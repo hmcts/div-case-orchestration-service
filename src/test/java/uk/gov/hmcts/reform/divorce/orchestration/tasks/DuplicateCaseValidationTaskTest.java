@@ -63,7 +63,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test
     public void givenGetCaseThrowsANotFoundException_whenExecute_thenDoNothing() throws TaskException {
         Response response = Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
+            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null, null, null))
             .headers(Collections.emptyMap())
             .status(HttpStatus.NOT_FOUND.value()).build();
 
@@ -81,7 +81,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test(expected = FeignException.class)
     public void givenGetCaseThrowsAServerException_whenExecute_thenThrowException() throws TaskException {
         Response response = Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
+            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null, null, null))
             .headers(Collections.emptyMap())
             .status(HttpStatus.GATEWAY_TIMEOUT.value()).build();
 

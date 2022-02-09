@@ -108,7 +108,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null, null, null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -120,7 +120,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null));
+        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null, null, null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -129,7 +129,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null, null,null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }

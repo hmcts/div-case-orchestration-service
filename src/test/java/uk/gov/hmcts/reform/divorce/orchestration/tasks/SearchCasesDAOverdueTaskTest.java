@@ -138,7 +138,7 @@ public class SearchCasesDAOverdueTaskTest {
             eq(AUTH_TOKEN),
             any(),
             any())
-        ).thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
+        ).thenThrow(new FeignException.BadRequest("Bad test request",  null, "".getBytes(),null));
 
         try {
             classUnderTest.execute(contextBeingModified, Collections.emptyMap());

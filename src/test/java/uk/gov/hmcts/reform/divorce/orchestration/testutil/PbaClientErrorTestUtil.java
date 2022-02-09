@@ -40,10 +40,10 @@ public class PbaClientErrorTestUtil {
 
     public static FeignException buildException(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
-        return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, body);
+        return new FeignException.FeignClientException(httpStatus.value(),  TEST_ERROR_MESSAGE, null, body, null);
     }
 
     public static FeignException buildExceptionWithOutResponseBody(HttpStatus httpStatus) {
-        return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, TEST_ERROR_MESSAGE.getBytes());
+        return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, null, TEST_ERROR_MESSAGE.getBytes(), null);
     }
 }

@@ -66,7 +66,7 @@ public class WelshContinueTaskTest {
 
     @Test
     public void testExecuteFailure()  {
-        Request request = Request.create(Request.HttpMethod.PATCH, "http://localhost:8080", Collections.EMPTY_MAP, Request.Body.empty());
+        Request request = Request.create(Request.HttpMethod.PATCH, "http://localhost:8080", Collections.EMPTY_MAP, Request.Body.empty(), null);
         Response response = Response.builder().request(request).status(422).reason("Unprocessable Entity ").build();
         FeignException exception = FeignException.errorStatus("update", response);
         when(caseMaintenanceClient.updateCase(context.getTransientObject(AUTH_TOKEN_JSON_KEY),

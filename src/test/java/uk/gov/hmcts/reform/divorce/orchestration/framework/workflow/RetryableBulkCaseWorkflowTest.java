@@ -7,6 +7,7 @@ import feign.RetryableException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,6 +43,9 @@ public class RetryableBulkCaseWorkflowTest {
     @Spy
     private RetryableBulkCaseWorkflow retryableBulkCaseWorkflow;
 
+    @Mock
+    Request mockRequest;
+
     @Before
     public void setup() {
         ReflectionTestUtils.setField(retryableBulkCaseWorkflow, "maxRetries", MAX_RETRIES);
@@ -70,28 +74,28 @@ public class RetryableBulkCaseWorkflowTest {
 
     @Test
     public void givenServiceUnavailableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.ServiceUnavailable("Error", "Error".getBytes()));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.ServiceUnavailable("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenBadGatewayException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.BadGateway("Error", "Error".getBytes()));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.BadGateway("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenGatewayTimeoutException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.GatewayTimeout("Error", "Error".getBytes()));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.GatewayTimeout("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenRetryableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET, new Date());
+        RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET, new Date(), null);
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(retryableException);
     }
 
     @Test
     public void givenInternalServerErrorException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.InternalServerError("Error", "Error".getBytes()));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.InternalServerError("", mockRequest, "Error".getBytes(), null));
     }
 
     public void given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(FeignException expectedException) throws WorkflowException {
@@ -122,7 +126,7 @@ public class RetryableBulkCaseWorkflowTest {
             CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-            .thenThrow(new FeignException.NotAcceptable("Error", "Error".getBytes()));
+            .thenThrow(new FeignException.NotAcceptable("Error", mockRequest, "Error".getBytes(), null));
 
         boolean executionSuccessful = retryableBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
@@ -142,7 +146,7 @@ public class RetryableBulkCaseWorkflowTest {
                 CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.UnprocessableEntity("Error", "Error".getBytes()));
+                .thenThrow(new FeignException.UnprocessableEntity("Error", mockRequest, "Error".getBytes(), null));
 
         boolean executionSuccessful = retryableBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
@@ -205,7 +209,7 @@ public class RetryableBulkCaseWorkflowTest {
                 CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.NotAcceptable("Error", "Error".getBytes()));
+                .thenThrow(new FeignException.NotAcceptable("Error", mockRequest, "Error".getBytes(), null));
 
         BulkWorkflowExecutionResult result =
                 retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
@@ -228,7 +232,7 @@ public class RetryableBulkCaseWorkflowTest {
                 CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.UnprocessableEntity("Error", "Error".getBytes()));
+                .thenThrow(new FeignException.UnprocessableEntity("Error", mockRequest, "Error".getBytes(), null));
 
         BulkWorkflowExecutionResult result =
                 retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
@@ -251,7 +255,7 @@ public class RetryableBulkCaseWorkflowTest {
                 CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.NotFound("Error", "Error".getBytes()));
+                .thenThrow(new FeignException.NotFound("Error", mockRequest, "Error".getBytes(), null));
 
         BulkWorkflowExecutionResult result =
                 retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);

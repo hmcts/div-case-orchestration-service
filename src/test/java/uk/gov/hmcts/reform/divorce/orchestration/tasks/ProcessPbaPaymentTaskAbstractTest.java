@@ -278,7 +278,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return (invocation) -> {
             if (httpStatus.value() >= 400) {
-                throw new FeignException.FeignClientException(httpStatus.value(), errorMessage, body);
+                throw new FeignException.FeignClientException(httpStatus.value(), errorMessage, null, body, null);
             }
             return ResponseEntity.status(httpStatus).body(paymentResponse);
         };

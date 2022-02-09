@@ -66,7 +66,7 @@ public class AuthUtil {
     }
 
     private String getIdamOauth2Token(String username, String password) {
-        return idamClient.authenticateUser(username, password);
+        return idamClient.getAccessToken(username, password);
     }
 
     public String getBearerToken(String token) {

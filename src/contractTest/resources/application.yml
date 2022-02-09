@@ -96,6 +96,12 @@ scheduler:
       description: 'Cron job to move eligible cases to AOS Overdue state'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
       cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
+    - name: 'NfdNotifierJob'
+      enabled: ${SCHEDULER_NFD_NOTIFIER_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to move notify citizens with unsubmitted applcations of NFD cutover'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.NfdNotifierJob'
+      cron: ${SCHEDULER_NFD_NOTIFIER__CRON:0/5 * * ? * * *} #Every day at 5 mins
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
@@ -615,3 +621,6 @@ logging:
     au.com.dius.pact: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+nfd:
+  cutoffdate: ${NFD_CUTOFF_DATE:03-04-2022}
