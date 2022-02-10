@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.NfdNotifierService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.text.ParseException;
