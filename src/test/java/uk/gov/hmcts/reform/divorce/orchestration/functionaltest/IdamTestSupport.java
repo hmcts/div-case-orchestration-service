@@ -37,7 +37,8 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
 
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/o/authorize";
-    private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/o/token";
+    private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
+    private static final String IDAM_EXCHANGE_TOKEN_CONTEXT_PATH = "/o/token";
     private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
     private static final String PIN_AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_CODE;
     private static final String APP_FORM_DATA_UTF8_HEADER = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";
@@ -124,7 +125,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenOExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -156,6 +157,15 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
 
     void stubTokenExchangeEndpoint(HttpStatus status, String responseBody) {
         idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH)
+            .withHeader(CONTENT_TYPE, new EqualToPattern(APP_FORM_DATA_UTF8_HEADER))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(responseBody)));
+    }
+
+    void stubTokenOExchangeEndpoint(HttpStatus status, String responseBody) {
+        idamServer.stubFor(post(IDAM_EXCHANGE_TOKEN_CONTEXT_PATH)
             .withHeader(CONTENT_TYPE, new EqualToPattern(APP_FORM_DATA_UTF8_HEADER))
             .willReturn(aResponse()
                 .withStatus(status.value())
