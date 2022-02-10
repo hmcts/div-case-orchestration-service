@@ -2,13 +2,17 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -89,8 +93,10 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
     private static final String FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/remove-all-petition-documents";
 
-    @Autowired
     private MockMvc webClient;
+
+    @Autowired
+    WebApplicationContext ctx;
 
     protected Map<String, Object> caseData;
     private CaseDetails caseDetails;
@@ -100,6 +106,11 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
 
     @Before
     public void setUp() {
+
+        WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
+        filter.init(new MockFilterConfig()); // using a mock that you construct with init params and all
+        webClient = MockMvcBuilders.webAppContextSetup(ctx).addFilters().build();
+
         basicFailedResponse = getBasicFailedResponse();
 
         FeeResponse feeResponse = FeeResponse.builder()

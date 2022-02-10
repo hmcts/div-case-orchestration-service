@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.solicitor.dn.re
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -42,11 +46,18 @@ public abstract class GetPetitionIssueFeesAbstractTest extends IdamTestSupport {
 
     FeeResponse amendFeeResponse;
 
+    protected MockMvc webClient;
+
     @Autowired
-    MockMvc webClient;
+    WebApplicationContext ctx;
 
     @Before
     public final void setUp() {
+
+        WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
+        filter.init(new MockFilterConfig()); // using a mock that you construct with init params and all
+        webClient = MockMvcBuilders.webAppContextSetup(ctx).addFilters().build();
+
         Map<String, Object> caseData = new HashMap<>();
         CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)

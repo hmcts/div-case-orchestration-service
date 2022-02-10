@@ -100,6 +100,7 @@ public abstract class MockedFunctionalTest {
     @ClassRule
     public static WireMockClassRule prdServer = new WireMockClassRule(buildWireMockConfig(4451));
 
+
     @AfterEach
     public void resetWireMocks() {
         WireMock.reset();

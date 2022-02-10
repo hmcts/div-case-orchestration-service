@@ -113,7 +113,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenOExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
