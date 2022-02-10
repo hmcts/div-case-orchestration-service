@@ -100,7 +100,7 @@ public class SearchDNPronouncedCasesTaskTest {
     @Test
     public void shouldRethrowFeignException() throws TaskException {
         when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any()))
-            .thenThrow(new FeignException.BadRequest("Bad test request", Mockito.mock(Request.class), "".getBytes()));
+            .thenThrow(new FeignException.BadRequest("Bad test request", Mockito.mock(Request.class), "".getBytes(), Collections.emptyMap()));
 
         Map<String, Object> actualResult = null;
         try {

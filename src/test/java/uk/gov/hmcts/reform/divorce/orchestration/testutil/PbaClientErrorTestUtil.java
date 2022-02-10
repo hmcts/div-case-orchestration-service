@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountP
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
+import java.util.Collections;
+
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
@@ -43,11 +45,11 @@ public class PbaClientErrorTestUtil {
     public static FeignException buildException(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return new FeignException.FeignClientException(httpStatus.value(),
-            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), body);
+            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), body, Collections.emptyMap());
     }
 
     public static FeignException buildExceptionWithOutResponseBody(HttpStatus httpStatus) {
         return new FeignException.FeignClientException(httpStatus.value(),
-            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), TEST_ERROR_MESSAGE.getBytes());
+            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), TEST_ERROR_MESSAGE.getBytes(), Collections.emptyMap());
     }
 }

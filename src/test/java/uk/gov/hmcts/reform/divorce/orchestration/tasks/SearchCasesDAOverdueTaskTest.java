@@ -140,7 +140,7 @@ public class SearchCasesDAOverdueTaskTest {
             eq(AUTH_TOKEN),
             any(),
             any())
-        ).thenThrow(new FeignException.BadRequest("Bad test request",  Mockito.mock(Request.class), "".getBytes()));
+        ).thenThrow(new FeignException.BadRequest("Bad test request",  Mockito.mock(Request.class), "".getBytes(), Collections.emptyMap()));
 
         try {
             classUnderTest.execute(contextBeingModified, Collections.emptyMap());

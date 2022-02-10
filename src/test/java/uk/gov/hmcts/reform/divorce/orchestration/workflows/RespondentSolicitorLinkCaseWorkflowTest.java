@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,7 +111,8 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", Mockito.mock(Request.class),null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", Mockito.mock(Request.class), "".getBytes(),
+            Collections.emptyMap()));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -124,7 +126,8 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondentTask.execute(any(), eq(userDetails)))
             .thenThrow(new FeignException.Unauthorized("test",
-                Mockito.mock(Request.class), null));
+                Mockito.mock(Request.class), "".getBytes(),
+                Collections.emptyMap()));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -133,7 +136,8 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", Mockito.mock(Request.class), null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", Mockito.mock(Request.class), "".getBytes(),
+            Collections.emptyMap()));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }

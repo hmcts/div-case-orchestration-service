@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public abstract class IdamTestSupport extends MockedFunctionalTest {
 
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
-    private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
-    private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
+    private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/o/authorize";
+    private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/o/token";
     private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
     private static final String PIN_AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_CODE;
     private static final String APP_FORM_DATA_UTF8_HEADER = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";

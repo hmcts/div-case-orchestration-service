@@ -146,7 +146,7 @@ public class BulkCaseCreateTaskTest {
         when(ccdUtilMock.getCurrentDateWithCustomerFacingFormat()).thenReturn(CURRENT_DATE);
         when(caseMaintenanceClient.submitBulkCase(bulkCaseFormat(), AUTH_TOKEN)).thenReturn(cmsResponse);
         when(caseMaintenanceClient.submitBulkCase(not(eq(bulkCaseFormat())), eq(AUTH_TOKEN)))
-            .thenThrow(new FeignException.BadRequest("Request failed", Mockito.mock(Request.class), "Request failed".getBytes()));
+            .thenThrow(new FeignException.BadRequest("Request failed", Mockito.mock(Request.class), "Request failed".getBytes(), Collections.emptyMap()));
 
         Map<String, Object> response = classToTest.execute(context, null);
 
