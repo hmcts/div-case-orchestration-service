@@ -25,7 +25,6 @@ public class IdamUsersCsvLoader {
 
             return list;
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Error occurred while loading object list from file " + fileName, e);
             return Collections.emptyList();
         }
