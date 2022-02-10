@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.aos;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.AosOverdueCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 
 import java.util.Map;
 
@@ -15,13 +17,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.H
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.AOS_OVERDUE_COVER_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitioner;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitionerSolicitor;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
 public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+
+    private static final String CONFIDENTIAL_TRUE = "keep";
 
     public AosOverdueCoverLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
                                                PdfDocumentGenerationService pdfDocumentGenerationService,
@@ -34,7 +41,7 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
         return AosOverdueCoverLetter.aosOverdueCoverLetterBuilder()
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .caseReference(formatCaseIdToReferenceNumber(context.getTransientObject(CASE_ID_JSON_KEY)))
-            .addressee(getPetitioner(caseData))
+            .addressee(getAddressee(caseData))
             .helpWithFeesNumber(getOptionalPropertyValueAsString(caseData, HELP_WITH_FEES_REF_NUMBER, null))
             .build();
     }
@@ -47,6 +54,18 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
     @Override
     public String getDocumentType() {
         return AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
+    }
+
+    public Addressee getAddressee(Map<String, Object> caseData) {
+
+        String confidentialField = getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL);
+
+        if (PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
+            return getPetitionerSolicitor(caseData);
+        }
+
+        Addressee emptyAddressee = Addressee.builder().name("").formattedAddress("").build();
+        return confidentialField.equals(CONFIDENTIAL_TRUE) ? emptyAddressee : getPetitioner(caseData);
     }
 
 }
