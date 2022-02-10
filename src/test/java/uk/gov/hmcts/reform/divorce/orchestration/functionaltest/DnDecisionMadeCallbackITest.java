@@ -4,9 +4,11 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -101,6 +103,19 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
 
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
+
+    @Autowired
+    PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
+
+    @Before
+    public void setUp() {
+        poolingHttpClientConnectionManager.setValidateAfterInactivity(10);
+    }
+
+    @BeforeEach
+    public void reset() {
+        resetAllMockServices();
+    }
 
     @Test
     public void givenCase_whenDnDecisionMade_thenCleanState() throws Exception {
@@ -242,7 +257,6 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     }
 
     @Test
-    @Ignore("Test is failing only at pr build stage, ignoring to unblock QA Testing, will investigate further when Testing signs off")
     public void shouldSendEmailToPetitionerWhenDnDecisionMade() throws Exception {
         final String caseId = "1509876543215683";
 
