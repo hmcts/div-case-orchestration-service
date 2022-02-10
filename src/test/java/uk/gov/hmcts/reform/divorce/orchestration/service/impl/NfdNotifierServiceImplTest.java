@@ -66,7 +66,8 @@ public class NfdNotifierServiceImplTest {
     public void setUpTest() {
 
         when(csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv")).thenReturn(Arrays.asList(IdamUser.builder().idamId(USER_ID).build()));
-        when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).thenReturn(UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
+        when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).
+            thenReturn(UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
 
     }
 
