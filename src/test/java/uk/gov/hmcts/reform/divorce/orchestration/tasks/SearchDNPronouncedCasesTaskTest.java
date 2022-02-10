@@ -47,7 +47,7 @@ public class SearchDNPronouncedCasesTaskTest {
 
     @Mock
     private CMSElasticSearchSupport mockCmsElasticSearchSupport;
-
+    BulkCaseCreateTaskTest
     @InjectMocks
     private SearchDNPronouncedCasesTask classUnderTest;
 

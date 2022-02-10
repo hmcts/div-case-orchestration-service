@@ -76,10 +76,10 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         payload.put(RESPONDENT_SOLICITOR_CASE_NO, respondentSolicitorCaseLink);
         payload.put(RESPONDENT_SOLICITOR_PIN, TEST_PIN);
         caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(payload)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
@@ -136,8 +136,10 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", Mockito.mock(Request.class), "".getBytes(),
-            Collections.emptyMap()));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(
+            new FeignException.GatewayTimeout("test",
+                Mockito.mock(Request.class),
+                "".getBytes(), Collections.emptyMap()));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
