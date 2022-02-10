@@ -38,7 +38,7 @@ public class AuthUtilTest {
     @Test
     public void testGetCitizenToken() {
         AuthenticateUserResponse authenticateResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
-        when(idamClient.getAccessToken(anyString(), anyString()))
+        when(idamClient.authenticateUser(anyString(), anyString()))
             .thenReturn(BEARER_AUTH_TYPE + " " + authenticateResponse.getCode());
 
         String token = authUtil.getCitizenToken();
