@@ -522,6 +522,7 @@ idam:
     services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:payment_app}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
+    §
 
 document:
   generator:

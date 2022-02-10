@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.client.NfdIdamService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.text.SimpleDateFormat;
@@ -51,7 +51,7 @@ public class NfdNotifierServiceImplTest {
     @Mock
     private IdamUsersCsvLoader csvLoader;
     @Mock
-    private IdamApi idamApi;
+    private NfdIdamService nfdIdamService;
 
     @Captor
     ArgumentCaptor<Map<String, String>> templateMapCaptor;
@@ -66,7 +66,7 @@ public class NfdNotifierServiceImplTest {
     public void setUpTest() {
 
         when(csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv")).thenReturn(Arrays.asList(IdamUser.builder().idamId(USER_ID).build()));
-        when(idamApi.getUserByUserId(AUTH_TOKEN, USER_ID)).thenReturn(UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
+        when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).thenReturn(UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
 
     }
 
@@ -95,7 +95,7 @@ public class NfdNotifierServiceImplTest {
     }
 
     private void verifyAndAssertNotifyService(String subjectDesc, int daysToAdd) throws CaseOrchestrationServiceException {
-        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, idamApi, setCutOffDate(daysToAdd));
+        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, setCutOffDate(daysToAdd));
 
         when(searchForCaseByEmail.searchCasesByEmail(EMAIL)).thenReturn(Optional.empty());
         notifierService.notifyUnsubmittedApplications(AUTH_TOKEN);

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.client.NfdIdamService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -37,18 +38,18 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
     private final EmailService emailService;
     private final SearchForCaseByEmail searchForCaseByEmail;
     private final IdamUsersCsvLoader csvLoader;
-    private final IdamApi idamApi;
+    private final NfdIdamService nfdIdamService;
     private final String cutoffDate;
 
     protected static final String EMAIL_DESCRIPTION = "Divorce service to be retired notification - ";
 
     public NfdNotifierServiceImpl(EmailService emailService,
                                   SearchForCaseByEmail searchForCaseByEmail,
-                                  IdamUsersCsvLoader csvLoader, IdamApi idamApi, @Value("${nfd.cutoffdate}") String cutoffDate) {
+                                  IdamUsersCsvLoader csvLoader, NfdIdamService nfdIdamService, @Value("${nfd.cutoffdate}") String cutoffDate) {
         this.emailService = emailService;
         this.searchForCaseByEmail = searchForCaseByEmail;
         this.csvLoader = csvLoader;
-        this.idamApi = idamApi;
+        this.nfdIdamService = nfdIdamService;
         this.cutoffDate = cutoffDate;
     }
 
@@ -63,7 +64,7 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
     }
 
     private void checkUserHasSubmittedAndNotify(String authToken, IdamUser idamUser) throws CaseOrchestrationServiceException {
-        UserDetails user = idamApi.getUserByUserId(authToken, idamUser.getIdamId());
+        UserDetails user = nfdIdamService.getUserDetail(idamUser.getIdamId(), authToken);
         if (user != null) {
             log.info("User details found for {} and email {}", user.getId(), user.getEmail());
             Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail(user.getEmail());
