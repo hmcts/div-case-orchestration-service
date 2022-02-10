@@ -510,6 +510,7 @@ idam:
     services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:test_service_allowed}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
+    userdetails: ${IDAM_API_URL:http://localhost:4503}/api/v1/users
 
 document:
   generator:
@@ -610,3 +611,6 @@ logging:
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+nfd:
+  cutoffdate: ${NFD_CUTOFF_DATE:03-04-2022}
