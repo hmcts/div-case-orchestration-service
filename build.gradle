@@ -286,6 +286,8 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
 
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: versions.jacksonDatabind
+
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
@@ -494,7 +496,9 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/controller/BulkScanController.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'
+        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/IdamUser.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/client/NfdIdamService.java'
 ]
 
 sonarqube {
