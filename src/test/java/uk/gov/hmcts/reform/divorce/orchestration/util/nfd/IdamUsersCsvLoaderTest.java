@@ -18,4 +18,11 @@ public class IdamUsersCsvLoaderTest {
         assertThat(idamUsers.isEmpty(), equalTo(Boolean.FALSE));
         assertThat(idamUsers.size(), equalTo(5));
     }
+
+    @Test
+    public void shouldReturnEmptyCollectionWhenFileNotFound() {
+        List<IdamUser> idamUsers = idamUsersCsvLoader.loadIdamUserList("idam-ids-test-file-does-not-exist.csv");
+
+        assertThat(idamUsers.isEmpty(), equalTo(Boolean.TRUE));
+    }
 }

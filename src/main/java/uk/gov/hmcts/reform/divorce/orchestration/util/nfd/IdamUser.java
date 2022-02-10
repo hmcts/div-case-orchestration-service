@@ -32,11 +32,4 @@ public class IdamUser {
         this.idamId = idamId;
     }
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("IdamUser{");
-        sb.append(", idamId=").append(idamId);
-        sb.append('}');
-        return sb.toString();
-    }
 }
