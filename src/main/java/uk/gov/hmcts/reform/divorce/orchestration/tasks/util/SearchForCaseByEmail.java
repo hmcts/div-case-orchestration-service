@@ -20,7 +20,7 @@ public class SearchForCaseByEmail {
     String buildQuery(String searchValue, String searchField) {
         String searchString = "{\"query\":{\"term\":{ \""
             + searchField
-            + ".keyword\":\"" + searchValue + "\"}}}";
+            + "\":\"" + searchValue + "\"}}}";
         return searchString;
     }
 

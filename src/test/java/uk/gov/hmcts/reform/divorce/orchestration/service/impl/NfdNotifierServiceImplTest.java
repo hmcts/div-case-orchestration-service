@@ -63,7 +63,7 @@ public class NfdNotifierServiceImplTest {
     ArgumentCaptor<String> descriptionCaptor;
 
     @Before
-    public void setUpTest() {
+    public void setUpTest() throws CaseOrchestrationServiceException {
 
         when(csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv")).thenReturn(Arrays.asList(IdamUser.builder().idamId(USER_ID).build()));
         when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN))

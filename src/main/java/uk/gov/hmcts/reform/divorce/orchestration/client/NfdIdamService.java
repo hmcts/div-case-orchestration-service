@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 @Service
@@ -25,7 +26,7 @@ public class NfdIdamService {
     @Value("${idam.api.userdetails}")
     private String userDetailsUrl;
 
-    public UserDetails getUserDetail(String userId, String authToken) {
+    public UserDetails getUserDetail(String userId, String authToken) throws CaseOrchestrationServiceException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION_HEADER, authToken);
@@ -40,7 +41,7 @@ public class NfdIdamService {
 
         if (response.getStatusCode() != HttpStatus.OK) {
             log.error("Failed to get user details from idam for userId {}", userId);
-            throw new RuntimeException(String.format("Unexpected code from Idam: %s ", response.getStatusCode()));
+            throw new CaseOrchestrationServiceException(String.format("Unexpected code from Idam: %s ", response.getStatusCode()));
         }
         return response.getBody();
     }

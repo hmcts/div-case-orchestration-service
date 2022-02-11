@@ -55,7 +55,7 @@ public class SearchForCaseByEmailTest {
         assertThat(caseDetails.isPresent(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
-        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail.keyword\":\"emailAddress\"}}}"));
+        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail\":\"emailAddress\"}}}"));
 
     }
 
@@ -69,7 +69,7 @@ public class SearchForCaseByEmailTest {
         assertThat(caseDetails.isEmpty(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
-        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail.keyword\":\"emailAddress\"}}}"));
+        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail\":\"emailAddress\"}}}"));
 
     }
 }

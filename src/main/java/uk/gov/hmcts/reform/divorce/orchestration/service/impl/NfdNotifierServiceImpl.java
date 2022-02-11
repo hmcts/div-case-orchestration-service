@@ -52,13 +52,17 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
         this.cutoffDate = cutoffDate;
     }
 
-
     @Override
-    public void notifyUnsubmittedApplications(String authToken) throws CaseOrchestrationServiceException {
+    public void notifyUnsubmittedApplications(String authToken) {
         log.info("In the Notify Unsubmitted appplications job");
         List<IdamUser> idamUsers = csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv");
         for (IdamUser idamUser : idamUsers) {
-            checkUserHasSubmittedAndNotify(authToken, idamUser);
+            try {
+                checkUserHasSubmittedAndNotify(authToken, idamUser);
+            } catch (RuntimeException | CaseOrchestrationServiceException e) {
+                log.error("Error processing  user {}", idamUser.getIdamId());
+                continue;
+            }
         }
     }
 
