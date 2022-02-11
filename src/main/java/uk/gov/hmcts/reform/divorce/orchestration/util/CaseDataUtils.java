@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getPaymentMethod;
@@ -306,7 +307,7 @@ public class CaseDataUtils {
     public boolean isRespondentNotDefendingAosOffline(Map<String, Object> caseData) {
         final String reasonForDivorce = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
 
-        if (equalsIgnoreCase(UNREASONABLE_BEHAVIOUR.getValue(), reasonForDivorce)) {
+        if (equalsIgnoreCase(UNREASONABLE_BEHAVIOUR.getValue(), reasonForDivorce) || equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
             return isRespondentNotDefending(caseData);
         }
 
