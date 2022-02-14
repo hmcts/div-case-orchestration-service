@@ -167,6 +167,18 @@ allprojects {
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
 
             dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
+
+            dependencySet(group: 'org.springframework', version: '5.2.19.RELEASE') {
+                entry 'spring-aop'
+                entry 'spring-beans'
+                entry 'spring-context'
+                entry 'spring-context-support'
+                entry 'spring-core'
+                entry 'spring-expression'
+                entry 'spring-jcl'
+                entry 'spring-web'
+                entry 'spring-webmvc'
+            }
         }
     }
 }
