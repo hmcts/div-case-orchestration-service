@@ -55,6 +55,7 @@ def versions = [
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         junit                        : '4.13.1',
+        logbackVersion               : '1.2.10',
         lombok                       : '1.18.22',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
@@ -68,7 +69,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.57',
+        tomcat                       : '9.0.58',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
@@ -156,6 +157,11 @@ allprojects {
                 entry 'tomcat-embed-core'
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
+            }
+            //CVE-2021-44228, CVE-2021-44832, CVE-2021-45046, CVE-2021-45105
+            dependencySet(group: 'org.apache.logging.log4j', version: '2.17.1') {
+                entry 'log4j-api'
+                entry 'log4j-to-slf4j'
             }
             //CVE-2017-18640
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
@@ -284,6 +290,8 @@ dependencies {
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
