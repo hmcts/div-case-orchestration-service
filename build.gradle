@@ -55,7 +55,7 @@ def versions = [
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         junit                        : '4.13.1',
-        lombok                       : '1.18.18',
+        lombok                       : '1.18.22',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
         reformPropertiesVolume       : '0.0.4',
@@ -68,7 +68,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.54',
+        tomcat                       : '9.0.57',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
@@ -140,7 +140,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869, CVE-2021-21409
-            dependencySet(group: 'io.netty', version: '4.1.68.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.71.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
