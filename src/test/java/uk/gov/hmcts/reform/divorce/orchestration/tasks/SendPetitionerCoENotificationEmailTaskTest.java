@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_DATE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_LIMIT_DATE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -70,6 +74,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_COE_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -78,10 +84,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendPetitionerCoENotificationEmailTaskTest {
 
     private static final String PET_CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/caseListedForHearing.json";
+    private static final String PET_CASE_LISTED_FOR_HEARING_WELSH_JSON = "/jsonExamples/payloads/caseListedForHearingWelsh.json";
     private static final String SOL_CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/solCaseListedForHearing.json";
 
     @Mock
     private TaskCommons taskCommons;
+
+    @Mock
+    LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @InjectMocks
     private SendPetitionerCoENotificationEmailTask sendPetitionerCoENotificationEmailTask;
@@ -112,6 +122,24 @@ public class SendPetitionerCoENotificationEmailTaskTest {
         DnCourt dnCourt = new DnCourt();
         dnCourt.setName("Court Name");
         when(taskCommons.getDnCourt(anyString())).thenReturn(dnCourt);
+        LocalDate dateOfHearing = LocalDate.of(2019, 4,21);
+        LocalDate limitDate = LocalDate.of(2019, 4,6);
+        when(localDateToWelshStringConverter.convert(dateOfHearing)).thenReturn(TEST_WESLH_DATE_COE);
+        when(localDateToWelshStringConverter.convert(limitDate)).thenReturn(TEST_WESLH_LIMIT_DATE_COE);
+    }
+
+    @Test
+    public void testThatPetNotificationServiceIsCalled_WhenCostsClaimIsGrantedInWelsh() throws TaskException, IOException {
+        Map<String, Object> incomingPayload = getJsonFromResourceFile(
+            PET_CASE_LISTED_FOR_HEARING_WELSH_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
+
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
+
+        verifyPetEmailParametersWelsh(allOf(
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+        ));
+        assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
 
     @Test
@@ -283,6 +311,26 @@ public class SendPetitionerCoENotificationEmailTaskTest {
         }
     }
 
+    private void verifyPetEmailParametersWelsh(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
+        verify(taskCommons).sendEmail(eq(PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION),
+            notNull(),
+            eq(TEST_PETITIONER_EMAIL),
+            argThat(new HamcrestArgumentMatcher<>(
+                allOf(
+                    hasEntry(NOTIFICATION_EMAIL, TEST_PETITIONER_EMAIL),
+                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE),
+                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME),
+                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME),
+                    optionalTextParametersMatcher,
+                    hasEntry(DATE_OF_HEARING, "21 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "6 April 2019"),
+                    hasEntry(WELSH_DATE_OF_HEARING, "21 Ebrill 2019"),
+                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, "6 Ebrill 2019"),
+                    hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
+                )
+            )),any());
+    }
+
     private void verifyPetEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
         verify(taskCommons).sendEmail(eq(PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION),
             notNull(),
@@ -295,7 +343,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "6 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),any());
@@ -314,7 +362,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Petitioner Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "6 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),any());

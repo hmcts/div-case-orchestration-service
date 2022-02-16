@@ -1,0 +1,31 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "D8PetitionerEmail": "testPetitioner@email.com",
+      "D8caseReference": "LV17D80102",
+      "D8PetitionerFirstName": "Clark",
+      "D8PetitionerLastName": "Kent",
+      "D8DivorceCostsClaim": "YES",
+      "D8InferredPetitionerGender": "male",
+      "CostsClaimGranted": "YES",
+      "CourtName": "liverpool",
+      "DateAndTimeOfHearing": [
+        {
+          "id": "a5961401-e669-4637-97b9-b9ea2ddbb2bd",
+          "value": {
+            "DateOfHearing": "2019-04-21",
+            "TimeOfHearing": "15:00"
+          }
+        }
+      ],
+      "D8RespondentFirstName":"Diana",
+      "D8RespondentLastName":"Prince",
+      "RespEmailAddress": "testRespondent@email.com",
+      "RespContactMethodIsDigital": "Yes",
+      "LanguagePreferenceWelsh" : "Yes",
+      "WELSH_DATE_OF_HEARING": "21 Ebrill 2019",
+      "WELSH_LIMIT_DATE_TO_CONTACT_COURT": "6 Ebrill 2019"
+    }
+  }
+}
