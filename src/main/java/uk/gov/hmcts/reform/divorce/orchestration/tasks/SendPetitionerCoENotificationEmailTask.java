@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -44,6 +45,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
@@ -53,6 +56,9 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
+
+    @Autowired
+    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Autowired
     private TaskCommons taskCommons;
@@ -117,6 +123,10 @@ public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, 
         try {
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
+            if (languagePreference.getCode().equalsIgnoreCase("welsh")) {
+                templateParameters.put(WELSH_DATE_OF_HEARING, localDateToWelshStringConverter.convert(dateOfHearing));
+                templateParameters.put(WELSH_LIMIT_DATE_TO_CONTACT_COURT, localDateToWelshStringConverter.convert(limitDateToContactCourt));
+            }
             taskCommons.sendEmail(template,
                 EMAIL_DESCRIPTION,
                 emailToBeSentTo,
