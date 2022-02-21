@@ -28,7 +28,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Authenti
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.NfdNotifierService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -52,6 +54,7 @@ public class OrchestrationController {
     private final CaseOrchestrationService orchestrationService;
     private final AuthUtil authUtil;
     private final FeatureToggleService featureToggleService;
+    private final NfdNotifierService notifierService;
 
     @PutMapping(path = "/payment-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles Payment Update callbacks")
@@ -335,5 +338,15 @@ public class OrchestrationController {
             throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetitionForRefusal(caseId, authorizationToken));
+    }
+
+    @PostMapping(path = "/runNfdNotifyJob", produces = APPLICATION_JSON)
+    @ApiOperation(value = "Runs notify nfdJob")
+    public ResponseEntity runNfdNotifyJob(
+        @RequestHeader(AUTHORIZATION)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken)
+        throws CaseOrchestrationServiceException {
+        notifierService.notifyUnsubmittedApplications(authorizationToken);
+        return ResponseEntity.ok().build();
     }
 }

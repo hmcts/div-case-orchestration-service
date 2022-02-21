@@ -17,9 +17,9 @@ public class IdamUsersCsvLoader {
     public List<IdamUser> loadIdamUserList(String fileName) {
         try {
             CsvMapper csvMapper = new CsvMapper();
-            CsvSchema csvSchema = csvMapper.typedSchemaFor(IdamUser.class);
+            CsvSchema csvSchema = csvMapper.typedSchemaFor(IdamUser.class).withHeader();
             List list = new CsvMapper().readerFor(IdamUser.class)
-                .with(csvSchema.withArrayElementSeparator(","))
+                .with(csvSchema)
                 .readValues(IdamUsersCsvLoader.class.getClassLoader().getResource(fileName))
                 .readAll();
 

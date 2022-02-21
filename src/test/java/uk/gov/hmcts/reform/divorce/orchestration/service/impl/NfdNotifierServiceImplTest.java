@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.NfdNotifier
 import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.NfdNotifierServiceImpl.FIRSTNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.NfdNotifierServiceImpl.LASTNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.NfdNotifierServiceImpl.SUBJECT;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.NfdNotifierServiceImpl.SUBMIT_YOUR_DIVORCE_APPLICATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NfdNotifierServiceImplTest {
@@ -72,30 +73,12 @@ public class NfdNotifierServiceImplTest {
     }
 
     @Test
-    public void shouldNotifyUsersWhenThreeDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("3 days to complete your divorce application", 3);
+    public void shouldNotifyUsersWithReminderEmail() {
+        verifyAndAssertNotifyService(SUBMIT_YOUR_DIVORCE_APPLICATION, 30);
 
     }
 
-    @Test
-    public void shouldNotifyUsersWhenTwoDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("2 days to complete your divorce application", 2);
-
-    }
-
-    @Test
-    public void shouldNotifyUsersWhenOneDayBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("1 days to complete your divorce application", 1);
-
-    }
-
-    @Test
-    public void shouldNotifyUsersWhenZeroDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("last chance to complete your divorce application", 0);
-
-    }
-
-    private void verifyAndAssertNotifyService(String subjectDesc, int daysToAdd) throws CaseOrchestrationServiceException {
+    private void verifyAndAssertNotifyService(String subjectDesc, int daysToAdd) {
         notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, setCutOffDate(daysToAdd));
 
         when(searchForCaseByEmail.searchCasesByEmail(EMAIL)).thenReturn(Optional.empty());

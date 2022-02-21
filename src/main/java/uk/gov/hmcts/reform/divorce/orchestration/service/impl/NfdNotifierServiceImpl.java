@@ -15,16 +15,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 @Slf4j
 @Component
@@ -33,6 +26,7 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
     protected static final String FIRSTNAME = "firstname";
     protected static final String LASTNAME = "lastname";
     protected static final String SUBJECT = "subject";
+    protected static final String SUBMIT_YOUR_DIVORCE_APPLICATION = "Submit your divorce application";
 
     private final EmailService emailService;
     private final SearchForCaseByEmail searchForCaseByEmail;
@@ -73,30 +67,11 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
             Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail(user.getEmail());
             if (caseDetails.isEmpty()) {
                 log.info("No case found for email {} so send a notification reminder", user.getEmail());
-                Map<String, String> tempVars = Map.of(SUBJECT, getSubject(), FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
+                Map<String, String> tempVars = Map.of(SUBJECT,
+                    SUBMIT_YOUR_DIVORCE_APPLICATION, FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
                 emailService.sendEmail(user.getEmail(), EmailTemplateNames.NFD_NOTIFICATION.name(), tempVars, EMAIL_DESCRIPTION,
                     LanguagePreference.ENGLISH);
             }
         }
-    }
-
-    protected String getSubject() throws CaseOrchestrationServiceException {
-        Date today = new Date();
-        Date dateCutOff;
-        try {
-            dateCutOff = new SimpleDateFormat("dd-MM-yyyy").parse(cutoffDate);
-        } catch (ParseException e) {
-            throw new CaseOrchestrationServiceException(e);
-        }
-
-        Instant start = today.toInstant();
-        Instant end = dateCutOff.toInstant().plus(1, DAYS);
-
-        long daysBetween = Duration.between(start, end).toDays();
-        if (daysBetween > 0) {
-            return daysBetween + " days to complete your divorce application";
-        }
-        return "last chance to complete your divorce application";
-
     }
 }
