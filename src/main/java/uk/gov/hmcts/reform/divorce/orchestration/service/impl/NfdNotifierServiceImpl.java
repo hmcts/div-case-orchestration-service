@@ -54,7 +54,7 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
             try {
                 checkUserHasSubmittedAndNotify(authToken, idamUser);
             } catch (RuntimeException | CaseOrchestrationServiceException e) {
-                log.error("Error processing  user {}", idamUser.getIdamId());
+                log.error("Exception processing user " + idamUser.getIdamId(), e);
                 continue;
             }
         }
