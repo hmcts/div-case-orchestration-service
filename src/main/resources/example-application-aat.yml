@@ -504,8 +504,8 @@ idam:
     username: ${IDAM_CASEWORKER_USERNAME:replace_me}
     password: ${IDAM_CASEWORKER_PASSWORD:replace_me}
     superuser:
-      username: ${IDAM_CASEWORKER_SUPERSUSER_USERNAME:replace_me}
-      password: ${IDAM_CASEWORKER_SUPERSUSER_PASSWORD:replace_me}
+      username: ${IDAM_CASEWORKER_SUPERUSER_USERNAME:replace_me}
+      password: ${IDAM_CASEWORKER_SUPERUSER_PASSWORD:replace_me}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
