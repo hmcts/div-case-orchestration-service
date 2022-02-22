@@ -32,7 +32,7 @@ public class NfdNotifierJobTest {
 
     @Before
     public void setUpTest() {
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(authUtil.getCaseworkerSuperUserToken()).thenReturn(AUTH_TOKEN);
     }
 
     @Test

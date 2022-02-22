@@ -22,7 +22,7 @@ public class NfdNotifierJob implements Job {
         log.info("Running {} job", this.getClass().getSimpleName());
 
         try {
-            nfdNotifierService.notifyUnsubmittedApplications(authUtil.getCaseworkerToken());
+            nfdNotifierService.notifyUnsubmittedApplications(authUtil.getCaseworkerSuperUserToken());
         } catch (CaseOrchestrationServiceException e) {
             JobExecutionException jobExecutionException = new JobExecutionException(e);
             log.error("Error when trying to run {}", this.getClass().getName(), jobExecutionException);

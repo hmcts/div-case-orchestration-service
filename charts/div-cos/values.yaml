@@ -45,6 +45,8 @@ java:
                 - idam-citizen-password
                 - idam-caseworker-username
                 - idam-caseworker-password
+                - idam-caseworker-superuser-username
+                - idam-caseworker-superuser-password
                 - uk-gov-notify-api-key
                 - cos-postgresql-password
                 - AppInsightsInstrumentationKey

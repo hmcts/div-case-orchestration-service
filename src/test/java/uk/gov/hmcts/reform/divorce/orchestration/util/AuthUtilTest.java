@@ -28,6 +28,8 @@ public class AuthUtilTest {
 
     @Before
     public void setup() {
+        setField(authUtil, "caseworkerSuperUserName", "caseworkerSuperUsername");
+        setField(authUtil, "caseworkerSuperUserPassword", "caseworkerSuperUsePassword");
         setField(authUtil, "citizenUserName", "citizenUsername");
         setField(authUtil, "citizenPassword", "password");
         setField(authUtil, "authRedirectUrl", "redirectUrl");
@@ -42,6 +44,16 @@ public class AuthUtilTest {
             .thenReturn(BEARER_AUTH_TYPE + " " + authenticateResponse.getCode());
 
         String token = authUtil.getCitizenToken();
+        assertTrue(token.startsWith("Bearer"));
+    }
+
+    @Test
+    public void testGetCaseworkerSuperUserToken() {
+        AuthenticateUserResponse authenticateResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
+        when(idamClient.authenticateUser(anyString(), anyString()))
+            .thenReturn(BEARER_AUTH_TYPE + " " + authenticateResponse.getCode());
+
+        String token = authUtil.getCaseworkerSuperUserToken();
         assertTrue(token.startsWith("Bearer"));
     }
 

@@ -27,7 +27,6 @@ public class NfdIdamService {
     private String userDetailsUrl;
 
     public UserDetails getUserDetail(String userId, String authToken) throws CaseOrchestrationServiceException {
-        log.error("In the get user details for token {}", authToken);
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION_HEADER, authToken);
         HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
