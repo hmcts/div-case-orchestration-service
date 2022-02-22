@@ -38,9 +38,8 @@ public class NfdIdamService {
             .toUriString();
 
         ResponseEntity<UserDetails> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, UserDetails.class);
-
         if (response.getStatusCode() != HttpStatus.OK) {
-            log.error("Failed to get user details from idam for userId {}", userId);
+            log.error("Failed to get user details from idam for userId {} and token {}", userId, authToken);
             throw new CaseOrchestrationServiceException(String.format("Unexpected code from Idam: %s ", response.getStatusCode()));
         }
         return response.getBody();
