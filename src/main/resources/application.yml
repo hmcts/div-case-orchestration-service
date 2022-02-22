@@ -511,7 +511,7 @@ idam:
   caseworker:
     username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
     password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
-    suoeruser:
+    superuser:
       username: ${IDAM_CASEWORKER_SUPERSUSER_USERNAME:dummyuser}
       password: ${IDAM_CASEWORKER_SUPERSUSER_PASSWORD:dummypassword}
   s2s-auth:
