@@ -48,7 +48,7 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
 
     @Override
     public void notifyUnsubmittedApplications(String authToken) {
-        log.info("In the Notify Unsubmitted appplications job");
+        log.info("In the Notify Unsubmitted applications job with token {}", authToken);
         List<IdamUser> idamUsers = csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv");
         for (IdamUser idamUser : idamUsers) {
             try {
