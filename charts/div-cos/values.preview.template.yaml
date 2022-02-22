@@ -17,6 +17,8 @@ java:
     DIV_SCHEDULER_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     DIV_SCHEDULER_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
     DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    IDAM_CASEWORKER_SUPERUSER_USERNAME: ${IDAM_CASEWORKER_SUPERUSER_USERNAME}
+    IDAM_CASEWORKER_SUPERUSER_PASSWORD: ${IDAM_CASEWORKER_SUPERUSER_PASSWORD}
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
     #Scheduler parameters
     SCHEDULER_ENABLED: true
