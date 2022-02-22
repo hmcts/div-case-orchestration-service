@@ -72,6 +72,7 @@ public class AuthUtil {
     }
 
     public String getCaseworkerSuperUserToken() {
+        log.info("get caseworker superuser for username {} and pwd {}", caseworkerSuperUserName, caseworkerSuperUserPassword);
         return getIdamOauth2Token(caseworkerSuperUserName, caseworkerSuperUserPassword);
     }
 
