@@ -24,7 +24,7 @@ public class NfdNotifierJobQuartzTest extends QuartzTest {
 
     @Override
     protected void setUpQuartzTest() {
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(authUtil.getCaseworkerSuperUserToken()).thenReturn(AUTH_TOKEN);
     }
 
     @Override
