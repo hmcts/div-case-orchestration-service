@@ -509,6 +509,9 @@ idam:
   caseworker:
     username: dummy
     password: dummy
+    superuser:
+      username: dummy
+      password: dummy
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
