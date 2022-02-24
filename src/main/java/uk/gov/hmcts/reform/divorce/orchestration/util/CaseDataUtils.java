@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
@@ -55,6 +56,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
@@ -275,6 +278,9 @@ public class CaseDataUtils {
     public boolean isAdulteryAndNoConsent(Map<String, Object> caseData) {
         String reasonForDivorce = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
         String respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT, EMPTY);
+        if (StringUtils.isBlank(respAdmitOrConsentToFact)) {
+            respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_AOS_ADMIT_ADULTERY, EMPTY);
+        }
 
         return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE,
             respAdmitOrConsentToFact);
@@ -283,6 +289,10 @@ public class CaseDataUtils {
     public boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {
         String reasonForDivorce = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
         String respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT, EMPTY);
+
+        if (StringUtils.isBlank(respAdmitOrConsentToFact)) {
+            respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_AOS_2_YR_CONSENT, EMPTY);
+        }
 
         return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
             && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
