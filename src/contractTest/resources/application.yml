@@ -507,6 +507,12 @@ idam:
     id: divorce
     health:
       context-path: /health
+  xui:
+    client:
+      redirect_uri: ${IDAM_API_XUI_REDIRECT_URL:http://localhost:8080/authenticated}
+      port: 4503
+      secret: ${IDAM_XUI_CLIENT_SECRET:dummysecret}
+      id: xuiwebapp
   citizen:
     username: dummy
     password: dummy

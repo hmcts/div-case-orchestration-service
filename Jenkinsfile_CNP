@@ -28,7 +28,9 @@ def secrets = [
                 secret("frontend-secret", "SERVICE_AUTH_SECRET"),
                 secret("idam-secret", "IDAM_CLIENT_SECRET"),
                 secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
-                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD"),
+                secret("idam-caseworker-superuser-password", "IDAM_CASEWORKER_SUPERUSER_PASSWORD"),
+                secret("idam-caseworker-superuser-username", "IDAM_CASEWORKER_SUPERUSER_USERNAME")
         ]
 ]
 

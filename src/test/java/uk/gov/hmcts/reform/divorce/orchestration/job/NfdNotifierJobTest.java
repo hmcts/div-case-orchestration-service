@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,8 +16,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NfdNotifierJobTest {
@@ -30,22 +27,18 @@ public class NfdNotifierJobTest {
     @InjectMocks
     private NfdNotifierJob nfdNotifierJob;
 
-    @Before
-    public void setUpTest() {
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
-    }
 
     @Test
     public void shouldCallNotifierService() throws JobExecutionException, CaseOrchestrationServiceException {
 
         nfdNotifierJob.execute(null);
-        verify(notifierService).notifyUnsubmittedApplications(AUTH_TOKEN);
+        verify(notifierService).notifyUnsubmittedApplications();
 
     }
 
     @Test
     public void shouldThrowJobExecutionException_WhenServiceFails() throws CaseOrchestrationServiceException {
-        doThrow(CaseOrchestrationServiceException.class).when(notifierService).notifyUnsubmittedApplications(AUTH_TOKEN);
+        doThrow(CaseOrchestrationServiceException.class).when(notifierService).notifyUnsubmittedApplications();
 
         JobExecutionException jobExecutionException = assertThrows(
             JobExecutionException.class,

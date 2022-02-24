@@ -8,7 +8,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.NfdIdamService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
+import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdIdamService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +44,14 @@ public class NfdNotifierServiceImplTest {
     protected static final String FORENAME = "John";
     protected static final String SURNAME = "Doe";
     NfdNotifierServiceImpl notifierService;
+    @Captor
+    ArgumentCaptor<Map<String, String>> templateMapCaptor;
+    @Captor
+    ArgumentCaptor<String> emailArgumentCaptor;
+    @Captor
+    ArgumentCaptor<String> templateNameArgumentCaptor;
+    @Captor
+    ArgumentCaptor<String> descriptionCaptor;
     @Mock
     private EmailService emailService;
     @Mock
@@ -53,52 +61,20 @@ public class NfdNotifierServiceImplTest {
     @Mock
     private NfdIdamService nfdIdamService;
 
-    @Captor
-    ArgumentCaptor<Map<String, String>> templateMapCaptor;
-    @Captor
-    ArgumentCaptor<String> emailArgumentCaptor;
-    @Captor
-    ArgumentCaptor<String> templateNameArgumentCaptor;
-    @Captor
-    ArgumentCaptor<String> descriptionCaptor;
-
     @Before
     public void setUpTest() {
-
+        when(nfdIdamService.getXuiCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv")).thenReturn(Arrays.asList(IdamUser.builder().idamId(USER_ID).build()));
-        when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).thenReturn(UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
-
+        when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).thenReturn(
+            UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
     }
 
     @Test
-    public void shouldNotifyUsersWhenThreeDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("3 days to complete your divorce application", 3);
-
-    }
-
-    @Test
-    public void shouldNotifyUsersWhenTwoDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("2 days to complete your divorce application", 2);
-
-    }
-
-    @Test
-    public void shouldNotifyUsersWhenOneDayBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("1 days to complete your divorce application", 1);
-
-    }
-
-    @Test
-    public void shouldNotifyUsersWhenZeroDaysBeforeCutOff() throws CaseOrchestrationServiceException {
-        verifyAndAssertNotifyService("last chance to complete your divorce application", 0);
-
-    }
-
-    private void verifyAndAssertNotifyService(String subjectDesc, int daysToAdd) throws CaseOrchestrationServiceException {
-        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, setCutOffDate(daysToAdd));
+    public void shouldNotifyUsers() throws CaseOrchestrationServiceException {
+        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, setCutOffDate());
 
         when(searchForCaseByEmail.searchCasesByEmail(EMAIL)).thenReturn(Optional.empty());
-        notifierService.notifyUnsubmittedApplications(AUTH_TOKEN);
+        notifierService.notifyUnsubmittedApplications();
 
         Mockito.verify(emailService)
             .sendEmail(emailArgumentCaptor.capture(), templateNameArgumentCaptor.capture(), templateMapCaptor.capture(), descriptionCaptor.capture(),
@@ -112,11 +88,11 @@ public class NfdNotifierServiceImplTest {
         Map<String, String> templateMap = templateMapCaptor.getValue();
         assertThat(templateMap.get(FIRSTNAME), equalTo(FORENAME));
         assertThat(templateMap.get(LASTNAME), equalTo(SURNAME));
-        assertThat( templateMap.get(SUBJECT), equalTo(subjectDesc));
+        assertThat(templateMap.get(SUBJECT), equalTo(""));
     }
 
-    private String setCutOffDate(int daysToAdd) {
-        LocalDate cutoffDate = LocalDate.now().plusDays(daysToAdd);
+    private String setCutOffDate() {
+        LocalDate cutoffDate = LocalDate.now();
         ZoneId defaultZoneId = ZoneId.systemDefault();
         Date date = Date.from(cutoffDate.atStartOfDay(defaultZoneId).toInstant());
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");

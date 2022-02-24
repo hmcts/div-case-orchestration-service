@@ -88,7 +88,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Cron job to move notify citizens with unsubmitted applcations of NFD cutover'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.NfdNotifierJob'
-      cron: ${SCHEDULER_NFD_NOTIFIER__CRON:0/5 * * ? * * *} #Every day at 5 mins
+      cron: ${SCHEDULER_NFD_NOTIFIER__CRON:0 0/5 * * ? * * *} #Every day at 5 mins
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
@@ -495,6 +495,12 @@ idam:
     id: divorce
     health:
       context-path: /health
+  xui:
+    client:
+      redirect_uri: ${IDAM_API_XUI_REDIRECT_URL:http://localhost:8080/authenticated}
+      port: 4503
+      secret: ${IDAM_XUI_CLIENT_SECRET:dummysecret}
+      id: xuiwebapp
   citizen:
     username: dummy
     password: dummy
@@ -511,6 +517,8 @@ idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
     userdetails: ${IDAM_API_URL:http://localhost:4503}/api/v1/users
+    authorize: ${IDAM_API_URL:http://localhost:4503}/api/v1/outh2/authorize
+    token: ${IDAM_API_URL:http://localhost:4503}/api/v1/outh2/token
 
 document:
   generator:
