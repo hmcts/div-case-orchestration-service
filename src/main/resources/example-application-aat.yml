@@ -518,8 +518,8 @@ idam:
   api:
     url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
     userdetails: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/api/v1/users
-    authorize: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/api/v1/oauth2/authorize
-    token: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/api/v1/oauth2/token
+    authorize: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/oauth2/authorize
+    token: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/oauth2/token
 
 document:
   generator:

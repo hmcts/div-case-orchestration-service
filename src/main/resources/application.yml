@@ -527,8 +527,8 @@ idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
     userdetails: ${IDAM_API_URL:http://localhost:4503}/api/v1/users
-    authorize: ${IDAM_API_URL:http://localhost:4503}/api/v1/oauth2/authorize
-    token: ${IDAM_API_URL:http://localhost:4503}/api/v1/oauth2/token
+    authorize: ${IDAM_API_URL:http://localhost:4503}/oauth2/authorize
+    token: ${IDAM_API_URL:http://localhost:4503}/oauth2/token
 
 document:
   generator:
