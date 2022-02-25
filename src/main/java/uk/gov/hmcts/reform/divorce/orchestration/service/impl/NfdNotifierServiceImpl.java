@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.NfdNotifierService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
+import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdAuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdIdamService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -31,36 +32,44 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
     private final SearchForCaseByEmail searchForCaseByEmail;
     private final IdamUsersCsvLoader csvLoader;
     private final NfdIdamService nfdIdamService;
+    private final NfdAuthUtil nfdAuthUtil;
 
     public NfdNotifierServiceImpl(EmailService emailService,
                                   SearchForCaseByEmail searchForCaseByEmail,
-                                  IdamUsersCsvLoader csvLoader, NfdIdamService nfdIdamService, @Value("${nfd.cutoffdate}") String cutoffDate) {
+                                  IdamUsersCsvLoader csvLoader, NfdIdamService nfdIdamService, NfdAuthUtil nfdAuthUtil) {
         this.emailService = emailService;
         this.searchForCaseByEmail = searchForCaseByEmail;
         this.csvLoader = csvLoader;
         this.nfdIdamService = nfdIdamService;
+        this.nfdAuthUtil = nfdAuthUtil;
     }
 
 
     @Override
     public void notifyUnsubmittedApplications() throws CaseOrchestrationServiceException {
         log.info("In the Notify Unsubmitted appplications job");
-        String authToken = nfdIdamService.getXuiCaseworkerToken();
+        String authToken = nfdAuthUtil.getCaseworkerToken();
         log.info("Got the token {}", authToken);
         List<IdamUser> idamUsers = csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv");
         for (IdamUser idamUser : idamUsers) {
-            checkUserHasSubmittedAndNotify(authToken, idamUser);
+            try {
+                checkUserHasSubmittedAndNotify(authToken, idamUser);
+            }
+            catch(RuntimeException e){
+                log.error("Error processing user {} ", idamUser.getIdamId());
+                continue;
+            }
         }
     }
 
-    private void checkUserHasSubmittedAndNotify(String authToken, IdamUser idamUser) throws CaseOrchestrationServiceException {
+    private void checkUserHasSubmittedAndNotify(String authToken, IdamUser idamUser) {
         UserDetails user = nfdIdamService.getUserDetail(idamUser.getIdamId(), authToken);
         if (user != null) {
             log.info("User details found for {} and email {}", user.getId(), user.getEmail());
             Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail(user.getEmail());
             if (caseDetails.isEmpty()) {
                 log.info("No case found for email {} so send a notification reminder", user.getEmail());
-                Map<String, String> tempVars = Map.of(SUBJECT, "", FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
+                Map<String, String> tempVars = Map.of(SUBJECT, "Submit your divorce application", FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
                 emailService.sendEmail(user.getEmail(), EmailTemplateNames.NFD_NOTIFICATION.name(), tempVars, EMAIL_DESCRIPTION,
                     LanguagePreference.ENGLISH);
             }

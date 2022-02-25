@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
+import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdAuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdIdamService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -60,10 +61,12 @@ public class NfdNotifierServiceImplTest {
     private IdamUsersCsvLoader csvLoader;
     @Mock
     private NfdIdamService nfdIdamService;
+    @Mock
+    private NfdAuthUtil nfdAuthUtil;
 
     @Before
     public void setUpTest() {
-        when(nfdIdamService.getXuiCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(nfdAuthUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(csvLoader.loadIdamUserList("unsubmittedIdamUserList.csv")).thenReturn(Arrays.asList(IdamUser.builder().idamId(USER_ID).build()));
         when(nfdIdamService.getUserDetail(USER_ID, AUTH_TOKEN)).thenReturn(
             UserDetails.builder().email(EMAIL).forename(FORENAME).surname(SURNAME).build());
@@ -71,7 +74,7 @@ public class NfdNotifierServiceImplTest {
 
     @Test
     public void shouldNotifyUsers() throws CaseOrchestrationServiceException {
-        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, setCutOffDate());
+        notifierService = new NfdNotifierServiceImpl(emailService, searchForCaseByEmail, csvLoader, nfdIdamService, nfdAuthUtil);
 
         when(searchForCaseByEmail.searchCasesByEmail(EMAIL)).thenReturn(Optional.empty());
         notifierService.notifyUnsubmittedApplications();
