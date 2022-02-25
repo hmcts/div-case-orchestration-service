@@ -8,8 +8,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
@@ -89,19 +92,32 @@ public class NfdIdamService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION_HEADER, base64Authorisation);
-        HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        String url = UriComponentsBuilder.fromHttpUrl(authorizeUrl)
-            .queryParam("response_type", AUTH_TYPE)
-            .queryParam("client_id", xuiClientId)
-            .queryParam("client_secret", xuiClientSecret)
-            .queryParam("redirect_uri", xuiRedirectUri)
-            .queryParam("scope", "openid profile roles manage-user")
-            .encode()
-            .toUriString();
+        HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("response_type", AUTH_TYPE);
+        map.add("client_id", xuiClientId);
+        map.add("client_secret", xuiClientSecret);
+        map.add("redirect_uri", xuiRedirectUri);
+        map.add("scope", "openid profile roles manage-user");
+
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        String url = UriComponentsBuilder.fromHttpUrl(authorizeUrl).toUriString();
+        ResponseEntity<AuthenticateUserResponse> response = restTemplate.postForEntity( url, request , AuthenticateUserResponse.class );
+
+//        String url = UriComponentsBuilder.fromHttpUrl(authorizeUrl)
+//            .queryParam("response_type", AUTH_TYPE)
+//            .queryParam("client_id", xuiClientId)
+//            .queryParam("client_secret", xuiClientSecret)
+//            .queryParam("redirect_uri", xuiRedirectUri)
+//            .queryParam("scope", "openid profile roles manage-user")
+//            .encode()
+//            .toUriString();
         log.info("Url built for code generation {} ", url);
 
-        ResponseEntity<AuthenticateUserResponse> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, AuthenticateUserResponse.class);
         if (response.getStatusCode() != HttpStatus.OK) {
             log.error("Failed to get code for username {} and pwd {}", username, password);
             throw new RuntimeException(String.format("Unexpected code from Idam: %s ", response.getStatusCode()));
