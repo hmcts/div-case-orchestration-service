@@ -522,7 +522,12 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/controller/BulkScanController.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'
+        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/IdamUser.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/NfdIdamService.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/tasks/util/SearchForCaseByEmail.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/tasks/util/SearchForCaseByEmail.java',
+
 ]
 
 sonarqube {
