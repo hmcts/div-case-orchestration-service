@@ -34,8 +34,8 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 import javax.validation.constraints.NotNull;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.FEE_PAY_S2S_TOKEN;
@@ -290,17 +290,17 @@ public class OrchestrationController {
     @PostMapping(path = "/submit-da/{caseId}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Submit Decree Absolute answers and update original Divorce case with new data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "DN successfully submitted and case was updated in CCD",
-            response = CaseResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
+            @ApiResponse(code = 200, message = "DN successfully submitted and case was updated in CCD",
+                    response = CaseResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> submitDa(
-        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
-        @PathVariable String caseId,
-        @RequestBody @ApiParam("Decree Absolute Data as required") Map<String, Object> divorceSession)
-        throws WorkflowException {
+            @RequestHeader(value = AUTHORIZATION) String authorizationToken,
+            @PathVariable String caseId,
+            @RequestBody @ApiParam("Decree Absolute Data as required") Map<String, Object> divorceSession)
+            throws WorkflowException {
 
         return ResponseEntity.ok(
-            orchestrationService.submitDaCase(divorceSession, authorizationToken, caseId));
+                orchestrationService.submitDaCase(divorceSession, authorizationToken, caseId));
     }
 
     @PutMapping(path = "/amend-petition/{caseId}")
@@ -312,10 +312,10 @@ public class OrchestrationController {
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetition(
-        @RequestHeader(AUTHORIZATION)
-        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @PathVariable String caseId)
-        throws WorkflowException {
+            @RequestHeader(AUTHORIZATION)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @PathVariable String caseId)
+            throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
@@ -329,10 +329,10 @@ public class OrchestrationController {
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetitionForRefusal(
-        @RequestHeader(AUTHORIZATION)
-        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @PathVariable String caseId)
-        throws WorkflowException {
+            @RequestHeader(AUTHORIZATION)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @PathVariable String caseId)
+            throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetitionForRefusal(caseId, authorizationToken));
     }
