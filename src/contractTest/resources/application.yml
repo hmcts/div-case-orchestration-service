@@ -507,6 +507,12 @@ idam:
     id: divorce
     health:
       context-path: /health
+  xui:
+    client:
+      redirect_uri: ${IDAM_API_XUI_REDIRECT_URL:http://localhost:8080/authenticated}
+      port: 4503
+      secret: ${IDAM_XUI_CLIENT_SECRET:dummysecret}
+      id: xuiwebapp
   citizen:
     username: dummy
     password: dummy
@@ -522,6 +528,9 @@ idam:
     services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:payment_app}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
+    userdetails: ${IDAM_API_URL:http://localhost:4503}/api/v1/users
+    authorize: ${IDAM_API_URL:http://localhost:4503}/api/v1/outh2/authorize
+    token: ${IDAM_API_URL:http://localhost:4503}/api/v1/outh2/token
 
 document:
   generator:
@@ -621,3 +630,6 @@ logging:
     au.com.dius.pact: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+nfd:
+  cutoffdate: ${NFD_CUTOFF_DATE:03-04-2022}
