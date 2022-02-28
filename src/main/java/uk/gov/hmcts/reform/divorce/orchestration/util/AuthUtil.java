@@ -23,6 +23,15 @@ public class AuthUtil {
     private final List<String> allowedToPaymentUpdate;
     private static final String BEARER = "Bearer ";
 
+    @Value("${idam.client.redirect_uri}")
+    private String authRedirectUrl;
+
+    @Value("${idam.client.id}")
+    private String authClientId;
+
+    @Value("${idam.client.secret}")
+    private String authClientSecret;
+
     @Value("${idam.citizen.username}")
     private String citizenUserName;
 

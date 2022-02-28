@@ -91,16 +91,7 @@ public class NfdNotifierServiceImplTest {
         Map<String, String> templateMap = templateMapCaptor.getValue();
         assertThat(templateMap.get(FIRSTNAME), equalTo(FORENAME));
         assertThat(templateMap.get(LASTNAME), equalTo(SURNAME));
-        assertThat(templateMap.get(SUBJECT), equalTo(""));
-    }
-
-    private String setCutOffDate() {
-        LocalDate cutoffDate = LocalDate.now();
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        Date date = Date.from(cutoffDate.atStartOfDay(defaultZoneId).toInstant());
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-        return format.format(date);
-
+        assertThat(templateMap.get(SUBJECT), equalTo("Submit your divorce application"));
     }
 
 }
