@@ -31,6 +31,7 @@ java:
         - ccd-submission-s2s-auth-secret
         - div-doc-s2s-auth-secret
         - idam-secret
+        - idam-xui-secret
         - frontend-secret
         - idam-citizen-username
         - idam-citizen-password
