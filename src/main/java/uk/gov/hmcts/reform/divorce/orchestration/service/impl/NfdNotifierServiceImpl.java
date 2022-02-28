@@ -53,8 +53,7 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
         for (IdamUser idamUser : idamUsers) {
             try {
                 checkUserHasSubmittedAndNotify(authToken, idamUser);
-            }
-            catch(RuntimeException e){
+            } catch (RuntimeException e) {
                 log.error("Error processing user {} ", idamUser.getIdamId());
                 continue;
             }
@@ -68,7 +67,8 @@ public class NfdNotifierServiceImpl implements NfdNotifierService {
             Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail(user.getEmail());
             if (caseDetails.isEmpty()) {
                 log.info("No case found for email {} so send a notification reminder", user.getEmail());
-                Map<String, String> tempVars = Map.of(SUBJECT, "Submit your divorce application", FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
+                Map<String, String> tempVars =
+                    Map.of(SUBJECT, "Submit your divorce application", FIRSTNAME, user.getForename(), LASTNAME, user.getSurname().orElse(""));
                 emailService.sendEmail(user.getEmail(), EmailTemplateNames.NFD_NOTIFICATION.name(), tempVars, EMAIL_DESCRIPTION,
                     LanguagePreference.ENGLISH);
             }
