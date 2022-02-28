@@ -19,11 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdAuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.NfdIdamService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
