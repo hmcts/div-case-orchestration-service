@@ -230,7 +230,7 @@ public class SendRespondentCoENotificationEmailTaskTest {
                     optionalTextParametersMatcher,
                     hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "6 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )), any());
@@ -249,7 +249,7 @@ public class SendRespondentCoENotificationEmailTaskTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Respondent Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "6 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )), any());

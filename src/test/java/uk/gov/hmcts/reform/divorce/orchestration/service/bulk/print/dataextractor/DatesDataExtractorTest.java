@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 public class DatesDataExtractorTest {
 
-    public static final String CONTACT_COURT_BY_DATE_FORMATTED = "26 September 2010";
+    public static final String CONTACT_COURT_BY_DATE_FORMATTED = "25 September 2010";
     public static final String VALID_DATE_FROM_CCD = "2010-10-01";
     public static final String EXPECTED_DATE = "1 October 2010";
     public static final String HEARING_DATE = "2010-10-10";
