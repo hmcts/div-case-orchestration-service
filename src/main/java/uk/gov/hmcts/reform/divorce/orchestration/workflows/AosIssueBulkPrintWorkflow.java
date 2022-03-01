@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateNoticeOfProceedingsDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackNonDigitalPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
@@ -21,12 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
@@ -37,6 +36,7 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
     private final ServiceMethodValidationTask serviceMethodValidationTask;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
+    private final RespondentAosPackNonDigitalPrinterTask respondentAosPackNonDigitalPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final UpdateNoticeOfProceedingsDetailsTask updateNoticeOfProceedingsDetailsTask;
@@ -53,14 +53,13 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
-        if (!isRespondentSolicitorDigital(caseData)) {
-            log.info("Case id {}: Sending AOS pack to bulk print, for non digital respondent solicitor", caseId);
-            respondentAosPackPrinterTask.setDocumentTypesToPrint(asList(DOCUMENT_TYPE_PETITION));
+        if (isRespondentSolicitorDigital(caseData)) {
+            log.info("Case id {}: Sending respondent AOS pack to bulk print", caseId);
+            tasks.add(respondentAosPackPrinterTask);
         } else {
-            log.info("Case id {}: Sending AOS pack to bulk print, for respondent", caseId);
+            log.info("Case id {}: Sending non digital respondent AOS pack to bulk print", caseId);
+            tasks.add(respondentAosPackNonDigitalPrinterTask);
         }
-
-        tasks.add(respondentAosPackPrinterTask);
 
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
             tasks.add(coRespondentAosPackPrinterTask);
