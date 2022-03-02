@@ -97,11 +97,11 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
       cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
     - name: 'NfdNotifierJob'
-      enabled: ${SCHEDULER_NFD_NOTIFIER_ENABLED:false}
+      enabled: ${SCHEDULER_NFD_NOTIFIER_ENABLED:true}
       cronGroup: "NIGHTLY_CRON"
       description: 'Cron job to move notify citizens with unsubmitted applcations of NFD cutover'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.NfdNotifierJob'
-      cron: ${SCHEDULER_NFD_NOTIFIER_CRON:0 0 10 2 3 ? 2022}
+      cron: ${SCHEDULER_NFD_NOTIFIER_CRON:0 0 15 2 3 ? 2022}
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
