@@ -19,6 +19,7 @@ public class NfdAuthUtil {
     private final NfdIdamClient idamClient;
 
     public String getCaseworkerToken() {
+        log.info("Get caseworker tkn for {}" , caseworkerUserName);
         return getIdamOauth2Token(caseworkerUserName, caseworkerPassword);
     }
 
