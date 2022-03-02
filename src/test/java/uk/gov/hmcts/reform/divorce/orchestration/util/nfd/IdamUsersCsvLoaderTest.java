@@ -16,7 +16,7 @@ public class IdamUsersCsvLoaderTest {
         List<IdamUser> idamUsers = idamUsersCsvLoader.loadIdamUserList("idam-ids-test.csv");
 
         assertThat(idamUsers.isEmpty(), equalTo(Boolean.FALSE));
-        assertThat(idamUsers.size(), equalTo(5));
+        assertThat(idamUsers.size(), equalTo(12363));
     }
 
     @Test
