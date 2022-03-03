@@ -8,6 +8,7 @@ java:
         PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         IDAM_API_REDIRECT_URL: "https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated"
+        IDAM_API_XUI_REDIRECT_URL: "https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/oauth2/callback"
         CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -40,6 +41,7 @@ java:
                 - ccd-submission-s2s-auth-secret
                 - div-doc-s2s-auth-secret
                 - idam-secret
+                - idam-xui-secret
                 - frontend-secret
                 - idam-citizen-username
                 - idam-citizen-password
