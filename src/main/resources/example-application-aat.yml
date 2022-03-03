@@ -497,6 +497,12 @@ idam:
     id: divorce
     health:
       context-path: /health
+  xui:
+    client:
+      redirect_uri: ${IDAM_API_XUI_REDIRECT_URL:https://manage-case.aat.platform.hmcts.net/oauth2/callback}
+      port: 4503
+      secret: ${IDAM_XUI_CLIENT_SECRET:replace_me}
+      id: xuiwebapp
   citizen:
     username: ${IDAM_CITIZEN_USERNAME:replace_me}
     password: ${IDAM_CITIZEN_PASSWORD:replace_me}
@@ -511,6 +517,9 @@ idam:
     services-allowed-to-validate: bulk_scan_processor
   api:
     url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
+    userdetails: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/api/v1/users/
+    authorize: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/oauth2/authorize
+    token: ${IDAM_API_URL:https:/idam-api.aat.platform.hmcts.net}/oauth2/token
 
 document:
   generator:
