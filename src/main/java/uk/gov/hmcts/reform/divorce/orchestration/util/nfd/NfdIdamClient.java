@@ -41,7 +41,7 @@ public class NfdIdamClient {
 
         String clientId = oauth2Configuration.getClientId();
         String redirectUri = oauth2Configuration.getRedirectUri();
-        log.info("Authenticate with clientId {} and redirectUrl {}" , clientId, redirectUri);
+        log.info("Authenticate with clientId {} and redirectUrl {}", clientId, redirectUri);
 
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
             BASIC_AUTH_TYPE + " " + base64Authorisation,
