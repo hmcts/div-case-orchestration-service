@@ -83,7 +83,7 @@ public class AosIssueBulkPrintWorkflowTest {
     }
 
     @Test
-    public void shouldCallAllTasksWhenAppropriate() throws WorkflowException, TaskException {
+    public void shouldCallAppropriateTasksWhenDigital() throws WorkflowException, TaskException {
         payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
         payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
@@ -99,6 +99,25 @@ public class AosIssueBulkPrintWorkflowTest {
             coRespondentAosPackPrinterTask,
             aosPackDueDateSetterTask,
             updateRespondentDigitalDetailsTask
+        );
+    }
+
+    @Test
+    public void shouldCallAppropriateTasksWhenNonDigital() throws WorkflowException, TaskException {
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        payload.remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
+        assertThat(response, is(payload));
+
+        verifyTasksCalledInOrder(
+            payload,
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStoreTask,
+            respondentAosPackNonDigitalPrinterTask,
+            coRespondentAosPackPrinterTask,
+            aosPackDueDateSetterTask
         );
     }
 
@@ -130,6 +149,7 @@ public class AosIssueBulkPrintWorkflowTest {
             fetchPrintDocsFromDmStoreTask,
             aosPackDueDateSetterTask,
             respondentAosPackPrinterTask,
+            respondentAosPackNonDigitalPrinterTask,
             coRespondentAosPackPrinterTask,
             updateRespondentDigitalDetailsTask
         );
