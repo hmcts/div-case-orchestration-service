@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class RespondentAosPackNonDigitalPrinterTask implements Task<Map<String, Object>> {
 
-    private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack";
+    private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack-non-digital";
     private static final List<String> DOCUMENT_TYPES_IN_ORDER = asList(DOCUMENT_TYPE_PETITION);
 
     private final BulkPrinterTask bulkPrinter;
