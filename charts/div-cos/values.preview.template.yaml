@@ -20,6 +20,7 @@ java:
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
     #Scheduler parameters
     SCHEDULER_ENABLED: false
+    SCHEDULER_NFD_NOTIFIER_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
 
@@ -30,6 +31,7 @@ java:
         - ccd-submission-s2s-auth-secret
         - div-doc-s2s-auth-secret
         - idam-secret
+        - idam-xui-secret
         - frontend-secret
         - idam-citizen-username
         - idam-citizen-password
