@@ -381,26 +381,24 @@ public class CallbackController {
             );
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
-                return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                        .data(ImmutableMap.of())
-                        .warnings(ImmutableList.of())
-                        .errors(singletonList("Failed to bulk print documents"))
-                        .build());
-            }
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(response)
-                    .errors(Collections.emptyList())
-                    .warnings(Collections.emptyList())
-                    .build());
-        } catch (WorkflowException e) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
+                return ResponseEntity.ok(CcdCallbackResponse.builder()
                     .data(ImmutableMap.of())
                     .warnings(ImmutableList.of())
-                    .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                    .errors(singletonList("Failed to bulk print documents"))
                     .build());
+            }
+
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(response)
+                .errors(Collections.emptyList())
+                .warnings(Collections.emptyList())
+                .build());
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(ImmutableMap.of())
+                .warnings(ImmutableList.of())
+                .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                .build());
         }
     }
 
