@@ -99,7 +99,7 @@ scheduler:
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
-§
+
 alternative-service:
   days-until-overdue: 7
 
