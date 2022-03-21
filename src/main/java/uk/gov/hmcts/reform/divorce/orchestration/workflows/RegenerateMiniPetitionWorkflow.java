@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class RegenerateMiniPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken) throws WorkflowException {
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        tasks.add(validateCaseDataTask);
         tasks.add(petitionGenerator);
+        tasks.add(addNewDocumentsToCaseDataTask);
 
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final Map<String, Object> caseData = caseDetails.getCaseData();

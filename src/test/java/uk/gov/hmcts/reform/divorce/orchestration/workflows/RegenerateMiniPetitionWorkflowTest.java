@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RegenerateMiniPetitionWorkflowTest {
 
     @Mock
-    private ValidateCaseDataTask validateCaseDataTask;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private PetitionGenerator petitionGenerator;
@@ -73,8 +73,8 @@ public class RegenerateMiniPetitionWorkflowTest {
     public void shouldCallTasks() throws WorkflowException {
 
         regenerateMiniPetitionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
-        verify(validateCaseDataTask).execute(any(DefaultTaskContext.class), eq(payload));
         verify(petitionGenerator).execute(any(DefaultTaskContext.class), eq(payload));
+        verify(addNewDocumentsToCaseDataTask).execute(any(DefaultTaskContext.class), eq(payload));
     }
 
 
