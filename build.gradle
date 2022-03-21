@@ -120,17 +120,12 @@ allprojects {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
         }
         dependencies {
-            dependencySet(
-                    group: 'com.fasterxml.jackson.core',
-                    version: versions.jackson
-            ) {
-                entry 'jackson-core'
-            }
 
             dependencySet(
                     group: 'com.fasterxml.jackson.core',
                     version: '2.13.0'
             ) {
+                entry 'jackson-core'
                 entry 'jackson-databind'
             }
 
