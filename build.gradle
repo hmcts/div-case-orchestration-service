@@ -126,6 +126,7 @@ allprojects {
             ) {
                 entry 'jackson-core'
                 entry 'jackson-databind'
+                entry 'jackson-annotations'
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.datatype',
