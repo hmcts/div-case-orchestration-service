@@ -120,13 +120,16 @@ allprojects {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
         }
         dependencies {
+
+            // solves CVE-2020-36518
             dependencySet(
                     group: 'com.fasterxml.jackson.core',
-                    version: versions.jackson
+                    version: '2.13.0'
             ) {
-                entry 'jackson-core'
+                entry 'jacson-core'
                 entry 'jackson-databind'
             }
+
             dependencySet(
                     group: 'com.fasterxml.jackson.datatype',
                     version: versions.jackson
