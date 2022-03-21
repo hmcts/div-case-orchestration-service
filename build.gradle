@@ -126,7 +126,7 @@ allprojects {
                     group: 'com.fasterxml.jackson.core',
                     version: '2.13.0'
             ) {
-                entry 'jacson-core'
+                entry 'jackson-core'
                 entry 'jackson-databind'
             }
 
@@ -329,7 +329,7 @@ dependencies {
         force = true
     }
 
-    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson) {
+    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.0') {
         force = true
     }
 
