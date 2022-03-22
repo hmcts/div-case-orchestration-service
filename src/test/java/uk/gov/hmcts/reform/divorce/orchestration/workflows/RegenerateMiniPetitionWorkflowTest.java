@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionRegenerator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class RegenerateMiniPetitionWorkflowTest {
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    private PetitionGenerator petitionGenerator;
+    private PetitionRegenerator petitionRegenerator;
 
     @InjectMocks
     private RegenerateMiniPetitionWorkflow regenerateMiniPetitionWorkflow;
@@ -73,7 +73,7 @@ public class RegenerateMiniPetitionWorkflowTest {
     public void shouldCallTasks() throws WorkflowException {
 
         regenerateMiniPetitionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
-        verify(petitionGenerator).execute(any(DefaultTaskContext.class), eq(payload));
+        verify(petitionRegenerator).execute(any(DefaultTaskContext.class), eq(payload));
         verify(addNewDocumentsToCaseDataTask).execute(any(DefaultTaskContext.class), eq(payload));
     }
 

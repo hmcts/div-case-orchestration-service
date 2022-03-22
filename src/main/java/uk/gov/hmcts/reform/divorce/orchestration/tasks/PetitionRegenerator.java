@@ -6,10 +6,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 
 @Component
-public class PetitionGenerator extends PetitionGeneratorBase {
+public class PetitionRegenerator extends PetitionGeneratorBase {
 
     @Autowired
-    public PetitionGenerator(DocumentGeneratorClient documentGeneratorClient) {
-        super(documentGeneratorClient, DocumentType.DIVORCE_MINI_PETITION);
+    public PetitionRegenerator(DocumentGeneratorClient documentGeneratorClient) {
+        super(documentGeneratorClient, DocumentType.DIVORCE_MINI_PETITION_REGENERATE);
     }
+
 }

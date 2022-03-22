@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionRegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class RegenerateMiniPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final PetitionGenerator petitionGenerator;
+    private final PetitionRegenerator petitionRegenerator;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
@@ -32,7 +32,7 @@ public class RegenerateMiniPetitionWorkflow extends DefaultWorkflow<Map<String, 
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        tasks.add(petitionGenerator);
+        tasks.add(petitionRegenerator);
         tasks.add(addNewDocumentsToCaseDataTask);
 
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
