@@ -327,9 +327,8 @@ dependencies {
         force = true
     }
 
-    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson) {
-        force = true
-    }
+    implementation group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
     implementation(group: 'com.google.guava', name: 'guava', version: versions.guava)
 
