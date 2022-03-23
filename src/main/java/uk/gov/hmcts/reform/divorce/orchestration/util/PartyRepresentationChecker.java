@@ -69,8 +69,8 @@ public class PartyRepresentationChecker {
     /**
      * This is meant to be used after case is submitted.
      *
-     * <p>For cases that are not submitted yet we should use isRespondentSolicitorDigitalSelectedYes</p>
-     * */
+     * For cases that are not submitted yet we should use isRespondentSolicitorDigitalSelectedYes
+     */
     public static boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
         return isPopulatedOrganisation(caseData, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
     }
@@ -78,8 +78,8 @@ public class PartyRepresentationChecker {
     /**
      * This is meant to be used before case is submitted to cover edge case DIV-6869.
      *
-     * <p>For cases already submitted (in exui / PFE) we should use isRespondentSolicitorDigital</p>
-     * */
+     * For cases already submitted (in exui / PFE) we should use isRespondentSolicitorDigital
+     */
     public static boolean isRespondentSolicitorDigitalSelectedYes(Map<String, Object> caseData) {
         return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, EMPTY_STRING)
             .equalsIgnoreCase(YES_VALUE);

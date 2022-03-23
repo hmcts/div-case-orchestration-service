@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateNoticeOfProceedingsDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackNonDigitalPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
@@ -34,12 +36,11 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
     private final ServiceMethodValidationTask serviceMethodValidationTask;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
+    private final RespondentAosPackNonDigitalPrinterTask respondentAosPackNonDigitalPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final UpdateNoticeOfProceedingsDetailsTask updateNoticeOfProceedingsDetailsTask;
-
     private final CaseDataUtils caseDataUtils;
-    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     public Map<String, Object> run(final String authToken, CaseDetails caseDetails) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
@@ -49,9 +50,15 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
 
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
-        if (representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData)) {
-            log.info("Case id {}: Sending respondent AOS pack to bulk print", caseId);
-            tasks.add(respondentAosPackPrinterTask);
+
+        if (isRespondentRepresented(caseData)) {
+            if (isRespondentSolicitorDigital(caseData)) {
+                log.info("Case id {}: Sending respondent AOS pack to bulk print", caseId);
+                tasks.add(respondentAosPackPrinterTask);
+            } else {
+                log.info("Case id {}: Sending non digital respondent AOS pack to bulk print", caseId);
+                tasks.add(respondentAosPackNonDigitalPrinterTask);
+            }
         } else {
             log.info("Case id {}: Not sending respondent AOS pack to bulk print", caseId);
         }
@@ -62,7 +69,7 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
 
         tasks.add(aosPackDueDateSetterTask);
 
-        if (representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(caseData)) {
+        if (isRespondentSolicitorDigital(caseData)) {
             log.info("CaseId: {} adding updateNoticeOfProceedingsDetailsTask", caseId);
             tasks.add(updateNoticeOfProceedingsDetailsTask);
         }

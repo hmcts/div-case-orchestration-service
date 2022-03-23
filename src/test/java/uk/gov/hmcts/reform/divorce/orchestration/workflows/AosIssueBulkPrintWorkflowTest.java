@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateNoticeOfProceedingsDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackNonDigitalPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +28,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
@@ -46,6 +49,9 @@ public class AosIssueBulkPrintWorkflowTest {
     private RespondentAosPackPrinterTask respondentAosPackPrinterTask;
 
     @Mock
+    private RespondentAosPackNonDigitalPrinterTask respondentAosPackNonDigitalPrinterTask;
+
+    @Mock
     private CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
 
     @Mock
@@ -53,9 +59,6 @@ public class AosIssueBulkPrintWorkflowTest {
 
     @Mock
     private UpdateNoticeOfProceedingsDetailsTask updateRespondentDigitalDetailsTask;
-
-    @Mock
-    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     @Mock
     private CaseDataUtils caseDataUtils;
@@ -70,8 +73,6 @@ public class AosIssueBulkPrintWorkflowTest {
     @Before
     public void setUp() {
         payload = new HashMap<>();
-        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
-
         caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
@@ -82,10 +83,10 @@ public class AosIssueBulkPrintWorkflowTest {
     }
 
     @Test
-    public void shouldCallAllTasksWhenAppropriate() throws WorkflowException, TaskException {
+    public void shouldCallAppropriateTasksWhenDigital() throws WorkflowException, TaskException {
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
-        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(true);
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(true);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
@@ -102,10 +103,28 @@ public class AosIssueBulkPrintWorkflowTest {
     }
 
     @Test
+    public void shouldCallAppropriateTasksWhenNonDigital() throws WorkflowException, TaskException {
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        payload.remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
+        assertThat(response, is(payload));
+
+        verifyTasksCalledInOrder(
+            payload,
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStoreTask,
+            respondentAosPackNonDigitalPrinterTask,
+            coRespondentAosPackPrinterTask,
+            aosPackDueDateSetterTask
+        );
+    }
+
+    @Test
     public void shouldCallMinimumTasksWhenAppropriate() throws WorkflowException, TaskException {
+        payload.put(RESP_SOL_REPRESENTED, NO_VALUE);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
-        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(false);
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(false);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
@@ -118,6 +137,7 @@ public class AosIssueBulkPrintWorkflowTest {
         );
 
         verifyNoInteractions(respondentAosPackPrinterTask);
+        verifyNoInteractions(respondentAosPackNonDigitalPrinterTask);
         verifyNoInteractions(coRespondentAosPackPrinterTask);
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
     }
@@ -129,9 +149,9 @@ public class AosIssueBulkPrintWorkflowTest {
             fetchPrintDocsFromDmStoreTask,
             aosPackDueDateSetterTask,
             respondentAosPackPrinterTask,
+            respondentAosPackNonDigitalPrinterTask,
             coRespondentAosPackPrinterTask,
             updateRespondentDigitalDetailsTask
         );
     }
-
 }
