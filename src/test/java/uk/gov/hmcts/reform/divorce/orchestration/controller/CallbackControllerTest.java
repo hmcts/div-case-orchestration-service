@@ -431,6 +431,36 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void givenErrors_whenRegenerateMiniPetition_thenReturnErrorResponse() throws WorkflowException {
+        final List<String> expectedError = singletonList("Some error");
+        final Map<String, Object> caseData =
+            Collections.singletonMap(
+                OrchestrationConstants.VALIDATION_ERROR_KEY,
+                ValidationResponse.builder()
+                    .errors(expectedError)
+                    .build());
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(expectedError)
+            .build();
+
+        when(caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.regenerateMiniPetitionCallback(AUTH_TOKEN,
+            ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
     public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = new HashMap<>();
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -565,6 +595,29 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
+
+    @Test
+    public void givenNoErrors_whenRegeneratePetition_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.regenerateMiniPetitionCallback(AUTH_TOKEN,
+            ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
     @Test
     public void testCaseLinkedForHearingCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
@@ -647,7 +700,7 @@ public class CallbackControllerTest {
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         when(caseOrchestrationService.confirmSolDnReviewPetition(caseDetails))
-                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+            .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmSolDnReviewPetition(ccdCallbackRequest);
 

@@ -443,6 +443,35 @@ public class CallbackController {
                 .build());
     }
 
+
+    @PostMapping(path = "/regenerate-mini-petition", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Handles regenerate mini petition event callback from CCD")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> regenerateMiniPetitionCallback(
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        log.info("Received request to /regenerate-mini-petition endpoint");
+
+        Map<String, Object> response = caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, authorizationToken);
+
+        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .errors(getErrors(response))
+                    .build());
+        }
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
+    }
+
     @PostMapping(path = "/case-linked-for-hearing", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handle actions that need to happen once the case has been linked for hearing (been given a hearing date).")
     @ApiResponses(value = {

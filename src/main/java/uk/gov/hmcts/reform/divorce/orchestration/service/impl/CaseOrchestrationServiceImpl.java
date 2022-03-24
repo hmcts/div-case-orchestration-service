@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RegenerateMiniPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
@@ -127,6 +128,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String PAYMENT = "payment";
 
     private final IssueEventWorkflow issueEventWorkflow;
+    private final RegenerateMiniPetitionWorkflow regenerateMiniPetitionWorkflow;
     private final BulkPrintWorkflow bulkPrintWorkflow;
     private final AosIssueBulkPrintWorkflow aosIssueBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -1039,6 +1041,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
+    }
+
+    @Override
+    public Map<String, Object> regenerateMiniPetition(CcdCallbackRequest ccdCallbackRequest,
+                                                      String authToken) throws WorkflowException {
+        return regenerateMiniPetitionWorkflow.run(ccdCallbackRequest, authToken);
+
     }
 
 }
