@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RegenerateMiniPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
@@ -146,7 +147,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
@@ -181,6 +181,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private IssueEventWorkflow issueEventWorkflow;
+
+    @Mock
+    private RegenerateMiniPetitionWorkflow regenerateMiniPetitionWorkflow;
 
     @Mock
     private RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -721,7 +724,8 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
+    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload()
+        throws WorkflowException, CaseOrchestrationServiceException {
         when(sendEmailNotificationWorkflow.run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails())).thenReturn(requestPayload);
 
         Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
@@ -744,7 +748,8 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenShandleDnPronouncementDocumentGenerationendPetitionerAmendEmailNotificationWorkflow_thenReturnPayload() throws Exception {
+    public void givenCaseData_whenShandleDnPronouncementDocumentGenerationendPetitionerAmendEmailNotificationWorkflow_thenReturnPayload()
+        throws Exception {
         when(sendPetitionerAmendEmailNotificationWorkflow.run(ccdCallbackRequest))
             .thenReturn(requestPayload);
 
@@ -1092,7 +1097,7 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
+                CaseDetails.builder().caseData(caseData).build())
             .build();
 
         classUnderTest
@@ -1386,7 +1391,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
+                CaseDetails.builder().caseData(caseData).build())
             .build();
 
         classUnderTest.handleGrantDACallback(ccdCallbackRequest, AUTH_TOKEN);
@@ -2061,8 +2066,8 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaitingSolicitor() {
         CaseDetails caseDetails = CaseDetails.builder()
-                .state(AOS_AWAITING_SOLICITOR)
-                .build();
+            .state(AOS_AWAITING_SOLICITOR)
+            .build();
 
         CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
 
@@ -2072,8 +2077,8 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaiting() {
         CaseDetails caseDetails = CaseDetails.builder()
-                .state(AOS_AWAITING)
-                .build();
+            .state(AOS_AWAITING)
+            .build();
 
         CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
 
@@ -2083,8 +2088,8 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffService() {
         CaseDetails caseDetails = CaseDetails.builder()
-                .state(AWAITING_BAILIFF_SERVICE)
-                .build();
+            .state(AWAITING_BAILIFF_SERVICE)
+            .build();
 
         CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
 
@@ -2094,8 +2099,8 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenDraftAOSEvent_shouldNotChangeState_whenIssuedToBailiff() {
         CaseDetails caseDetails = CaseDetails.builder()
-                .state(ISSUED_TO_BAILIFF)
-                .build();
+            .state(ISSUED_TO_BAILIFF)
+            .build();
 
         CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
 
@@ -2103,15 +2108,18 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffReferral() {
+    public void shouldRegenerateMiniPetition() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder()
-                .state(AWAITING_BAILIFF_REFERRAL)
-                .build();
+            .state(ISSUED_TO_BAILIFF)
+            .build();
+        ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+        classUnderTest.regenerateMiniPetition(ccdCallbackRequest, AUTH_TOKEN);
 
-        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
+        verify(regenerateMiniPetitionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+
     }
+
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
         OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
