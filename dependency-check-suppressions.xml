@@ -46,3 +46,4 @@
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
     </suppress>
+</suppressions>    
