@@ -29,9 +29,9 @@ public class PrintRespondentAosPackService {
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final SearchForCaseByReference searchForCaseByReference;
-    @Value("${aos.bulkprint.batchsize:250}")
+    @Value("${aos.bulkprint.batchsize:50}")
     private int bulkPrintBatchSize;
-    @Value("${aos.bulkprint.wait-time-mins:2}")
+    @Value("${aos.bulkprint.wait-time-mins:30}")
     private int bulkPrintWaitTime;
 
     public void printAosPacks() throws InterruptedException {
@@ -48,7 +48,7 @@ public class PrintRespondentAosPackService {
                 batchCount++;
             }
             try {
-                log.info("Search for case reference {}, batch {}, count {}", caseReference.getCaseReference(), batchCount, count);
+                log.info("Process case reference {}, batch {}, count {}", caseReference.getCaseReference(), batchCount, count);
                 Optional<List<CaseDetails>> caseDetailsListOpt =
                     searchForCaseByReference.searchCasesByCaseReference(caseReference.getCaseReference());
                 if (caseDetailsListOpt.isPresent()) {
