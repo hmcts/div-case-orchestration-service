@@ -19,7 +19,7 @@ public class BulkPrintAosJob implements Job {
         try {
             printRespondentAosPackService.printAosPacks();
         } catch (InterruptedException e) {
-            throw new JobExecutionException(e);
+            Thread.currentThread().interrupt();
         }
         log.info("PrintRespondentAosPackService Job successfully executed");
     }

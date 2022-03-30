@@ -524,8 +524,9 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/util/csv/**/*'
-
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/csv/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/job/BulkPrintAosJob.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/PrintRespondentAosPackService.java'
 ]
 
 sonarqube {
