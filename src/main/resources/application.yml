@@ -640,3 +640,8 @@ logging:
 
 nfd:
   cutoffdate: ${NFD_CUTOFF_DATE:03-04-2022}
+
+aos:
+  bulkprint:
+    batchsize: ${AOS_BULKPRINT_BATCHSIZE:50}
+    wait-time-mins: ${AOS_BULKPRINT_WAIT_TIME_MINS:10}

@@ -48,7 +48,8 @@ public class PrintRespondentAosPackServiceTest {
     @Before
     public void setUpTest() {
         printRespondentAosPackService =
-            new PrintRespondentAosPackService(csvLoader, fetchPrintDocsFromDmStoreTask, respondentAosPackPrinterTask, searchForCaseByReference);
+            new PrintRespondentAosPackService(csvLoader, fetchPrintDocsFromDmStoreTask,
+                respondentAosPackPrinterTask, searchForCaseByReference, 10, 1);
         when(csvLoader.loadCaseReferenceList("printAosPackCaseReferenceList.csv")).thenReturn(
             Arrays.asList(CaseReference.builder().caseReference(CASE_REFERENCE).build()));
         caseDetails = CaseDetails.builder().caseData(Map.of("D8PetitionerEmail", "someemailaddress@mail.com")).build();
@@ -56,7 +57,7 @@ public class PrintRespondentAosPackServiceTest {
     }
 
     @Test
-    public void shouldExecuteAllRelevantTasks() {
+    public void shouldExecuteAllRelevantTasks() throws InterruptedException {
         printRespondentAosPackService.printAosPacks();
         verify(searchForCaseByReference).searchCasesByCaseReference(CASE_REFERENCE);
         verify(fetchPrintDocsFromDmStoreTask).execute(taskContextArgumentCaptor.capture(), anyMap());

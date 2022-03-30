@@ -16,7 +16,11 @@ public class BulkPrintAosJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info("Starting PrintRespondentAosPackService Job...");
-        printRespondentAosPackService.printAosPacks();
+        try {
+            printRespondentAosPackService.printAosPacks();
+        } catch (InterruptedException e) {
+            throw new JobExecutionException(e);
+        }
         log.info("PrintRespondentAosPackService Job successfully executed");
     }
 }

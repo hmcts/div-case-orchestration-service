@@ -21,7 +21,7 @@ public class BulkPrintAosJobTest {
 
 
     @Test
-    public void shouldCallNotifierService() throws JobExecutionException {
+    public void shouldCallNotifierService() throws JobExecutionException, InterruptedException {
 
         bulkPrintAosJob.execute(null);
         verify(printRespondentAosPackService).printAosPacks();

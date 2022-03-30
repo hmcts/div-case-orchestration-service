@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.csv.CaseReferenceCsvLoader
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
@@ -27,11 +29,21 @@ public class PrintRespondentAosPackService {
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final SearchForCaseByReference searchForCaseByReference;
+    @Value("${aos.bulkprint.batchsize}")
+    private final Integer bulkPrintBatchSize;
+    @Value("${aos.bulkprint.wait-time-mins}")
+    private final Integer bulkPrintWaitTime;
 
-    public void printAosPacks() {
+    public void printAosPacks() throws InterruptedException {
         log.info("In the Print Respondent AOS Pack service job");
         List<CaseReference> caseReferences = csvLoader.loadCaseReferenceList("printAosPackCaseReferenceList.csv");
+        int count = 0;
         for (CaseReference caseReference : caseReferences) {
+            count++;
+            if (count == bulkPrintBatchSize) {
+                TimeUnit.MINUTES.sleep(bulkPrintWaitTime);
+                count = 0;
+            }
             try {
                 log.info("Search for case reference {}", caseReference.getCaseReference());
                 Optional<List<CaseDetails>> caseDetailsListOpt =
