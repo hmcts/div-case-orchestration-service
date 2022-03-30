@@ -25,11 +25,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchForCaseByEmailTest {
+public class SearchForCaseByReferenceTest {
 
     protected static final String CASEWORKER_TOKEN = "caseworkerToken";
-    SearchForCaseByEmail searchForCaseByEmail;
-
+    protected static final String CASE_REFERENCE = "1234432112244321";
+    SearchForCaseByReference searchForCaseByReference;
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -43,8 +43,8 @@ public class SearchForCaseByEmailTest {
 
     @Before
     public void setUpTest() {
-        initMocks(SearchForCaseByEmail.class);
-        searchForCaseByEmail = new SearchForCaseByEmail(new SearchForCase(caseMaintenanceClient, authUtil));
+        initMocks(SearchForCaseByReference.class);
+        searchForCaseByReference = new SearchForCaseByReference(new SearchForCase(caseMaintenanceClient, authUtil));
     }
 
     @Test
@@ -53,11 +53,11 @@ public class SearchForCaseByEmailTest {
         when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_TOKEN);
         when(caseMaintenanceClient.searchCases(anyString(), anyString()))
             .thenReturn(SearchResult.builder().cases(Collections.singletonList(CaseDetails.builder().caseId("caseId").build())).build());
-        Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail("emailAddress");
+        Optional<List<CaseDetails>> caseDetails = searchForCaseByReference.searchCasesByCaseReference(CASE_REFERENCE);
         assertThat(caseDetails.isPresent(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
-        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail\":\"emailAddress\"}}}"));
+        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"reference\":\"1234432112244321\"}}}"));
 
     }
 
@@ -67,11 +67,10 @@ public class SearchForCaseByEmailTest {
         when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_TOKEN);
         when(caseMaintenanceClient.searchCases(anyString(), anyString())).thenReturn(SearchResult.builder().cases(Collections.emptyList()).build());
 
-        Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail("emailAddress");
+        Optional<List<CaseDetails>> caseDetails = searchForCaseByReference.searchCasesByCaseReference(CASE_REFERENCE);
         assertThat(caseDetails.isEmpty(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
-        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail\":\"emailAddress\"}}}"));
-
+        assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"reference\":\"1234432112244321\"}}}"));
     }
 }
