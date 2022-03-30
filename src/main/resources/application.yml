@@ -101,7 +101,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Cron job to make bulk print Aos packs'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.BulkPrintAosJob'
-      cron: ${SCHEDULER_BULK_PRINT_AOS_CRON:0 35 22 ? * * *} #Every 10 mins
+      cron: ${SCHEDULER_BULK_PRINT_AOS_CRON:0 40 22 ? * * *} #Every 10 mins
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
