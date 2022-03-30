@@ -38,15 +38,17 @@ public class PrintRespondentAosPackService {
         log.info("In the Print Respondent AOS Pack service job");
         List<CaseReference> caseReferences = csvLoader.loadCaseReferenceList("printAosPackCaseReferenceList.csv");
         int count = 0;
+        int batchCount = 1;
         for (CaseReference caseReference : caseReferences) {
             count++;
             if (count == bulkPrintBatchSize) {
-                log.info("Batch limit reached {}, pausing for {} minutes", bulkPrintBatchSize, bulkPrintWaitTime);
+                log.info("Batch {} limit reached {}, pausing for {} minutes", batchCount, bulkPrintBatchSize, bulkPrintWaitTime);
                 TimeUnit.MINUTES.sleep(bulkPrintWaitTime);
                 count = 0;
+                batchCount++;
             }
             try {
-                log.info("Search for case reference {}, count {}", caseReference.getCaseReference(), count);
+                log.info("Search for case reference {}, batch {}, count {}", caseReference.getCaseReference(), batchCount, count);
                 Optional<List<CaseDetails>> caseDetailsListOpt =
                     searchForCaseByReference.searchCasesByCaseReference(caseReference.getCaseReference());
                 if (caseDetailsListOpt.isPresent()) {
