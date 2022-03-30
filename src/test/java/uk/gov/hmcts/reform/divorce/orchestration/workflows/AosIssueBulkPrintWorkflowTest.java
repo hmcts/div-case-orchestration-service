@@ -133,14 +133,16 @@ public class AosIssueBulkPrintWorkflowTest {
             payload,
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
+            respondentAosPackPrinterTask,
             aosPackDueDateSetterTask
+
         );
 
-        verifyNoInteractions(respondentAosPackPrinterTask);
         verifyNoInteractions(respondentAosPackNonDigitalPrinterTask);
         verifyNoInteractions(coRespondentAosPackPrinterTask);
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
     }
+
 
     private void mockTaskExecution() {
         mockTasksExecution(
