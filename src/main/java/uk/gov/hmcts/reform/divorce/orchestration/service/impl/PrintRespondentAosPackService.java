@@ -41,11 +41,12 @@ public class PrintRespondentAosPackService {
         for (CaseReference caseReference : caseReferences) {
             count++;
             if (count == bulkPrintBatchSize) {
+                log.info("Batch limit reached {}, pausing for {} minutes", bulkPrintBatchSize, bulkPrintWaitTime);
                 TimeUnit.MINUTES.sleep(bulkPrintWaitTime);
                 count = 0;
             }
             try {
-                log.info("Search for case reference {}", caseReference.getCaseReference());
+                log.info("Search for case reference {}, count {}", caseReference.getCaseReference(), count);
                 Optional<List<CaseDetails>> caseDetailsListOpt =
                     searchForCaseByReference.searchCasesByCaseReference(caseReference.getCaseReference());
                 if (caseDetailsListOpt.isPresent()) {
