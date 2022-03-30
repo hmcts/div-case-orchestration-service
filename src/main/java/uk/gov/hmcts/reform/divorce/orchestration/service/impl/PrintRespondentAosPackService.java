@@ -29,10 +29,10 @@ public class PrintRespondentAosPackService {
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final SearchForCaseByReference searchForCaseByReference;
-    @Value("${aos.bulkprint.batchsize}")
-    private final Integer bulkPrintBatchSize;
-    @Value("${aos.bulkprint.wait-time-mins}")
-    private final Integer bulkPrintWaitTime;
+    @Value("${aos.bulkprint.batchsize:250}")
+    private int bulkPrintBatchSize;
+    @Value("${aos.bulkprint.wait-time-mins:2}")
+    private int bulkPrintWaitTime;
 
     public void printAosPacks() throws InterruptedException {
         log.info("In the Print Respondent AOS Pack service job");

@@ -49,7 +49,7 @@ public class PrintRespondentAosPackServiceTest {
     public void setUpTest() {
         printRespondentAosPackService =
             new PrintRespondentAosPackService(csvLoader, fetchPrintDocsFromDmStoreTask,
-                respondentAosPackPrinterTask, searchForCaseByReference, 10, 1);
+                respondentAosPackPrinterTask, searchForCaseByReference);
         when(csvLoader.loadCaseReferenceList("printAosPackCaseReferenceList.csv")).thenReturn(
             Arrays.asList(CaseReference.builder().caseReference(CASE_REFERENCE).build()));
         caseDetails = CaseDetails.builder().caseData(Map.of("D8PetitionerEmail", "someemailaddress@mail.com")).build();
