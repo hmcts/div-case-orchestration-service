@@ -5,7 +5,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
 
 import java.util.Collections;
 import java.util.List;

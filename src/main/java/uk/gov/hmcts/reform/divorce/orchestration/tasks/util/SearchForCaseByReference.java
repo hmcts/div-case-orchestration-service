@@ -11,7 +11,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SearchForCaseByReference{
+public class SearchForCaseByReference {
 
     private final SearchForCase searchForCase;
 

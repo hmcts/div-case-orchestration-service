@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util.csv;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUser;
-import uk.gov.hmcts.reform.divorce.orchestration.util.nfd.IdamUsersCsvLoader;
 
 import java.util.List;
 
@@ -11,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CaseReferenceCsvLoaderTest {
 
-    CaseReferenceCsvLoader  caseReferenceCsvLoader = new CaseReferenceCsvLoader();
+    CaseReferenceCsvLoader caseReferenceCsvLoader = new CaseReferenceCsvLoader();
 
     @Test
     public void shouldLoadCaseRefsCsvFile() {
