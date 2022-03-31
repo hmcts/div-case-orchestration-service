@@ -16,7 +16,7 @@ public class CaseReferenceCsvLoaderTest {
         List<CaseReference> caseReferences = caseReferenceCsvLoader.loadCaseReferenceList("caserefs-test.csv");
 
         assertThat(caseReferences.isEmpty(), equalTo(Boolean.FALSE));
-        assertThat(caseReferences.size(), equalTo(429));
+        assertThat(caseReferences.size(), equalTo(6770));
     }
 
     @Test
