@@ -10,8 +10,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByReference;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.csv.CaseReference;
 import uk.gov.hmcts.reform.divorce.orchestration.util.csv.CaseReferenceCsvLoader;
 
@@ -40,7 +42,11 @@ public class PrintRespondentAosPackServiceTest {
     @Mock
     private RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     @Mock
+    private CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
+    @Mock
     private SearchForCaseByReference searchForCaseByReference;
+    @Mock
+    private CaseDataUtils caseDataUtils;
     @Captor
     ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
     private CaseDetails caseDetails;
@@ -49,7 +55,7 @@ public class PrintRespondentAosPackServiceTest {
     public void setUpTest() {
         printRespondentAosPackService =
             new PrintRespondentAosPackService(csvLoader, fetchPrintDocsFromDmStoreTask,
-                respondentAosPackPrinterTask, searchForCaseByReference);
+                respondentAosPackPrinterTask, coRespondentAosPackPrinterTask, searchForCaseByReference, caseDataUtils);
         when(csvLoader.loadCaseReferenceList("printAosPackCaseReferenceList.csv")).thenReturn(
             Arrays.asList(CaseReference.builder().caseReference(CASE_REFERENCE).build()));
         caseDetails = CaseDetails.builder().caseData(Map.of("D8PetitionerEmail", "someemailaddress@mail.com")).build();
