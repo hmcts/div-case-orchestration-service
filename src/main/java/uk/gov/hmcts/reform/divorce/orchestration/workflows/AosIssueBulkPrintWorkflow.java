@@ -60,7 +60,8 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
                 tasks.add(respondentAosPackNonDigitalPrinterTask);
             }
         } else {
-            log.info("Case id {}: Not sending respondent AOS pack to bulk print", caseId);
+            log.info("Case id {}: Sending respondent AOS pack for non-represented respondent to bulk print", caseId);
+            tasks.add(respondentAosPackPrinterTask);
         }
 
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
