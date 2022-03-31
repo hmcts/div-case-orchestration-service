@@ -97,7 +97,7 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
       cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
     - name: 'BulkPrintAosJob'
-      enabled: ${SCHEDULER_BULK_PRINT_AOS_JOB_ENABLED:true}
+      enabled: ${SCHEDULER_BULK_PRINT_AOS_JOB_ENABLED:false}
       cronGroup: "NIGHTLY_CRON"
       description: 'Cron job to make bulk print Aos packs'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.BulkPrintAosJob'
@@ -643,5 +643,5 @@ nfd:
 
 aos:
   bulkprint:
-    batchsize: ${AOS_BULKPRINT_BATCHSIZE:50}
-    wait-time-mins: ${AOS_BULKPRINT_WAIT_TIME_MINS:30}
+    batchsize: ${AOS_BULKPRINT_BATCHSIZE:500}
+    wait-time-mins: ${AOS_BULKPRINT_WAIT_TIME_MINS:10}
