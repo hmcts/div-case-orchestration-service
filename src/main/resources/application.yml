@@ -70,7 +70,7 @@ feign:
 
 scheduler:
   re-create: ${SCHEDULER_RE_CREATE:true}
-  enabled: ${SCHEDULER_ENABLED:false}
+  enabled: ${SCHEDULER_ENABLED:true}
   schedules:
     - name: 'CreateBulkCase'
       enabled: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED:true}
