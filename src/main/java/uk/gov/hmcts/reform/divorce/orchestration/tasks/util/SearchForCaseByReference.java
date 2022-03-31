@@ -11,12 +11,13 @@ import java.util.Optional;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SearchForCaseByEmail {
+public class SearchForCaseByReference {
 
     private final SearchForCase searchForCase;
 
-    public Optional<List<CaseDetails>> searchCasesByEmail(String emailAddress) {
-        log.info("Search for case in CCD for Citizen, emailAddress: {}", emailAddress);
-        return searchForCase.search("data.D8PetitionerEmail", emailAddress);
+    public Optional<List<CaseDetails>> searchCasesByCaseReference(String caseReference) {
+        log.info("Search for case in CCD for Citizen, caseReference: {}", caseReference);
+        return searchForCase.search("reference", caseReference);
     }
+
 }

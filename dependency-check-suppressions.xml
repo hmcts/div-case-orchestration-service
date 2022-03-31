@@ -46,5 +46,12 @@
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
     </suppress>
+    <suppress until="2022-05-01Z">
+        <notes><![CDATA[
+   file name: postgresql-42.2.13.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <cve>CVE-2022-21724</cve>
+    </suppress>
     
 </suppressions>    
