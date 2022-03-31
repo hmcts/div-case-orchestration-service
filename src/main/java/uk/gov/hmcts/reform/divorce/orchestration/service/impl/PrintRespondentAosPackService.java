@@ -8,8 +8,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.SearchForCaseByReference;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.csv.CaseReference;
 import uk.gov.hmcts.reform.divorce.orchestration.util.csv.CaseReferenceCsvLoader;
 
@@ -28,10 +30,12 @@ public class PrintRespondentAosPackService {
     private final CaseReferenceCsvLoader csvLoader;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
+    private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final SearchForCaseByReference searchForCaseByReference;
-    @Value("${aos.bulkprint.batchsize:50}")
+    private final CaseDataUtils caseDataUtils;
+    @Value("${aos.bulkprint.batchsize:500}")
     private int bulkPrintBatchSize;
-    @Value("${aos.bulkprint.wait-time-mins:30}")
+    @Value("${aos.bulkprint.wait-time-mins:10}")
     private int bulkPrintWaitTime;
 
     public void printAosPacks() throws InterruptedException {
@@ -60,6 +64,9 @@ public class PrintRespondentAosPackService {
                     fetchPrintDocsFromDmStoreTask.execute(taskContext, caseData);
                     log.info("Got the docs for {}, now print the aos pack", caseReference.getCaseReference());
                     respondentAosPackPrinterTask.execute(taskContext, caseData);
+                    if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
+                        coRespondentAosPackPrinterTask.execute(taskContext, caseData);
+                    }
                 }
 
             } catch (RuntimeException e) {
