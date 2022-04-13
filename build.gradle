@@ -78,7 +78,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.3.11.RELEASE'
+    def springBootVersion = '5.2.20.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
