@@ -58,7 +58,7 @@ def versions = [
         junit                 : '4.13.1',
         logbackVersion        : '1.2.10',
         lombok                : '1.18.22',
-        postgresql            : '42.2.13',
+        postgresql            : '42.2.25',
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
