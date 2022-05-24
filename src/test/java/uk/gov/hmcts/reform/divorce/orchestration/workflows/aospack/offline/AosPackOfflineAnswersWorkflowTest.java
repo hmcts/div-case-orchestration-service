@@ -28,9 +28,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
@@ -65,6 +69,12 @@ public class AosPackOfflineAnswersWorkflowTest {
     @Mock
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
+    @Mock
+    private RespondentAosOfflineNotification respondentAosOfflineNotification;
+
+    @Mock
+    private CoRespondentAosOfflineNotification corespondentAosOfflineNotification;
+
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
 
@@ -83,6 +93,7 @@ public class AosPackOfflineAnswersWorkflowTest {
         when(respondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
         when(respondentAnswersGenerator.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
         when(addNewDocumentsToCaseDataTask.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
+        doNothing().when(respondentAosOfflineNotification).addAOSEmailTasks(anyMap(), anyList(), any(CaseDetails.class), anyString());
 
         Map<String, Object> returnedPayload = classUnderTest.run(AUTH_TOKEN, caseDetails, RESPONDENT);
 
@@ -103,6 +114,7 @@ public class AosPackOfflineAnswersWorkflowTest {
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         assertThat(taskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
         verifyTaskWasNeverCalled(coRespondentAosAnswersProcessor);
+        verify(respondentAosOfflineNotification).addAOSEmailTasks(anyMap(), anyList(), any(), anyString());
     }
 
     @Test
@@ -114,12 +126,14 @@ public class AosPackOfflineAnswersWorkflowTest {
         when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
         when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(payload);
         when(coRespondentAosDerivedAddressFormatter.execute(any(), eq(payload))).thenReturn(returnedCaseData);
+        doNothing().when(corespondentAosOfflineNotification).addAOSEmailTasks(anyList(), any(CaseDetails.class));
 
         Map<String, Object> returnedPayload = classUnderTest.run(AUTH_TOKEN, caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
         verifyTasksCalledInOrder(payload, formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
         verifyTasksWereNeverCalled(respondentAosAnswersProcessor, respondentAnswersGenerator, addNewDocumentsToCaseDataTask);
+        verify(corespondentAosOfflineNotification).addAOSEmailTasks(anyList(), any());
     }
 
     @Test

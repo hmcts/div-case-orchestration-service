@@ -67,7 +67,7 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
 
     private static final String TEST_COURT_NAME = "Liverpool Civil and Family Court Hearing Centre";
     private static final String TEST_DATE_OF_HEARING = "21 April 2019";
-    private static final String TEST_LIMIT_DATE_TO_CONTACT_COURT = "7 April 2019";
+    private static final String TEST_LIMIT_DATE_TO_CONTACT_COURT = "6 April 2019";
     private static final String TEST_CCD_REFERENCE = "0123456789012345";
 
     @Autowired

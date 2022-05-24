@@ -83,6 +83,12 @@ scheduler:
       description: 'Cron job to move eligible cases to AOS Overdue state'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
       cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
+    - name: 'BulkPrintAosJob'
+      enabled: ${SCHEDULER_BULK_PRINT_AOS_JOB_ENABLED:true}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to make bulk print Aos packs'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.BulkPrintAosJob'
+      cron: ${SCHEDULER_BULK_PRINT_AOS_CRON:0 0 10 ? * * *} #Every 10 mins
 
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
@@ -489,6 +495,12 @@ idam:
     id: divorce
     health:
       context-path: /health
+  xui:
+    client:
+      redirect_uri: ${IDAM_API_XUI_REDIRECT_URL:http://localhost:8080/authenticated}
+      port: 4503
+      secret: ${IDAM_XUI_CLIENT_SECRET:dummysecret}
+      id: xuiwebapp
   citizen:
     username: dummy
     password: dummy
@@ -504,6 +516,9 @@ idam:
     services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:test_service_allowed}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
+    userdetails: ${IDAM_API_URL:http://localhost:4503}/api/v1/users
+    authorize: ${IDAM_API_URL:http://localhost:4503}/oauth2/authorize
+    token: ${IDAM_API_URL:http://localhost:4503}/oauth2/token
 
 document:
   generator:
@@ -604,3 +619,11 @@ logging:
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+nfd:
+  cutoffdate: ${NFD_CUTOFF_DATE:03-04-2022}
+
+aos:
+  bulkprint:
+    batchsize: ${AOS_BULKPRINT_BATCHSIZE:250}
+    wait-time-mins: ${AOS_BULKPRINT_WAIT_TIME_MINS:2}
