@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByAlternativeMethodTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MarkRespondentAsNonDigitalTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +27,18 @@ public class ConfirmAlternativeServiceWorkflowTest {
     @Mock
     private MarkJourneyAsServedByAlternativeMethodTask markJourneyAsServedByAlternativeMethodTask;
 
+    @Mock
+    private MarkRespondentAsNonDigitalTask markRespondentAsNonDigitalTask;
+
     @InjectMocks
     private ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
 
     @Test
     public void whenConfirmAlternativeServiceWorkflowModifyDueDateTaskIsExecuted() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, alternativeServiceDueDateSetterTask, markJourneyAsServedByAlternativeMethodTask);
+        mockTasksExecution(caseData, alternativeServiceDueDateSetterTask,
+            markJourneyAsServedByAlternativeMethodTask,
+            markRespondentAsNonDigitalTask);
 
         Map<String, Object> returned = confirmAlternativeServiceWorkflow.run(
             CaseDetails.builder()
@@ -41,6 +47,8 @@ public class ConfirmAlternativeServiceWorkflowTest {
         );
 
         assertThat(returned, is(caseData));
-        verifyTasksCalledInOrder(caseData, alternativeServiceDueDateSetterTask, markJourneyAsServedByAlternativeMethodTask);
+        verifyTasksCalledInOrder(caseData, alternativeServiceDueDateSetterTask,
+            markJourneyAsServedByAlternativeMethodTask,
+            markRespondentAsNonDigitalTask);
     }
 }
