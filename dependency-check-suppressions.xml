@@ -22,18 +22,11 @@
         <cve>CVE-2021-22134</cve>
     </suppress>
 
-    <suppress until="2021-09-16Z">
-        <notes><![CDATA[
-   file name: jakarta.el-3.0.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.glassfish/jakarta\.el@.*$</packageUrl>
-        <cve>CVE-2021-28170</cve>
-    </suppress>
-
     <suppress until="2022-11-01Z">
         <notes><![CDATA[Suppress tomcat CVE as there is no updated version.]]></notes>
         <vulnerabilityName>CVE-2021-42340</vulnerabilityName>
     </suppress>
+
     <suppress until="2030-01-01">
         <notes><![CDATA[
                  https://nvd.nist.gov/vuln/detail/CVE-2021-22096#range-7096083
@@ -41,4 +34,20 @@
                 ]]></notes>
         <cve>CVE-2021-22096</cve>
     </suppress>
-</suppressions>
+
+    <suppress>
+        <notes><![CDATA[file name: jackson-databind-2.13.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[file name: spring-core-5.2.20.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+        <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2022-22968</cve>
+        <cve>CVE-2022-22970</cve>
+        <cve>CVE-2022-22971</cve>
+    </suppress>
+
+</suppressions>    
