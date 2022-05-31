@@ -42,7 +42,7 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
             context.setTaskFailed(true);
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
-
+        log.info("Validation response for caseID {}: {}", caseId, validationResponse);
         return caseData;
     }
 }
