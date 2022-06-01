@@ -58,7 +58,7 @@ def versions = [
         junit                 : '4.13.1',
         logbackVersion        : '1.2.10',
         lombok                : '1.18.22',
-        postgresql            : '42.2.13',
+        postgresql            : '42.2.25',
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
@@ -70,7 +70,7 @@ def versions = [
         springSecurityCrypto  : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.58',
+        tomcat                       : '9.0.63',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
@@ -143,7 +143,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869, CVE-2021-21409
-            dependencySet(group: 'io.netty', version: '4.1.71.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.77.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -170,7 +170,8 @@ allprojects {
 
             dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
 
-            dependencySet(group: 'org.springframework', version: '5.2.19.RELEASE') {
+            //CVE-2022-22965
+            dependencySet(group: 'org.springframework', version: '5.2.20.RELEASE') {
                 entry 'spring-aop'
                 entry 'spring-beans'
                 entry 'spring-context'
@@ -180,6 +181,10 @@ allprojects {
                 entry 'spring-jcl'
                 entry 'spring-web'
                 entry 'spring-webmvc'
+                entry 'spring-aspects'
+                entry 'spring-jdbc'
+                entry 'spring-orm'
+                entry 'spring-tx'
             }
         }
     }
@@ -523,8 +528,10 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/**/*'
-
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/nfd/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/util/csv/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/job/BulkPrintAosJob.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/PrintRespondentAosPackService.java'
 ]
 
 sonarqube {

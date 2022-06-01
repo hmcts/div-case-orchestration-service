@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MarkRespondentAsNonDigitalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
@@ -42,6 +43,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
     @Mock private ServiceApplicationDataTask serviceApplicationDataTask;
     @Mock private ServiceApplicationRemovalTask serviceApplicationRemovalTask;
     @Mock private BailiffApplicationApprovedDataTask bailiffApplicationApprovedDataTask;
+    @Mock private MarkRespondentAsNonDigitalTask markRespondentAsNonDigital;
 
     @InjectMocks
     private MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
@@ -78,6 +80,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         mockTasksExecution(
             caseData,
             makeServiceDecisionDateTask,
+            markRespondentAsNonDigital,
             orderToDispenseGenerationTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
@@ -85,7 +88,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
 
-        verifyTasksCalledInOrder(caseData, makeServiceDecisionDateTask, orderToDispenseGenerationTask);
+        verifyTasksCalledInOrder(caseData, makeServiceDecisionDateTask, markRespondentAsNonDigital, orderToDispenseGenerationTask);
         verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
     }
 
@@ -154,6 +157,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         mockTasksExecution(
             caseData,
             makeServiceDecisionDateTask,
+            markRespondentAsNonDigital,
             deemedServiceOrderGenerationTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
@@ -164,6 +168,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         verifyTasksCalledInOrder(
             caseData,
             makeServiceDecisionDateTask,
+            markRespondentAsNonDigital,
             deemedServiceOrderGenerationTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
@@ -180,6 +185,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         mockTasksExecution(
             caseData,
             makeServiceDecisionDateTask,
+            markRespondentAsNonDigital,
             bailiffApplicationApprovedDataTask
         );
 
@@ -188,6 +194,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         verifyTasksCalledInOrder(
             caseData,
             makeServiceDecisionDateTask,
+            markRespondentAsNonDigital,
             bailiffApplicationApprovedDataTask
         );
         verifyTasksWereNeverCalled(
