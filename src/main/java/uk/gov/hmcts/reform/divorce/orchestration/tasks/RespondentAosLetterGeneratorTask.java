@@ -34,21 +34,17 @@ public class RespondentAosLetterGeneratorTask implements Task<Map<String, Object
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.AOS_INVITATION_REP_RESP);
 
-        GeneratedDocumentInfo aosInvitation =
-            documentGeneratorClient.generatePDF(
-                GenerateDocumentRequest.builder()
-                    .template(templateId)
-                    .values(ImmutableMap.of(
-                        DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                        ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN))
-                    )
-                    .build(),
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-            );
+        GeneratedDocumentInfo aosInvitation = documentGeneratorClient.generatePDF(
+            GenerateDocumentRequest.builder().template(templateId)
+                .values(ImmutableMap.of(
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
+                    ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN))
+                ).build(),
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+        );
 
         aosInvitation.setDocumentType(DOCUMENT_TYPE_RESPONDENT_INVITATION);
-        aosInvitation.setFileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT,
-            caseDetails.getCaseId()));
+        aosInvitation.setFileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
             new LinkedHashSet<>());

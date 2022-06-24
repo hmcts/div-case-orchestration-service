@@ -144,6 +144,7 @@ public class OrchestrationConstants {
     public static final String CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
     public static final String CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
+    public static final String D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "D8PetitionerContactDetailsConfidential";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
@@ -172,8 +173,9 @@ public class OrchestrationConstants {
     public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
     public static final String DATE_OF_HEARING = "date of hearing";
     public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
+    public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
-    public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
+    public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofDays(15);
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";

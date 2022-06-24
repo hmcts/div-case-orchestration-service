@@ -11,6 +11,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
@@ -26,6 +27,7 @@ public class AddresseeDataExtractor {
         public static final String RESPONDENT_SOLICITOR_ADDRESS = "D8DerivedRespondentSolicitorAddr";
         public static final String CO_RESPONDENT_ADDRESS = "D8DerivedReasonForDivorceAdultery3rdAddr";
         public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
+        public static final String PETITIONER_SOLICITOR_ADDRESS = "DerivedPetitionerSolicitorAddr";
     }
 
     public static Addressee getRespondent(Map<String, Object> caseData) {
@@ -46,6 +48,13 @@ public class AddresseeDataExtractor {
         return Addressee.builder()
             .name(getCoRespondentFullName(caseData))
             .formattedAddress(getCoRespondentFormattedAddress(caseData))
+            .build();
+    }
+
+    public static Addressee getPetitionerSolicitor(Map<String, Object> caseData) {
+        return Addressee.builder()
+            .name(getPetitionerSolicitorFullName(caseData))
+            .formattedAddress(getPetitionerSolicitorFormattedAddress(caseData))
             .build();
     }
 
@@ -76,6 +85,10 @@ public class AddresseeDataExtractor {
 
     private static String getCoRespondentFormattedAddress(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_ADDRESS);
+    }
+
+    private static String getPetitionerSolicitorFormattedAddress(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.PETITIONER_SOLICITOR_ADDRESS);
     }
 
     private static String getRespondentSolicitorFormattedAddress(Map<String, Object> caseData) {

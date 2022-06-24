@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -13,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
+@Slf4j
 public class CreateAmendPetitionDraftForRefusalFromCaseIdTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
@@ -25,12 +27,18 @@ public class CreateAmendPetitionDraftForRefusalFromCaseIdTask implements Task<Ma
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> caseData) {
+        String oldCaseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        log.info("About to request amended draft for Case {}", oldCaseId);
+
         final Map<String, Object> amendDraft = caseMaintenanceClient
             .amendPetitionForRefusalFromCaseId(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 context.getTransientObject(CASE_ID_JSON_KEY));
 
+        log.info("Obtained amended draft for Case {}", oldCaseId);
+
         context.setTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY, amendDraft);
+
         return amendDraft;
     }
 }

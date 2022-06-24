@@ -16,6 +16,6 @@ public class QueueAosSolicitorSubmitTask extends AutoPublishingAsyncTask<Map<Str
 
     @Override
     public List<ApplicationEvent> getApplicationEventsToPublish(TaskContext context, Map<String, Object> payload) {
-        return  singletonList(new SubmitSolicitorAosEvent(context));
+        return singletonList(new SubmitSolicitorAosEvent(context));
     }
 }

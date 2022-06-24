@@ -22,24 +22,33 @@ compileTestJava {
 def versions = [
   assertj           : '3.16.1',
   flyway            : '6.5.5',
-  jacksonDatabind   : '2.11.1',
+  jacksonDatabind   : '2.13.2',
   lombok            : '1.18.18',
-  postgresql        : '42.2.13',
+  postgresql        : '42.2.25',
+  logbackVersion    : '1.2.10',
   reformJavaLogging : '5.0.1'
 ]
 
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
+      exclude group: 'ch.qos.logback', module: 'logback-core'
+      exclude group: 'ch.qos.logback', module: 'logback-classic'
+  }
   compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
+  compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging, {
+      exclude group: 'ch.qos.logback', module: 'logback-core'
+      exclude group: 'ch.qos.logback', module: 'logback-classic'
+  }
 
   compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
     force = true
