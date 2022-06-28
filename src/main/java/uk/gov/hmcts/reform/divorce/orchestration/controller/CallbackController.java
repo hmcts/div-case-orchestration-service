@@ -248,9 +248,19 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> solicitorAmendPetitionForRefusal(
         @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken))
-            .build());
+        Map<String, Object> response = caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken);
+
+        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .errors(getErrors(response))
+                    .build());
+        }
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
     }
 
     @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
