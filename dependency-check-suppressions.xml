@@ -50,4 +50,10 @@
         <cve>CVE-2022-22971</cve>
     </suppress>
 
+    <suppress until="2022-09-01">
+        <notes><![CDATA[No new version of Tomcat available with a fix -
+         the latest version available at the moment (10.1.0-M16) is compromised]]></notes>
+        <cve>CVE-2022-34305</cve>
+    </suppress>
+
 </suppressions>    
