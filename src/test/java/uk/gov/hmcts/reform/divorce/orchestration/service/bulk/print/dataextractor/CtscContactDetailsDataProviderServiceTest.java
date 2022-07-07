@@ -28,6 +28,6 @@ public class CtscContactDetailsDataProviderServiceTest {
         assertThat(details.getTown(), is("Harlow"));
         assertThat(details.getEmailAddress(), is("divorcecase@justice.gov.uk"));
         assertThat(details.getPhoneNumber(), is("0300 303 0642"));
-        assertThat(details.getOpeningHours(), is("Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm"));
+        assertThat(details.getOpeningHours(), is("8am to 6pm, Monday to Friday"));
     }
 }

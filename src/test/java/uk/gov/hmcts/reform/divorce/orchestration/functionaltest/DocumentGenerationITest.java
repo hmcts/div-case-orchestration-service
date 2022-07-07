@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -124,6 +125,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
     public void happyPathWithDnCourt() throws Exception {
         // Data matching application properties.
         Map<String, Object> formattedDocumentCaseData = new HashMap<>();
+        formattedDocumentCaseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         formattedDocumentCaseData.put(COURT_NAME, "Liverpool Civil and Family Court Hearing Centre");
         formattedDocumentCaseData.put(COURT_CONTACT_JSON_KEY, "c/o Liverpool Civil and Family Court Hearing Centre"
             + "\n35 Vernon Street\nLiverpool\nL2 2BX\n\nEmail: divorcecase@justice.gov.uk\nPhone: 0300 303 0642");

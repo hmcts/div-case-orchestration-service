@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
@@ -47,6 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DN_COURT_DETAILS;
@@ -83,7 +83,7 @@ public class MultipleDocumentGenerationTaskTest {
             new DocumentGenerationTask(mockDocumentGeneratorClient, ctscContactDetailsDataProviderService);
 
         when(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .thenReturn(CtscContactDetails.builder().build());
+            .thenReturn(getCtscContactDetails());
 
         classUnderTest = new MultipleDocumentGenerationTask(documentGenerationTask);
 
@@ -157,6 +157,7 @@ public class MultipleDocumentGenerationTaskTest {
         taskContext.setTransientObject(DN_COURT_DETAILS, dnCourtDetails);
         Map<String, Object> caseData = new HashMap<>(payload);
         caseData.putAll(dnCourtDetails);
+        caseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
 
         CaseDetails dnCaseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -214,4 +215,18 @@ public class MultipleDocumentGenerationTaskTest {
         ));
     }
 
+    protected CtscContactDetails getCtscContactDetails() {
+        return CtscContactDetails
+            .builder()
+            .serviceCentre("Courts and Tribunals Service Centre")
+            .careOf("c/o HMCTS Digital Divorce")
+            .centreName("HMCTS Digital Divorce")
+            .poBox("PO Box 12706")
+            .town("Harlow")
+            .postcode("CM20 9QT")
+            .emailAddress("divorcecase@justice.gov.uk")
+            .phoneNumber("0300 303 0642")
+            .openingHours("8am to 6pm, Monday to Friday")
+            .build();
+    }
 }
