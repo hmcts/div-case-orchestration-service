@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,12 +70,20 @@ public class MultipleDocumentGenerationTaskTest {
 
     private DocumentGeneratorClient mockDocumentGeneratorClient;
 
+    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+
     private MultipleDocumentGenerationTask classUnderTest;
 
     @Before
     public void setUp() {
         mockDocumentGeneratorClient = mock(DocumentGeneratorClient.class);
-        DocumentGenerationTask documentGenerationTask = new DocumentGenerationTask(mockDocumentGeneratorClient);
+        ctscContactDetailsDataProviderService = mock(CtscContactDetailsDataProviderService.class);
+
+        DocumentGenerationTask documentGenerationTask =
+            new DocumentGenerationTask(mockDocumentGeneratorClient, ctscContactDetailsDataProviderService);
+
+        when(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .thenReturn(CtscContactDetails.builder().build());
 
         classUnderTest = new MultipleDocumentGenerationTask(documentGenerationTask);
 
