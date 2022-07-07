@@ -23,10 +23,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
@@ -68,12 +70,13 @@ public class ValidateCaseDataTaskTest {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
     }
 
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
-        when(validationService.validate(any())).thenReturn(validationResponse);
+        when(validationService.validate(any(), any())).thenReturn(validationResponse);
 
         //when
         Map<String, Object> response = validateCaseDataTask.execute(context, payload);
@@ -87,7 +90,7 @@ public class ValidateCaseDataTaskTest {
     @Test
     public void executeShouldReturnUpdatedContextForInValidCase() {
         //given
-        when(validationService.validate(any())).thenReturn(invalidationResponse);
+        when(validationService.validate(any(), any())).thenReturn(invalidationResponse);
 
         //when
         Map<String, Object> response = validateCaseDataTask.execute(context, payload);
