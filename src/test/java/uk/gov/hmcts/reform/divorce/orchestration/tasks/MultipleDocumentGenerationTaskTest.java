@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -87,7 +86,9 @@ public class MultipleDocumentGenerationTaskTest {
 
         classUnderTest = new MultipleDocumentGenerationTask(documentGenerationTask);
 
-        payload = singletonMap("testKey1", "testValue1");
+        payload = new HashMap<>();
+        payload.put("testKey1", "testValue1");
+        payload.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(payload)

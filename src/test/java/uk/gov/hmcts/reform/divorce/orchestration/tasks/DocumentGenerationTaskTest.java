@@ -59,6 +59,7 @@ public class DocumentGenerationTaskTest {
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() {
         final Map<String, Object> payload = new HashMap<>();
+        payload.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(payload)
@@ -77,6 +78,8 @@ public class DocumentGenerationTaskTest {
             .documentType(TEST_DOCUMENT_TYPE)
             .fileName("filename.pdf")
             .build();
+        when(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .thenReturn(getCtscContactDetails());
         when(documentGeneratorClient.generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN)))
             .thenReturn(documentToReturn);
 

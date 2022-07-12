@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,16 +33,11 @@ public class PrepareToPrintForPronouncementTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/prepare-to-print-for-pronouncement";
 
-    private static final Map<String, Object> CASE_DATA = new HashMap<>();
+    private Map<String, Object> caseData;
 
-    private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-        .caseData(CASE_DATA)
-        .caseId(TEST_CASE_ID)
-        .build();
+    private CaseDetails caseDetails;
 
-    private static final CcdCallbackRequest CCD_CALLBACK_REQUEST = CcdCallbackRequest.builder()
-        .caseDetails(CASE_DETAILS)
-        .build();
+    private CcdCallbackRequest ccdCallbackRequest;
 
     private static final String TEMPLATE_NAME = "FL-DIV-GNO-ENG-00059.docx";
     private static final String EXPECTED_DOCUMENT_TYPE = "caseListForPronouncement";
@@ -49,6 +45,21 @@ public class PrepareToPrintForPronouncementTest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
+
+    @Before
+    public void setUp() {
+        caseData = new HashMap<>();
+        caseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
+
+        caseDetails = CaseDetails.builder()
+                                 .caseData(caseData)
+                                 .caseId(TEST_CASE_ID)
+                                 .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+                                               .caseDetails(caseDetails)
+                                               .build();
+    }
 
     @Test
     public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
@@ -62,7 +73,7 @@ public class PrepareToPrintForPronouncementTest extends MockedFunctionalTest {
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -70,11 +81,11 @@ public class PrepareToPrintForPronouncementTest extends MockedFunctionalTest {
 
     @Test
     public void happyPath() throws Exception {
-        stubDocumentGeneratorService(TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), EXPECTED_DOCUMENT_TYPE);
+        stubDocumentGeneratorService(TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), EXPECTED_DOCUMENT_TYPE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

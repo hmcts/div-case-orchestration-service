@@ -70,6 +70,7 @@ public class UpdateBulkCaseHearingDetailsTest extends MockedFunctionalTest {
 
     @Test
     public void happyPath() throws Exception {
+        CASE_DETAILS.getCaseData().put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         stubDocumentGeneratorService(TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), EXPECTED_DOCUMENT_TYPE);
 
         webClient.perform(post(API_URL)
