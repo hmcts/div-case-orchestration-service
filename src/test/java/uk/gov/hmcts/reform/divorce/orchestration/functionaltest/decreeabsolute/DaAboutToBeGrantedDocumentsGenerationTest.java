@@ -92,8 +92,8 @@ public class DaAboutToBeGrantedDocumentsGenerationTest extends MockedFunctionalT
                                .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
                                .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
                                .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
-                               .put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails())
                                .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
+                               .put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails())
                                .build();
 
         caseDetails = CaseDetails.builder()
