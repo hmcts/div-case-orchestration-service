@@ -44,17 +44,15 @@ public class DocumentGenerationTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
-        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
+        Map<String, Object> copyOfCaseData = new HashMap<>();
+        copyOfCaseData.putAll(caseData);
+        copyOfCaseData.put(CTSC_CONTACT_DETAILS_KEY, ctscContactDetailsDataProviderService.getCtscContactDetails());
         if (Objects.nonNull(context.getTransientObject(DN_COURT_DETAILS))) {
-            // We do not want any modifications in this task to affect the actual caseData.
-            Map<String, Object> copyOfCaseData = new HashMap<>();
-            copyOfCaseData.putAll(caseData);
             copyOfCaseData.putAll(context.getTransientObject(DN_COURT_DETAILS));
-            copyOfCaseData.put(CTSC_CONTACT_DETAILS_KEY, ctscContactDetailsDataProviderService.getCtscContactDetails());
-
-            caseDetails = caseDetails.toBuilder().caseData(copyOfCaseData).build();
         }
+        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        caseDetails = caseDetails.toBuilder().caseData(copyOfCaseData).build();
 
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generatePDF(
