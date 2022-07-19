@@ -56,14 +56,4 @@
         <cve>CVE-2022-34305</cve>
     </suppress>
 
-
-
-    <suppress until="2022-09-15">
-        <notes><![CDATA[
-   file name: spring-security-rsa-1.0.7.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.*$</packageUrl>
-        <cve>CVE-2022-31569</cve>
-    </suppress>
-
 </suppressions>    

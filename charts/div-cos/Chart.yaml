@@ -5,5 +5,5 @@ name: div-cos
 version: 1.5.12
 dependencies:
   - name: java
-    version: 3.7.6
+    version: 4.0.1
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
