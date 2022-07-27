@@ -1,15 +1,15 @@
 {
-  "CaseTitle": "Divorce Case",
+  "CaseTitle": "Divorce bulk case for Listing 2019-05-08",
   "CaseList": [
     {
-      "id": "6c8a94a4-1566-43fa-a797-b559221aaef0",
+      "id": "ee2f3006-a7f4-4aca-bb01-81e065e52267",
       "value": {
-        "CostOrder": null,
+        "CostOrder": "Yes",
         "CaseParties": "John Smith vs Jane Jamed",
         "CaseReference": {
-          "CaseReference": "1558711395612316"
+          "CaseReference": "1652923168024208"
         },
-        "DNApprovalDate": null,
+        "DNApprovalDate": "2019-05-08",
         "FamilyManReference": "LV17D80100"
       }
     }
