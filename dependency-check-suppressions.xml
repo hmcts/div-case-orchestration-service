@@ -50,10 +50,34 @@
         <cve>CVE-2022-22971</cve>
     </suppress>
 
-    <suppress until="2022-09-01">
-        <notes><![CDATA[No new version of Tomcat available with a fix -
-         the latest version available at the moment (10.1.0-M16) is compromised]]></notes>
-        <cve>CVE-2022-34305</cve>
+    <suppress>
+      <notes><![CDATA[file name: spring-core-5.2.21.RELEASE.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+      <cve>CVE-2022-22970</cve>
     </suppress>
-
+    <suppress>
+      <notes><![CDATA[file name: spring-core-5.2.21.RELEASE.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
+      <cve>CVE-2022-22971</cve>
+    </suppress>
+    <suppress>
+      <notes><![CDATA[file name: tomcat-embed-core-9.0.58.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+      <cve>CVE-2022-29885</cve>
+    </suppress>
+    <suppress>
+   <notes><![CDATA[file name: tomcat-embed-websocket-9.0.58.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+      <cve>CVE-2022-29885</cve>
+    </suppress>
+    <suppress>
+      <notes><![CDATA[file name: tomcat-embed-core-9.0.58.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+      <cve>CVE-2022-34305</cve>
+    </suppress>
+    <suppress>
+      <notes><![CDATA[file name: tomcat-embed-websocket-9.0.58.jar]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+      <cve>CVE-2022-34305</cve>
+    </suppress>
 </suppressions>    
