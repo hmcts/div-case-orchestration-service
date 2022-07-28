@@ -17,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -305,6 +306,21 @@ public abstract class MockedFunctionalTest {
                     .caseData(caseData)
                     .build()
             )
+            .build();
+    }
+
+    protected CtscContactDetails getCtscContactDetails() {
+        return CtscContactDetails
+            .builder()
+            .serviceCentre("Courts and Tribunals Service Centre")
+            .careOf("c/o HMCTS Digital Divorce")
+            .centreName("HMCTS Digital Divorce")
+            .poBox("PO Box 12706")
+            .town("Harlow")
+            .postcode("CM20 9QT")
+            .emailAddress("divorcecase@justice.gov.uk")
+            .phoneNumber("0300 303 0642")
+            .openingHours("8am to 6pm, Monday to Friday")
             .build();
     }
 }

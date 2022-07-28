@@ -230,6 +230,8 @@ public class OrchestrationConstants {
     public static final String EMAIL_LABEL = "Email:";
     public static final String PHONE_LABEL = "Phone:";
 
+    public static final String CTSC_CONTACT_DETAILS_KEY = "ctscContactDetails";
+
     // Document Generator
     public static final String DOCUMENT_TYPE_JSON_KEY = "DocumentType";
     public static final String DOCUMENT_FILENAME_JSON_KEY = "DocumentFileName";

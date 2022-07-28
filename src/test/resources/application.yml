@@ -420,7 +420,7 @@ court:
       courtCity: 'Harlow'
       poBox: 'PO Box 12706'
       postCode: 'CM20 9QT'
-      openingHours: 'Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm'
+      openingHours: ${CTSC_OPENING_HOURS:8am to 6pm, Monday to Friday}
       email: 'divorcecase@justice.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA07'

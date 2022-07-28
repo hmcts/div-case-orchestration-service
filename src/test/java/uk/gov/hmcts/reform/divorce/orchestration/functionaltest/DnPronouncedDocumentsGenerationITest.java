@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
@@ -23,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
@@ -42,23 +45,32 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final String COSTS_ORDER_JUDGE_TEMPLATE_ID = "FL-DIV-DEC-ENG-00711.docx";
     private static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
-    private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
-        DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
-        DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
-        BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build()
-    );
+    private Map<String, Object> caseData;
 
-    private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-        .caseData(CASE_DATA)
-        .caseId(TEST_CASE_ID)
-        .build();
+    private CaseDetails caseDetails;
 
-    private static final CcdCallbackRequest CCD_CALLBACK_REQUEST = CcdCallbackRequest.builder()
-        .caseDetails(CASE_DETAILS)
-        .build();
+    private CcdCallbackRequest ccdCallbackRequest;
 
     @Autowired
     private MockMvc webClient;
+
+    @Before
+    public void setUp() {
+        caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
+
+        caseDetails = CaseDetails.builder()
+                                 .caseData(caseData)
+                                 .caseId(TEST_CASE_ID)
+                                 .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+                                               .caseDetails(caseDetails)
+                                               .build();
+    }
 
     @Test
     public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
@@ -72,7 +84,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -108,11 +120,11 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     @Test
     public void happyPathWithCostsOrder() throws Exception {
         String firstDocumentId = stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
-            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             DECREE_NISI_DOCUMENT_TYPE);
 
         Map<String, Object> caseDataWithFirstDocumentAdded = ImmutableMap.<String, Object>builder()
-            .putAll(CASE_DATA)
+            .putAll(caseData)
             .put(D8DOCUMENTS_GENERATED, singletonList(
                 createCollectionMemberDocumentAsMap(getDocumentStoreTestUrl(firstDocumentId),
                     DECREE_NISI_DOCUMENT_TYPE,
@@ -125,11 +137,11 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .build()),
             COSTS_ORDER_DOCUMENT_TYPE);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -142,7 +154,8 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             JUDGE_COSTS_DECISION, YES_VALUE,
             DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
             DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
-            BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build()
+            BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build(),
+            CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails()
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -186,7 +199,8 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     @Test
     public void happyPathWithoutCostsOrder() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
-            BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build()
+            BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build(),
+            CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails()
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -218,6 +232,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
             DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
             DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE,
+            CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails(),
             BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build()
         );
 
