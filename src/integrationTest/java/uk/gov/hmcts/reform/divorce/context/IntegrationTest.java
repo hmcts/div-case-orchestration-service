@@ -234,4 +234,12 @@ public abstract class IntegrationTest {
         return "Bearer " + token;
     }
 
+    protected void waitForCaseToBeUploadedToES() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }

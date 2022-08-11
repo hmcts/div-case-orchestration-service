@@ -63,7 +63,7 @@ public class CcdClientSupport {
             ).data(data)
             .build();
 
-        return coreCaseDataApi.submitForCitizen(
+        CaseDetails caseDetails = coreCaseDataApi.submitForCitizen(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
@@ -71,6 +71,10 @@ public class CcdClientSupport {
             caseType,
             true,
             caseDataContent);
+
+        waitForCaseToBeUploadedToES();
+
+        return caseDetails;
     }
 
     public CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
@@ -199,6 +203,14 @@ public class CcdClientSupport {
             jurisdictionId,
             caseType,
             caseId);
+    }
+
+    protected void waitForCaseToBeUploadedToES() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }
