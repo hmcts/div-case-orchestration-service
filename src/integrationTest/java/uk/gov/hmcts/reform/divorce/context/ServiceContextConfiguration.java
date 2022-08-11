@@ -45,9 +45,6 @@ import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 
 @Lazy
 @Configuration
