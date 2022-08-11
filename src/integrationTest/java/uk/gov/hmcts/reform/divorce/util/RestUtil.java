@@ -14,9 +14,9 @@ public class RestUtil {
 
     public static Response postToRestService(String url, Map<String, Object> headers, Object requestBody,
                                              Map<String, Object> params) {
-        RestAssured.useRelaxedHTTPSValidation();
         if (requestBody != null) {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .body(requestBody)
@@ -25,6 +25,7 @@ public class RestUtil {
                 .andReturn();
         } else {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .when()
@@ -39,9 +40,9 @@ public class RestUtil {
 
     public static Response putToRestService(String url, Map<String, Object> headers, Object requestBody,
                                              Map<String, Object> params) {
-        RestAssured.useRelaxedHTTPSValidation();
         if (requestBody != null) {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .body(requestBody)
@@ -50,6 +51,7 @@ public class RestUtil {
                 .andReturn();
         } else {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .when()
