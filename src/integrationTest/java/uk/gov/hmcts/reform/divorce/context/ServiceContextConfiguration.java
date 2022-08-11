@@ -206,6 +206,7 @@ public class ServiceContextConfiguration {
         return objectMapper;
     }
 
+    // custom SslSocketFactory required to relax https validation for cos feign client during preview build functional tests
     private SSLSocketFactory getSslSocketFactory() {
         try {
             SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
