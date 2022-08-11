@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.util;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 
