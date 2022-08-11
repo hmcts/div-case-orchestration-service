@@ -26,7 +26,6 @@ public class RestUtil {
             return SerenityRest.given()
                 .relaxedHTTPSValidation()
                 .headers(headers)
-                .relaxedHTTPSValidation()
                 .queryParams(params)
                 .when()
                 .post(url)
