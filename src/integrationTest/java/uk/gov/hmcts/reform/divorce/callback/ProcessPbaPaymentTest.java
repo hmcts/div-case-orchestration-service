@@ -135,6 +135,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
         return RestAssured.given()
             .contentType(ContentType.JSON)
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.AUTHORIZATION, createCaseWorkerUser().getAuthToken())
             .body(requestBody)
             .when()
