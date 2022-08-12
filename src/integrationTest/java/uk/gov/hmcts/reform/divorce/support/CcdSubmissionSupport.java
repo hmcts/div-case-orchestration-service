@@ -221,11 +221,15 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.postToRestService(
+        Response response = RestUtil.postToRestService(
             serverUrl + submitDnContextPath + "/" + caseId,
             headers,
             filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 
     @SuppressWarnings("unchecked")
