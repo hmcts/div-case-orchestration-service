@@ -195,10 +195,14 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.postToRestService(
+        Response response = RestUtil.postToRestService(
             serverUrl + linkRespondentContextPath + "/" + caseId + "/" + pin,
             headers,
             null
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 }

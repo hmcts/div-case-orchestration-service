@@ -89,6 +89,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         final UserDetails respondentUserDetails = createCitizenUser();
 
+        waitForCaseToBeUploadedToES();
+
         Response linkResponse =
             linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
@@ -128,6 +130,9 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
 
         final UserDetails respondentUserDetails = createCitizenUser();
+
+        waitForCaseToBeUploadedToES();
+
         Response linkResponse =
             linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
@@ -165,6 +170,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             petitionerUserDetails);
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
+
+        waitForCaseToBeUploadedToES();
 
         Response linkResponse =
             linkingRespondentSuccessfully(
@@ -204,6 +211,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
+        waitForCaseToBeUploadedToES();
+
         Response linkResponse =
             linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
@@ -216,6 +225,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
 
+        waitForCaseToBeUploadedToES();
+        
         linkResponse =
             linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
@@ -280,7 +291,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
             retryCount++;
         }
-        while (response.getStatusCode() == 200 && retryCount <= 3);
+        while (response.getStatusCode() == 200 && retryCount <= 5);
         return response;
     }
 }
