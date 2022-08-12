@@ -121,11 +121,15 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.putToRestService(
+        Response response = RestUtil.putToRestService(
             serverUrl + amendPetitionContextPath + "/" + caseId,
             headers,
             null,
             new HashMap<>()
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 }
