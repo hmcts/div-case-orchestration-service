@@ -81,7 +81,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             null,
             PAYMENT_REFERENCE_EVENT,
             ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
-
+        waitForCaseToBeUploadedToES();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
                 TEST_AOS_AWAITING_EVENT,
@@ -121,7 +121,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             null,
             PAYMENT_REFERENCE_EVENT,
             ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
-
+        waitForCaseToBeUploadedToES();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
                 TEST_AOS_AWAITING_EVENT,

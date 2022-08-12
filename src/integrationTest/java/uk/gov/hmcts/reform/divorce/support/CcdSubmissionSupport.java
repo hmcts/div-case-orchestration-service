@@ -227,8 +227,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
         );
 
-        waitForCaseToBeUploadedToES();
-
         return response;
     }
 

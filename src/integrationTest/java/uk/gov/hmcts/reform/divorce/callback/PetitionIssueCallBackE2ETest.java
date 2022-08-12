@@ -67,6 +67,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
+        waitForCaseToBeUploadedToES();
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);

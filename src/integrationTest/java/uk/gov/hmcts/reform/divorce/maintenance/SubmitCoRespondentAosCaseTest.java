@@ -160,6 +160,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         log.info("Case " + caseDetails.getId() + " created.");
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
+        waitForCaseToBeUploadedToES();
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
