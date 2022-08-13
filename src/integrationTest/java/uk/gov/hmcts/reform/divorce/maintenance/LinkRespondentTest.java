@@ -77,14 +77,10 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
-        waitForCaseToBeUploadedToES();
-
         updateCase(String.valueOf(caseDetails.getId()),
             null,
             PAYMENT_REFERENCE_EVENT,
             ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
-
-        waitForCaseToBeUploadedToES();
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
@@ -121,22 +117,15 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
-        waitForCaseToBeUploadedToES();
-
         updateCase(String.valueOf(caseDetails.getId()),
             null,
             PAYMENT_REFERENCE_EVENT,
             ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
-        waitForCaseToBeUploadedToES();
-
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
                 TEST_AOS_AWAITING_EVENT,
             petitionerUserDetails);
-
-        waitForCaseToBeUploadedToES();
-        waitForCaseToBeUploadedToES();
 
         updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
 
