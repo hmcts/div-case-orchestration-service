@@ -137,6 +137,7 @@ public class ServiceContextConfiguration {
             .encoder(new JacksonEncoder())
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
+            .client(new Client.Default(getSslSocketFactory(), new NoopHostnameVerifier()))
             .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
     }
 
