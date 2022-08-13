@@ -67,7 +67,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
-        waitForCaseToBeUploadedToES();
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);
@@ -94,6 +93,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE);
+        waitForCaseToBeUploadedToES();
         fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         log.info("case {}", caseDetails.getId().toString());
@@ -105,11 +105,13 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final UserDetails respondentUser = createCitizenUser();
         final String respondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(RESPONDENT_LETTER_HOLDER_ID));
 
+        waitForCaseToBeUploadedToES();
         linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), respondentPin);
 
         // submit respondent response
         submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
             loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
+        waitForCaseToBeUploadedToES();
 
         // link the co-respondent
         final UserDetails coRespondentUser = createCitizenUser();
@@ -121,6 +123,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
         submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
 
+        waitForCaseToBeUploadedToES();
         // reject the case
         final CaseDetails beforeReIssue = fireEvent(caseDetails.getId().toString(), REJECTED_EVENT_ID);
 
@@ -136,6 +139,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         ));
 
         // issue the case
+        waitForCaseToBeUploadedToES();
         final CaseDetails caseAfterReIssue = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_REJECTED_EVENT_ID);
         final Map<String, Object> result = caseAfterReIssue.getData();
 
