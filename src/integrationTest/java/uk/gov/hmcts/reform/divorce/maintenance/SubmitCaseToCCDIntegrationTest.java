@@ -83,10 +83,14 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
         }
 
-        return RestUtil.postToRestService(
-                serverUrl + caseCreationContextPath,
-                headers,
-                body
+        Response response = RestUtil.postToRestService(
+            serverUrl + caseCreationContextPath,
+            headers,
+            body
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 }

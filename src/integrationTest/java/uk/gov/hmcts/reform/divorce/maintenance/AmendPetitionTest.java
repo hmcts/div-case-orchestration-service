@@ -80,6 +80,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
 
         String testIssueDate = "2018-06-08";
         updateCase(caseId, null, PAYMENT_REFERENCE_EVENT, ImmutablePair.of(ISSUE_DATE, testIssueDate));
+        waitForCaseToBeUploadedToES();
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
         updateCaseForCitizen(caseId, null, AOS_RECEIVED_NO_ADMIT_EVENT_ID, citizenUser);
 
@@ -121,11 +122,13 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.putToRestService(
+        Response response = RestUtil.putToRestService(
             serverUrl + amendPetitionContextPath + "/" + caseId,
             headers,
             null,
             new HashMap<>()
         );
+
+        return response;
     }
 }

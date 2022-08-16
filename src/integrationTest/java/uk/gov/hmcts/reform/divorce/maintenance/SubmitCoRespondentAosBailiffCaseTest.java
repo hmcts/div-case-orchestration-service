@@ -69,7 +69,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
         caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
-
+        waitForCaseToBeUploadedToES();
         final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         assertThat(coRespondentSubmissionResponse.getStatusCode(), is(OK.value()));

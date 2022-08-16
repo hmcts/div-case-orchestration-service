@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableList;
+import feign.Client;
 import feign.Feign;
 import feign.Request;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import feign.codec.Decoder;
 import feign.jackson.JacksonEncoder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -38,6 +42,9 @@ import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 @Lazy
 @Configuration
@@ -130,6 +137,7 @@ public class ServiceContextConfiguration {
             .encoder(new JacksonEncoder())
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
+            .client(new Client.Default(getSslSocketFactory(), new NoopHostnameVerifier()))
             .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
     }
 
@@ -174,6 +182,7 @@ public class ServiceContextConfiguration {
             .encoder(new JacksonEncoder())
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
+            .client(new Client.Default(getSslSocketFactory(), new NoopHostnameVerifier()))
             .target(CosApiClient.class, cosApiClientUrl);
     }
 
@@ -196,6 +205,16 @@ public class ServiceContextConfiguration {
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
         return objectMapper;
+    }
+
+    // custom SslSocketFactory required to relax https validation for cos feign client during preview build functional tests
+    private SSLSocketFactory getSslSocketFactory() {
+        try {
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+            return sslContext.getSocketFactory();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

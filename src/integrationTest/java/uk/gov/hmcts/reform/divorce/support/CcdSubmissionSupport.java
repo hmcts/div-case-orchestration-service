@@ -150,11 +150,15 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     public Response submitRespondentAosCase(String userToken, Long caseId, String requestBody) {
         final Map<String, Object> headers = populateHeaders(userToken);
 
-        return RestUtil.postToRestService(
+        Response response = RestUtil.postToRestService(
             serverUrl + submitRespondentAosContextPath + "/" + caseId,
             headers,
             requestBody
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 
     public Response submitCoRespondentAosCase(final UserDetails userDetails, final String requestBody) {
@@ -163,11 +167,15 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         if (StringUtils.isNotEmpty(bodyWithUser)) {
             bodyWithUser = bodyWithUser.replaceAll(CO_RESPONDENT_DEFAULT_EMAIL, userDetails.getEmailAddress());
         }
-        return RestUtil.postToRestService(
+        Response response = RestUtil.postToRestService(
             serverUrl + submitCoRespondentAosContextPath,
             headers,
             bodyWithUser
         );
+
+        waitForCaseToBeUploadedToES();
+
+        return response;
     }
 
     public CaseDetails retrieveCaseForCitizen(final UserDetails user, String caseId) {
@@ -213,11 +221,13 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.postToRestService(
+        Response response = RestUtil.postToRestService(
             serverUrl + submitDnContextPath + "/" + caseId,
             headers,
             filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
         );
+
+        return response;
     }
 
     @SuppressWarnings("unchecked")
