@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
@@ -56,15 +57,19 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+        CaseDetails caseDetails = CompletableFuture.supplyAsync(() -> submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails)).join();
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
+        CompletableFuture.supplyAsync(() -> updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null, TEST_AOS_STARTED_EVENT, userDetails)).join();
 
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
+        Response cosResponse = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+                        loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
+                } catch (Exception e) {
+                    return null;
+                }
+            }).join();
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));

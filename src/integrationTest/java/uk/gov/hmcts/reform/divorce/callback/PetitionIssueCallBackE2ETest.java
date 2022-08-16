@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -62,80 +63,96 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
     @Test
     public void givenServiceCentreCaseSubmitted_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);
-
-        // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
-        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
-
-        assertGeneratedDocumentsExists(issuedCase, true, false);
+        CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCompose(userDetails ->
+                CompletableFuture.supplyAsync(() -> submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, userDetails)))
+            .thenCompose(caseDetails ->
+                CompletableFuture.supplyAsync(() -> updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE)))
+            .thenCompose(updatedCaseDetails ->
+                CompletableFuture.supplyAsync(() -> fireEvent(updatedCaseDetails.getId().toString(), ISSUE_EVENT_ID)))
+            .thenAccept(issuedCase -> assertGeneratedDocumentsExists(issuedCase, true, false))
+            .join();
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenServiceCentreCaseSubmittedWithCoRespondent_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
-
-        // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
-        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
-
-        assertGeneratedDocumentsExists(issuedCase, true, true);
+        CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCompose(userDetails ->
+                CompletableFuture.supplyAsync(() -> submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, userDetails)))
+            .thenCompose(caseDetails ->
+                CompletableFuture.supplyAsync(() -> updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE)))
+            .thenCompose(updatedCaseDetails ->
+                CompletableFuture.supplyAsync(() -> fireEvent(updatedCaseDetails.getId().toString(), ISSUE_EVENT_ID)))
+            .thenAccept(issuedCase -> assertGeneratedDocumentsExists(issuedCase, true, true))
+            .join();
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenAosSubmitted_whenReissuing_thenAosLinkingFieldsAreReset() throws Exception {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
+        CaseDetails caseDetails = CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCompose(userDetails ->
+                CompletableFuture.supplyAsync(() -> submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, userDetails)))
+            .join();
 
-        // make payment
-        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE);
-        fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
+        CaseDetails updatedCaseDetails = CompletableFuture.supplyAsync(() -> updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE))
+            .thenCompose(updatedCase -> CompletableFuture.supplyAsync(() ->  fireEvent(updatedCase.getId().toString(), ISSUE_EVENT_ID)))
+            .thenCompose(issuedCase -> CompletableFuture.supplyAsync(() -> fireEvent(issuedCase.getId().toString(), ISSUE_AOS_EVENT_ID)))
+            .join();
 
-        log.info("case {}", caseDetails.getId().toString());
+        CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCombine(
+                CompletableFuture.supplyAsync(
+                    () -> idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(RESPONDENT_LETTER_HOLDER_ID))),
+                (respondentUser, respondentPin) -> {
+                    linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), respondentPin);
+                        return CompletableFuture.supplyAsync(() -> {
+                            try {
+                                return submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
+                                    loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
+                            } catch (Exception e) {
+                                log.info("Exception thrown");
+                                return null;
+                            }
+                        }).join();
+                })
+            .join();
 
-        // put case in aos awaiting
-        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS_EVENT_ID);
-
-        // link the respondent
-        final UserDetails respondentUser = createCitizenUser();
-        final String respondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(RESPONDENT_LETTER_HOLDER_ID));
-
-        linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), respondentPin);
-
-        // submit respondent response
-        submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
-            loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
-
-        // link the co-respondent
-        final UserDetails coRespondentUser = createCitizenUser();
-        final String coRespondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(CO_RESPONDENT_LETTER_HOLDER_ID));
-
-        linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), coRespondentPin);
-
-        // submit co-respondent response
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
-        submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
+        CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCombine(CompletableFuture.supplyAsync(
+                    () -> idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(CO_RESPONDENT_LETTER_HOLDER_ID))),
+                (coRespondentUser, coRespondentPin) -> {
+                    CompletableFuture.supplyAsync(() -> linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), coRespondentPin)).join();
+                    return CompletableFuture.supplyAsync(() -> { try {
+                        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
+                        return submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
+                    } catch (Exception e) {
+                        return null;
+                    }}).join();
+            })
+            .join();
 
         // reject the case
-        final CaseDetails beforeReIssue = fireEvent(caseDetails.getId().toString(), REJECTED_EVENT_ID);
-
-        assertThat(beforeReIssue.getData(), allOf(
-            hasEntry(equalTo(CO_RESP_LINKED_TO_CASE), notNullValue()),
-            hasEntry(equalTo(CO_RESP_LINKED_TO_CASE_DATE), notNullValue()),
-            hasEntry(equalTo(CO_RESP_EMAIL_ADDRESS), notNullValue()),
-            hasEntry(equalTo(RECEIVED_AOS_FROM_CO_RESP), notNullValue()),
-            hasEntry(equalTo(RECEIVED_AOS_FROM_CO_RESP_DATE), notNullValue()),
-            hasEntry(equalTo(RECEIVED_AOS_FROM_RESP), notNullValue()),
-            hasEntry(equalTo(RECEIVED_AOS_FROM_RESP_DATE), notNullValue()),
-            hasEntry(equalTo(RESPONDENT_EMAIL_ADDRESS), notNullValue())
-        ));
+        CompletableFuture.supplyAsync(() -> fireEvent(updatedCaseDetails.getId().toString(), REJECTED_EVENT_ID))
+            .thenAccept(caseDetailsBeforeReIssue ->
+                assertThat(caseDetailsBeforeReIssue.getData(), allOf(
+                    hasEntry(equalTo(CO_RESP_LINKED_TO_CASE), notNullValue()),
+                    hasEntry(equalTo(CO_RESP_LINKED_TO_CASE_DATE), notNullValue()),
+                    hasEntry(equalTo(CO_RESP_EMAIL_ADDRESS), notNullValue()),
+                    hasEntry(equalTo(RECEIVED_AOS_FROM_CO_RESP), notNullValue()),
+                    hasEntry(equalTo(RECEIVED_AOS_FROM_CO_RESP_DATE), notNullValue()),
+                    hasEntry(equalTo(RECEIVED_AOS_FROM_RESP), notNullValue()),
+                    hasEntry(equalTo(RECEIVED_AOS_FROM_RESP_DATE), notNullValue()),
+                    hasEntry(equalTo(RESPONDENT_EMAIL_ADDRESS), notNullValue())
+                )))
+            .join();
 
         // issue the case
-        final CaseDetails caseAfterReIssue = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_REJECTED_EVENT_ID);
+        CaseDetails caseAfterReIssue = CompletableFuture
+            .supplyAsync(() -> fireEvent(updatedCaseDetails.getId().toString(), ISSUE_FROM_REJECTED_EVENT_ID))
+            .join();
+
         final Map<String, Object> result = caseAfterReIssue.getData();
 
         // assert fields have been nullified

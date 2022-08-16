@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
-import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
-import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
@@ -17,9 +16,11 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 
+@Slf4j
 public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
@@ -44,25 +45,23 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(SERVICE_AUTHORIZATION_HEADER, idamTestSupportUtil.generateUserTokenWithValidMicroService(allowedService));
 
-        UserDetails citizenUser = createCitizenUser();
+        CompletableFuture.supplyAsync(this::createCitizenUser)
+            .thenCompose(citizenUser -> CompletableFuture.supplyAsync(() -> ccdClientSupport.submitCase(
+                ResourceLoader.loadJsonToObject(SUBMIT_PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class), citizenUser)))
+            .thenCompose(caseDetails -> CompletableFuture.supplyAsync(() -> {
+                String caseId = caseDetails.getId().toString();
 
-        String caseId = ccdClientSupport.submitCase(
-            ResourceLoader.loadJsonToObject(SUBMIT_PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
-            citizenUser
-        ).getId().toString();
+                PaymentUpdate paymentUpdate = ResourceLoader.loadJsonToObject(
+                    PAYLOAD_CONTEXT_PATH + "paymentUpdate.json", PaymentUpdate.class);
+                paymentUpdate.setCcdCaseNumber(caseId);
 
-        PaymentUpdate paymentUpdate = ResourceLoader.loadJsonToObject(
-            PAYLOAD_CONTEXT_PATH + "paymentUpdate.json", PaymentUpdate.class
-        );
-
-        paymentUpdate.setCcdCaseNumber(caseId);
-
-        Response response = RestUtil.putToRestService(
-            serverUrl + contextPath,
-            headers,
-            paymentUpdate
-        );
-
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+                return CompletableFuture.supplyAsync(() -> RestUtil.putToRestService(
+                    serverUrl + contextPath,
+                    headers,
+                    paymentUpdate)).join();
+            }))
+            .thenAccept(response ->
+                assertEquals(HttpStatus.OK.value(), response.getStatusCode()))
+            .join();
     }
 }
