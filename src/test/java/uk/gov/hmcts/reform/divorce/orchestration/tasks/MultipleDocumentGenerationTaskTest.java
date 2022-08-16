@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DN_COURT_DETAILS;
@@ -67,16 +69,26 @@ public class MultipleDocumentGenerationTaskTest {
 
     private DocumentGeneratorClient mockDocumentGeneratorClient;
 
+    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+
     private MultipleDocumentGenerationTask classUnderTest;
 
     @Before
     public void setUp() {
         mockDocumentGeneratorClient = mock(DocumentGeneratorClient.class);
-        DocumentGenerationTask documentGenerationTask = new DocumentGenerationTask(mockDocumentGeneratorClient);
+        ctscContactDetailsDataProviderService = mock(CtscContactDetailsDataProviderService.class);
+
+        DocumentGenerationTask documentGenerationTask =
+            new DocumentGenerationTask(mockDocumentGeneratorClient, ctscContactDetailsDataProviderService);
+
+        when(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .thenReturn(getCtscContactDetails());
 
         classUnderTest = new MultipleDocumentGenerationTask(documentGenerationTask);
 
-        payload = singletonMap("testKey1", "testValue1");
+        payload = new HashMap<>();
+        payload.put("testKey1", "testValue1");
+        payload.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(payload)
@@ -146,6 +158,7 @@ public class MultipleDocumentGenerationTaskTest {
         taskContext.setTransientObject(DN_COURT_DETAILS, dnCourtDetails);
         Map<String, Object> caseData = new HashMap<>(payload);
         caseData.putAll(dnCourtDetails);
+        caseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
 
         CaseDetails dnCaseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -203,4 +216,18 @@ public class MultipleDocumentGenerationTaskTest {
         ));
     }
 
+    protected CtscContactDetails getCtscContactDetails() {
+        return CtscContactDetails
+            .builder()
+            .serviceCentre("Courts and Tribunals Service Centre")
+            .careOf("c/o HMCTS Digital Divorce")
+            .centreName("HMCTS Digital Divorce")
+            .poBox("PO Box 12706")
+            .town("Harlow")
+            .postcode("CM20 9QT")
+            .emailAddress("divorcecase@justice.gov.uk")
+            .phoneNumber("0300 303 0642")
+            .openingHours("8am to 6pm, Monday to Friday")
+            .build();
+    }
 }

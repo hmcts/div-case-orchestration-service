@@ -6,11 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -30,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
@@ -47,12 +50,16 @@ public class DocumentGenerationTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
+    @Mock
+    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+
     @InjectMocks
     private DocumentGenerationTask documentGenerationTask;
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() {
         final Map<String, Object> payload = new HashMap<>();
+        payload.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(payload)
@@ -71,6 +78,8 @@ public class DocumentGenerationTaskTest {
             .documentType(TEST_DOCUMENT_TYPE)
             .fileName("filename.pdf")
             .build();
+        when(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .thenReturn(getCtscContactDetails());
         when(documentGeneratorClient.generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN)))
             .thenReturn(documentToReturn);
 
@@ -104,6 +113,9 @@ public class DocumentGenerationTaskTest {
         context.setTransientObject(DOCUMENT_FILENAME, TEST_DOCUMENT_FILE_NAME);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
+        when(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .thenReturn(getCtscContactDetails());
+
         Map<String, Object> dnCourtDetails = ImmutableMap.of(
             COURT_NAME, "TestCourt",
             COURT_CONTACT_JSON_KEY, "TestContact"
@@ -115,6 +127,7 @@ public class DocumentGenerationTaskTest {
             .caseData(new HashMap<>())
             .build();
         dnCourtCaseDetails.getCaseData().putAll(dnCourtDetails);
+        dnCourtCaseDetails.getCaseData().put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
 
         //given
         final GeneratedDocumentInfo documentToReturn = GeneratedDocumentInfo.builder()
@@ -137,6 +150,21 @@ public class DocumentGenerationTaskTest {
 
         verify(documentGeneratorClient).generatePDF(
             argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails)), eq(AUTH_TOKEN));
+    }
+
+    protected CtscContactDetails getCtscContactDetails() {
+        return CtscContactDetails
+            .builder()
+            .serviceCentre("Courts and Tribunals Service Centre")
+            .careOf("c/o HMCTS Digital Divorce")
+            .centreName("HMCTS Digital Divorce")
+            .poBox("PO Box 12706")
+            .town("Harlow")
+            .postcode("CM20 9QT")
+            .emailAddress("divorcecase@justice.gov.uk")
+            .phoneNumber("0300 303 0642")
+            .openingHours("8am to 6pm, Monday to Friday")
+            .build();
     }
 
 }

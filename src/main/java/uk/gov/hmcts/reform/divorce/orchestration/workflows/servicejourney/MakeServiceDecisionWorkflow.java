@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MarkRespondentAsNonDigitalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
@@ -43,6 +44,7 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
     private final ServiceApplicationRemovalTask serviceApplicationRemovalTask;
     private final BailiffApplicationApprovedDataTask bailiffApplicationApprovedDataTask;
+    private final MarkRespondentAsNonDigitalTask markRespondentAsNonDigital;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 
@@ -58,9 +60,11 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
         if (isServiceApplicationGranted(caseData)) {
             if (isServiceApplicationDispensed(caseData)) {
                 log.info("CaseID: {} application type = dispensed. Order to Dispense will be generated.", caseId);
+                tasks.add(markRespondentAsNonDigital);
                 tasks.add(orderToDispenseGenerationTask);
             } else if (isServiceApplicationDeemed(caseData)) {
                 log.info("CaseID: {} application type = deemed. Deemed Service Order will be generated.", caseId);
+                tasks.add(markRespondentAsNonDigital);
                 tasks.add(deemedServiceOrderGenerationTask);
             } else {
                 log.info("CaseID: {} application type != dispensed/deemed. No pdf will be generated.", caseId);
@@ -84,6 +88,7 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
             // for "bailiff service application granted" case the application should not be moved into previous
             // applications collection until the end of bailiff workflow; instead need to copy ServiceApplicationGranted CCD field
             // into BailiffApplicationGranted - the latter field is required to display custom label for service application of "bailiff" type
+            tasks.add(markRespondentAsNonDigital);
             tasks.add(bailiffApplicationApprovedDataTask);
         } else {
             log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);

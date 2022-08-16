@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.C
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CTSC_CONTACT_DETAILS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
@@ -82,6 +83,7 @@ public class RemoveListingTest extends IdamTestSupport {
 
     private Map<String, Object> buildExpectedCaseData() {
         Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CTSC_CONTACT_DETAILS_KEY, getCtscContactDetails());
         caseData.put(COURT_NAME, "Name of Court");
         caseData.put(COURT_HEARING_DATE, "2000-01-01T10:20:55.000");
         caseData.put(BULK_CASE_TITLE_KEY, "Title");

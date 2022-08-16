@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.JudgeService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,6 +87,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
@@ -211,6 +213,32 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorAmendPetitionForRefusal(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
+    public void whenSolicitorAmendPetitionForRefusal_AndResponseContainsValidationErrorKey_thenReturnCcdResponse() throws Exception {
+        List<String> errors = List.of("error");
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(VALIDATION_ERROR_KEY, ValidationResponse.builder()
+            .errors(errors)
+            .validationStatus(ValidationStatus.FAILED.getValue())
+            .build());
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        when(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorAmendPetitionForRefusal(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().errors(errors).build();
 
         assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -403,6 +431,36 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void givenErrors_whenRegenerateMiniPetition_thenReturnErrorResponse() throws WorkflowException {
+        final List<String> expectedError = singletonList("Some error");
+        final Map<String, Object> caseData =
+            Collections.singletonMap(
+                OrchestrationConstants.VALIDATION_ERROR_KEY,
+                ValidationResponse.builder()
+                    .errors(expectedError)
+                    .build());
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(expectedError)
+            .build();
+
+        when(caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.regenerateMiniPetitionCallback(AUTH_TOKEN,
+            ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
     public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = new HashMap<>();
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -537,6 +595,29 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
+
+    @Test
+    public void givenNoErrors_whenRegeneratePetition_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.regenerateMiniPetitionCallback(AUTH_TOKEN,
+            ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
     @Test
     public void testCaseLinkedForHearingCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
@@ -619,7 +700,7 @@ public class CallbackControllerTest {
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         when(caseOrchestrationService.confirmSolDnReviewPetition(caseDetails))
-                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+            .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmSolDnReviewPetition(ccdCallbackRequest);
 

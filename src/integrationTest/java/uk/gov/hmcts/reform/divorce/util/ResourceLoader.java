@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.divorce.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class ResourceLoader {
 
     public static String loadJson(final String filePath) throws Exception {
-        return new String(loadResource(filePath), Charset.forName("utf-8"));
+        return new String(loadResource(filePath), StandardCharsets.UTF_8);
     }
 
     public static <T> T loadJsonToObject(String filePath, Class<T> type) {
@@ -33,7 +34,7 @@ public class ResourceLoader {
 
     public static <T> String objectToJson(T object) {
         try {
-            return new ObjectMapper().writeValueAsString(object);
+            return new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(object);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -41,7 +42,7 @@ public class ResourceLoader {
 
     public static <T> T jsonToObject(byte[] json, Class<T> type) {
         try {
-            return new ObjectMapper().readValue(json, type);
+            return new ObjectMapper().registerModule(new JavaTimeModule()).readValue(json, type);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

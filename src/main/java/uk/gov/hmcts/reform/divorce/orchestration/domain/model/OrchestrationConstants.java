@@ -106,6 +106,7 @@ public class OrchestrationConstants {
     public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
     public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
     public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
+    public static final String CASE_EVENT_ID = "TestCaseEventId";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
@@ -228,6 +229,8 @@ public class OrchestrationConstants {
     public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
     public static final String EMAIL_LABEL = "Email:";
     public static final String PHONE_LABEL = "Phone:";
+
+    public static final String CTSC_CONTACT_DETAILS_KEY = "ctscContactDetails";
 
     // Document Generator
     public static final String DOCUMENT_TYPE_JSON_KEY = "DocumentType";

@@ -248,9 +248,19 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> solicitorAmendPetitionForRefusal(
         @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken))
-            .build());
+        Map<String, Object> response = caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken);
+
+        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .errors(getErrors(response))
+                    .build());
+        }
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
     }
 
     @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -380,26 +390,24 @@ public class CallbackController {
             );
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
-                return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                        .data(ImmutableMap.of())
-                        .warnings(ImmutableList.of())
-                        .errors(singletonList("Failed to bulk print documents"))
-                        .build());
-            }
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(response)
-                    .errors(Collections.emptyList())
-                    .warnings(Collections.emptyList())
-                    .build());
-        } catch (WorkflowException e) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
+                return ResponseEntity.ok(CcdCallbackResponse.builder()
                     .data(ImmutableMap.of())
                     .warnings(ImmutableList.of())
-                    .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                    .errors(singletonList("Failed to bulk print documents"))
                     .build());
+            }
+
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(response)
+                .errors(Collections.emptyList())
+                .warnings(Collections.emptyList())
+                .build());
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(ImmutableMap.of())
+                .warnings(ImmutableList.of())
+                .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                .build());
         }
     }
 
@@ -420,6 +428,35 @@ public class CallbackController {
 
         Map<String, Object> response = caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, authorizationToken,
             generateAosInvitation);
+
+        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .errors(getErrors(response))
+                    .build());
+        }
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
+    }
+
+
+    @PostMapping(path = "/regenerate-mini-petition", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Handles regenerate mini petition event callback from CCD")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> regenerateMiniPetitionCallback(
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        log.info("Received request to /regenerate-mini-petition endpoint");
+
+        Map<String, Object> response = caseOrchestrationService.regenerateMiniPetition(ccdCallbackRequest, authorizationToken);
 
         if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(

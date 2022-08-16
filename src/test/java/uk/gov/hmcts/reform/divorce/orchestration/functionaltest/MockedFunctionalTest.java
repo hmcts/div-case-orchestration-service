@@ -8,6 +8,7 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -99,6 +101,11 @@ public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule prdServer = new WireMockClassRule(buildWireMockConfig(4451));
+
+    @BeforeEach
+    public void resetWireMocksBefore() {
+        WireMock.reset();
+    }
 
     @AfterEach
     public void resetWireMocks() {
@@ -299,6 +306,21 @@ public abstract class MockedFunctionalTest {
                     .caseData(caseData)
                     .build()
             )
+            .build();
+    }
+
+    protected CtscContactDetails getCtscContactDetails() {
+        return CtscContactDetails
+            .builder()
+            .serviceCentre("Courts and Tribunals Service Centre")
+            .careOf("c/o HMCTS Digital Divorce")
+            .centreName("HMCTS Digital Divorce")
+            .poBox("PO Box 12706")
+            .town("Harlow")
+            .postcode("CM20 9QT")
+            .emailAddress("divorcecase@justice.gov.uk")
+            .phoneNumber("0300 303 0642")
+            .openingHours("8am to 6pm, Monday to Friday")
             .build();
     }
 }
