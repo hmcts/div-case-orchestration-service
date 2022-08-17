@@ -43,7 +43,6 @@ withNightlyPipeline(type, product, component) {
     after('DependencyCheckNightly') {
         stage('NightlyFunctional') {
             println("~~~~~~~~~~~~~~~~~  Starting Nightly Only Functional :aat ~~~~~~~~~~")
-            sh("./gradlew --no-daemon --init-script init.gradle nightlyFunctional")
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 
