@@ -435,52 +435,6 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
     }
 }
 
-//task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-//    doFirst(){
-//        printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
-//    }
-//
-//    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-//    forkEvery = 10
-//
-//    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
-//    exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
-//
-//
-//    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
-//    setClasspath(sourceSets.integrationTest.runtimeClasspath)
-//
-//    if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
-//        useJUnit {
-//            excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
-//        }
-//    }
-//    finalizedBy aggregate
-//}
-//
-//task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
-//    doFirst(){
-//        printf("::::::::::  Running  nightlyFunctional ::::::::::")
-//    }
-//
-//    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-//    forkEvery = 10
-//
-//    include "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
-//    include "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
-//
-//
-//    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
-//    setClasspath(sourceSets.integrationTest.runtimeClasspath)
-//
-//    if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
-//        useJUnit {
-//            excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
-//        }
-//    }
-//    finalizedBy aggregate
-//}
-
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
     excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',

@@ -52,26 +52,6 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
-    before('functionalTest:aat') {
-        env.test_environment = 'aat'
-    }
-
-    after('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-    }
-
-    // Kubernetes does not retrieve variables from the output terraform
-    before('functionalTest:preview') {
-        env.FEATURE_RESP_SOLICITOR_DETAILS = 'true'
-        env.test_environment = 'aat'
-    }
-
-    after('functionalTest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-    }
-
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
 
 }
