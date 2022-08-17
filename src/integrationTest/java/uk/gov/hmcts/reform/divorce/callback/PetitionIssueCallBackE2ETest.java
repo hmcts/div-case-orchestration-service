@@ -107,15 +107,14 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
                     () -> idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(RESPONDENT_LETTER_HOLDER_ID))),
                 (respondentUser, respondentPin) -> {
                     linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), respondentPin);
-                        return CompletableFuture.supplyAsync(() -> {
-                            try {
-                                return submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
-                                    loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
-                            } catch (Exception e) {
-                                log.info("Exception thrown");
-                                return null;
-                            }
-                        }).join();
+                    return CompletableFuture.supplyAsync(() -> {
+                        try {
+                            return submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
+                                loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).join();
                 })
             .join();
 
@@ -123,13 +122,14 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
             .thenCombine(CompletableFuture.supplyAsync(
                     () -> idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(CO_RESPONDENT_LETTER_HOLDER_ID))),
                 (coRespondentUser, coRespondentPin) -> {
-                    CompletableFuture.supplyAsync(() -> linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), coRespondentPin)).join();
-                    return CompletableFuture.supplyAsync(() -> { try {
-                        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
-                        return submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
-                    } catch (Exception e) {
-                        return null;
-                    }}).join();
+                    linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), coRespondentPin);
+                    return CompletableFuture.supplyAsync(() -> {
+                        try {
+                            final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
+                            return submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e.getMessage());
+                        }}).join();
             })
             .join();
 

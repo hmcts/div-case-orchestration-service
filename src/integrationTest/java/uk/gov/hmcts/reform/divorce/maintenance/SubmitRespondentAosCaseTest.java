@@ -56,20 +56,10 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        CaseDetails caseDetails = CompletableFuture.supplyAsync(() -> submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails)).join();
+    public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() {
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_JSON);
 
-        CompletableFuture.supplyAsync(() -> updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null, TEST_AOS_STARTED_EVENT, userDetails)).join();
-
-        Response cosResponse = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-                        loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
-                } catch (Exception e) {
-                    return null;
-                }
-            }).join();
+        Response cosResponse = submitAosCase(caseDetails, AOS_DEFEND_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -79,16 +69,10 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+    public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() {
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_NO_CONSENT_JSON));
+        Response cosResponse = submitAosCase(caseDetails, AOS_DEFEND_NO_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -99,15 +83,9 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_CONSENT_JSON));
+        Response cosResponse = submitAosCase(caseDetails, AOS_NO_DEFEND_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -118,15 +96,9 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() {
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            AOS_NO_DEFEND_NO_CONSENT_JSON);
+        Response cosResponse = submitAosCase(caseDetails, AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -137,15 +109,9 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() {
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, userDetails);
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            AOS_NO_DEFEND_NO_CONSENT_JSON);
+        Response cosResponse = submitAosCase(caseDetails, AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -156,15 +122,9 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);
+        final CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            AOS_NO_DEFEND_NO_CONSENT_JSON);
+        Response cosResponse = submitAosCase(caseDetails, AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -173,16 +133,10 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() {
+        CaseDetails caseDetails = submitCaseAsync(SUBMIT_COMPLETE_CASE_JSON);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_AOS_STARTED_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
+        Response cosResponse = submitAosCase(caseDetails, AOS_SOLICITOR_REPRESENTATION_JSON);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
@@ -195,5 +149,19 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         CaseDetails caseDetails = this.retrieveCaseForCitizen(userDetails, caseId);
         assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP), is(YES_VALUE));
         assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE), is(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))));
+    }
+
+    private Response submitAosCase(CaseDetails caseDetails, String jsonTestFixture) {
+        CompletableFuture.supplyAsync(() -> updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_STARTED_EVENT,
+            userDetails)).join();
+
+        return CompletableFuture.supplyAsync(() -> submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+            jsonTestFixture)).join();
+    }
+
+    private CaseDetails submitCaseAsync(String caseDetailsJson) {
+        return CompletableFuture.supplyAsync(() -> submitCase(caseDetailsJson, userDetails)).join();
     }
 }
