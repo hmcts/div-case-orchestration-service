@@ -186,6 +186,11 @@ allprojects {
                 entry 'spring-orm'
                 entry 'spring-tx'
             }
+
+            //CVE-2022-25857
+            dependencySet(group: 'org.yaml', version: '1.31') {
+                entry 'snakeyaml'
+            }
         }
     }
 }
