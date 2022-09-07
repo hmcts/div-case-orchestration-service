@@ -79,7 +79,6 @@ public abstract class IntegrationTest {
 
     @PostConstruct
     public void init() {
-        RestAssured.useRelaxedHTTPSValidation();
         if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
