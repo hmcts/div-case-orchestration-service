@@ -80,21 +80,6 @@ public abstract class IntegrationTest {
     @PostConstruct
     public void init() {
         RestAssured.useRelaxedHTTPSValidation();
-        if (!Strings.isNullOrEmpty(httpProxy)) {
-            try {
-                URL proxy = new URL(httpProxy);
-                if (!InetAddress.getByName(proxy.getHost()).isReachable(2000)) { // check proxy connectivity
-                    throw new IOException("Could not reach proxy in timeout time");
-                }
-                System.setProperty("http.proxyHost", proxy.getHost());
-                System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
-                System.setProperty("https.proxyHost", proxy.getHost());
-                System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
-            } catch (IOException e) {
-                log.error("Error setting up proxy - are you connected to the VPN?", e);
-                throw new RuntimeException("Error setting up proxy", e);
-            }
-        }
     }
 
     @Before
