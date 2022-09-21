@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import net.serenitybdd.rest.SerenityRest;
-import org.assertj.core.util.Strings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,9 +18,6 @@ import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
