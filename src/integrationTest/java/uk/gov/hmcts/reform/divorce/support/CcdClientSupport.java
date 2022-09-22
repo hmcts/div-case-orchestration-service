@@ -63,7 +63,7 @@ public class CcdClientSupport {
             ).data(data)
             .build();
 
-        return coreCaseDataApi.submitForCitizen(
+        CaseDetails caseDetails = coreCaseDataApi.submitForCitizen(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
@@ -71,6 +71,10 @@ public class CcdClientSupport {
             caseType,
             true,
             caseDataContent);
+
+        sleepThread();
+
+        return caseDetails;
     }
 
     public CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
@@ -103,14 +107,18 @@ public class CcdClientSupport {
                 ).data(data)
                 .build();
 
-        return coreCaseDataApi.submitForCaseworker(
-                userDetails.getAuthToken(),
-                serviceToken,
-                userDetails.getId(),
-                jurisdictionId,
-                caseType,
-                true,
-                caseDataContent);
+        CaseDetails caseDetails = coreCaseDataApi.submitForCaseworker(
+            userDetails.getAuthToken(),
+            serviceToken,
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            true,
+            caseDataContent);
+
+        sleepThread();
+
+        return caseDetails;
     }
 
     CaseDetails updateForCitizen(String caseId, Object data, String eventId, UserDetails userDetails) {
@@ -136,7 +144,7 @@ public class CcdClientSupport {
             ).data(data)
             .build();
 
-        return coreCaseDataApi.submitEventForCitizen(
+        CaseDetails caseDetails = coreCaseDataApi.submitEventForCitizen(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
@@ -145,6 +153,10 @@ public class CcdClientSupport {
             caseId,
             true,
             caseDataContent);
+
+        sleepThread();
+
+        return caseDetails;
     }
 
     CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails, boolean isBulkType) {
@@ -170,7 +182,7 @@ public class CcdClientSupport {
             ).data(data)
             .build();
 
-        return coreCaseDataApi.submitEventForCaseWorker(
+        CaseDetails caseDetails = coreCaseDataApi.submitEventForCaseWorker(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
@@ -179,6 +191,10 @@ public class CcdClientSupport {
             caseId,
             true,
             caseDataContent);
+
+        sleepThread();
+
+        return caseDetails;
     }
 
     public CaseDetails retrieveCaseForCitizen(UserDetails userDetails, String caseId) {
@@ -199,6 +215,14 @@ public class CcdClientSupport {
             jurisdictionId,
             caseType,
             caseId);
+    }
+
+    private void sleepThread() {
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }
