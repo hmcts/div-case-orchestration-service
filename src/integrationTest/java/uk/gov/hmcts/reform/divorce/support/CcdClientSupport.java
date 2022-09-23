@@ -219,7 +219,7 @@ public class CcdClientSupport {
 
     private void sleepThread() {
         try {
-            Thread.sleep(7000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
