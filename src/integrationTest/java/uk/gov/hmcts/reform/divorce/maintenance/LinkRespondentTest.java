@@ -137,6 +137,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+        System.out.println(caseResponse);
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
