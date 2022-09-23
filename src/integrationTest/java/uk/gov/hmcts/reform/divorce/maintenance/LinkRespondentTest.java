@@ -268,7 +268,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         }
 
         int retryCount = 0;
-        Response response = null;
+        Response response;
 
         // Add a Retry of 3 times till we get back a Response of 200 otherwise return
         // null back to calling method.
@@ -280,7 +280,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
             retryCount++;
         }
-        while (response.getStatusCode() == 200 && retryCount <= 3);
+        while (response.getStatusCode() != 200 && retryCount <= 10);
         return response;
     }
 }
