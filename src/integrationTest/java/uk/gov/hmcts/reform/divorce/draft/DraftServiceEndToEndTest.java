@@ -5,6 +5,7 @@ import feign.FeignException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,7 @@ public class DraftServiceEndToEndTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Ignore
     public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, draftResource);
 

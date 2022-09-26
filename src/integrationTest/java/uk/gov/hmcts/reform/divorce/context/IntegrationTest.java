@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import net.serenitybdd.rest.SerenityRest;
-import org.assertj.core.util.Strings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,9 +18,6 @@ import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -78,21 +75,7 @@ public abstract class IntegrationTest {
 
     @PostConstruct
     public void init() {
-        if (!Strings.isNullOrEmpty(httpProxy)) {
-            try {
-                URL proxy = new URL(httpProxy);
-                if (!InetAddress.getByName(proxy.getHost()).isReachable(2000)) { // check proxy connectivity
-                    throw new IOException("Could not reach proxy in timeout time");
-                }
-                System.setProperty("http.proxyHost", proxy.getHost());
-                System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
-                System.setProperty("https.proxyHost", proxy.getHost());
-                System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
-            } catch (IOException e) {
-                log.error("Error setting up proxy - are you connected to the VPN?", e);
-                throw new RuntimeException("Error setting up proxy", e);
-            }
-        }
+        RestAssured.useRelaxedHTTPSValidation();
     }
 
     @Before

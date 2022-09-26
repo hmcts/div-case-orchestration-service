@@ -58,7 +58,7 @@ def versions = [
         junit                 : '4.13.1',
         logbackVersion        : '1.2.10',
         lombok                : '1.18.22',
-        postgresql            : '42.2.25',
+        postgresql            : '42.2.26',
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
@@ -166,7 +166,7 @@ allprojects {
                 entry 'log4j-to-slf4j'
             }
             //CVE-2017-18640
-            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
+            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.31'
 
             dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
 
