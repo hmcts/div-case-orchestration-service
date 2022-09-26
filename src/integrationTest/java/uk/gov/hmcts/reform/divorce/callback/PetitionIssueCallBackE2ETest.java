@@ -115,7 +115,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final String coRespondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(CO_RESPONDENT_LETTER_HOLDER_ID));
 
         linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), coRespondentPin);
-
+        sleepThread();
         // submit co-respondent response
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
         submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
