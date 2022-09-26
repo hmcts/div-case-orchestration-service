@@ -5,6 +5,7 @@ import feign.FeignException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -97,18 +99,19 @@ public class DraftServiceEndToEndTest extends CcdSubmissionSupport {
         assertEquals(HttpStatus.NOT_FOUND.value(), expectedException.status());
     }
 
-    //    @Test
-    //    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
-    //        draftsSubmissionSupport.saveDraft(user, draftResource);
-    //
-    //        assertUserDraft(draftsSubmissionSupport.getUserDraft(user), loadJsonToObject(DRAFT_WITH_DIVORCE_FORMAT_FILE, Map.class));
-    //
-    //        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
-    //
-    //        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
-    //        List response = (List) draftFromCMS.get(DATA);
-    //        assertEquals(0, response.size());
-    //    }
+    @Test
+    @Ignore
+    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
+        draftsSubmissionSupport.saveDraft(user, draftResource);
+
+        assertUserDraft(draftsSubmissionSupport.getUserDraft(user), loadJsonToObject(DRAFT_WITH_DIVORCE_FORMAT_FILE, Map.class));
+
+        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
+
+        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
+        List response = (List) draftFromCMS.get(DATA);
+        assertEquals(0, response.size());
+    }
 
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
