@@ -48,7 +48,8 @@ public class AosPackIssuedCallbackTest extends RetrieveCaseSupport {
         caseworkerUser = createCaseWorkerUser();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void shouldReturnAppropriateResponseWhenAosPackIssuedIsCalled() {
         CaseDetails caseDetails = createCaseAndTriggerTestEvent();
 

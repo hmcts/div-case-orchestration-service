@@ -54,7 +54,8 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         userDetails = createCitizenUser();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
         caseDetails = getCaseDetailsAfterSubmitCase();
@@ -66,7 +67,8 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
         caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
@@ -79,7 +81,8 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         checkCaseAfterSuccessfulCoRespondentSubmission(userDetails, String.valueOf(caseDetails.getId()), CO_RESPONDENT_ANSWERS_JSON);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsIssuedToBailiff_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         caseDetails = getCaseDetailsAfterSubmitCase();

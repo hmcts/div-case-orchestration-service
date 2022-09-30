@@ -61,7 +61,8 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String linkRespondentContextPath;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenServiceCentreCaseSubmitted_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
         final UserDetails petitionerUserDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);
@@ -73,7 +74,8 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         assertGeneratedDocumentsExists(issuedCase, true, false);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenServiceCentreCaseSubmittedWithCoRespondent_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
         final UserDetails petitionerUserDetails = createCitizenUser();
@@ -86,7 +88,8 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         assertGeneratedDocumentsExists(issuedCase, true, true);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenAosSubmitted_whenReissuing_thenAosLinkingFieldsAreReset() throws Exception {
         final UserDetails petitionerUserDetails = createCitizenUser();

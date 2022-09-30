@@ -25,7 +25,8 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void whenSubmitDa_thenProceedAsExpected() {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);

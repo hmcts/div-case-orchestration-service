@@ -55,7 +55,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         userDetails = createCitizenUser();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
 
@@ -73,7 +74,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -92,7 +94,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -111,7 +114,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -130,7 +134,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, userDetails);
@@ -149,7 +154,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);
@@ -168,7 +174,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
 

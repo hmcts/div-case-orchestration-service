@@ -114,7 +114,8 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().string(containsString(TEST_ERROR)));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
@@ -138,7 +139,8 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
@@ -162,7 +164,8 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");

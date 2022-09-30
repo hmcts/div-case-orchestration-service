@@ -39,7 +39,8 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
     @Autowired
     protected IdamUtils idamTestSupportUtil;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

@@ -67,7 +67,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         userDetails = createCitizenUser();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -82,7 +83,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
@@ -98,7 +100,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         checkCaseAfterSuccessfulCoRespondentSubmission(userDetails, String.valueOf(caseDetails.getId()), CO_RESPONDENT_ANSWERS_JSON);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -115,7 +118,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_AWAITING));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -132,7 +136,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_STARTED));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -153,7 +158,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_SUBMITTED_AWAITING_ANSWER));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -171,7 +177,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_OVERDUE));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsAosDefended_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -199,7 +206,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
      * I.e the clock on the running COS remote instance could have ticked over to 25th December but the test could still be running on 24th December
      * at 23:59.
      */
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenCoRespondentIsDefending_whenSubmittingCoRespondentAnswers_thenDueDateIsRecalculated() throws Exception {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,

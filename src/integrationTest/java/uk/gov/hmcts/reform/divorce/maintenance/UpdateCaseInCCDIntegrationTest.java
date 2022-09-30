@@ -30,7 +30,8 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     @Value("${case.orchestration.maintenance.update.context-path}")
     private String contextPath;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         UserDetails citizenUser = createCitizenUser();
 

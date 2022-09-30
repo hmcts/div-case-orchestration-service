@@ -30,7 +30,8 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenCaseExists_whenRetrieveCase_thenReturnResponse() throws Exception {
         UserDetails userDetails = createCitizenUser();
 
@@ -57,7 +58,8 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         assertGeneralOrdersWereAdequatelyFiltered(responseJsonData);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenMultipleSubmittedCaseInCcd_whenGetCase_thenReturn300() {
         UserDetails userDetails = createCitizenUser();
 

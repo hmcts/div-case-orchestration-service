@@ -46,7 +46,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String contextPath;
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
@@ -66,7 +67,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenAosAwaitingState_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -103,7 +105,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
@@ -142,7 +145,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
@@ -180,7 +184,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     @Category(ExtendedTest.class)
     public void givenLinkedCase_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();

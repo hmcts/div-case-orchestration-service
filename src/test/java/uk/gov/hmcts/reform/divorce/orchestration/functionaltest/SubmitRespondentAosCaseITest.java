@@ -143,7 +143,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
             .andExpect(content().string(containsString(TEST_ERROR)));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
@@ -165,7 +166,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, true);
 
@@ -235,7 +237,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
@@ -252,7 +255,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = buildSolicitorRepresentationResponse();
         final String caseDataString = convertObjectToJsonString(caseData);

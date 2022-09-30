@@ -96,7 +96,8 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
             .andExpect(content().string(containsString(TEST_ERROR)));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void givenCaseUpdateIsSuccessful_whenSubmitDa_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         final String caseDataString = convertObjectToJsonString(caseData);

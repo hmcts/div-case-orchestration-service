@@ -266,7 +266,8 @@ public class OrchestrationControllerTest {
         verify(caseOrchestrationService).submitCoRespondentAosCase(caseData, AUTH_TOKEN);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void whenSubmitDn_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> dnCase = Collections.emptyMap();
 
@@ -280,7 +281,8 @@ public class OrchestrationControllerTest {
         verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void whenSubmitDa_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> daCase = Collections.emptyMap();
 
