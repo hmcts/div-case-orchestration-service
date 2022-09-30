@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -113,7 +114,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().string(containsString(TEST_ERROR)));
     }
 
-    @Test
+    @Test @Ignore
     public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
@@ -137,7 +138,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test
+    @Test @Ignore
     public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
@@ -161,7 +162,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .andExpect(content().json(caseDataString));
     }
 
-    @Test
+    @Test @Ignore
     public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");

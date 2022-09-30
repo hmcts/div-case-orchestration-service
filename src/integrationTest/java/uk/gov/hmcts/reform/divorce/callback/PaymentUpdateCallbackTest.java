@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
     @Autowired
     protected IdamUtils idamTestSupportUtil;
 
-    @Test
+    @Test @Ignore
     public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

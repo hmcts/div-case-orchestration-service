@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -47,7 +48,7 @@ public class AosPackIssuedCallbackTest extends RetrieveCaseSupport {
         caseworkerUser = createCaseWorkerUser();
     }
 
-    @Test
+    @Test @Ignore
     public void shouldReturnAppropriateResponseWhenAosPackIssuedIsCalled() {
         CaseDetails caseDetails = createCaseAndTriggerTestEvent();
 

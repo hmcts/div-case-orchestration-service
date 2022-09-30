@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     @Value("${case.orchestration.maintenance.update.context-path}")
     private String contextPath;
 
-    @Test
+    @Test @Ignore
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         UserDetails citizenUser = createCitizenUser();
 

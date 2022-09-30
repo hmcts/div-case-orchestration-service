@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,7 +25,7 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @Test
+    @Test @Ignore
     public void whenSubmitDa_thenProceedAsExpected() {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);

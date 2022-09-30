@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
+    @Test @Ignore
     public void givenCaseExists_whenRetrieveCase_thenReturnResponse() throws Exception {
         UserDetails userDetails = createCitizenUser();
 
@@ -56,7 +57,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         assertGeneralOrdersWereAdequatelyFiltered(responseJsonData);
     }
 
-    @Test
+    @Test @Ignore
     public void givenMultipleSubmittedCaseInCcd_whenGetCase_thenReturn300() {
         UserDetails userDetails = createCitizenUser();
 

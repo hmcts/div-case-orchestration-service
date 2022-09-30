@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
@@ -25,7 +26,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         caseDetails = submitCase("submit-complete-case.json", userDetails);
     }
 
-    @Test
+    @Test @Ignore
     public void whenSubmitDn_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);
         updateCaseForCitizen(AOS_SUBMITTED_UNDEFENDED_EVENT_ID);
@@ -38,7 +39,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
     }
 
 
-    @Test
+    @Test @Ignore
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);
         updateCaseForCitizen(AOS_SUBMITTED_UNDEFENDED_EVENT_ID);

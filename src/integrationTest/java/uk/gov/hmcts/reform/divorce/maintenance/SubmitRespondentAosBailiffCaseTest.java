@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
+import io.cucumber.java.bs.I;
 import io.restassured.response.Response;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -52,7 +54,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         userDetails = createCitizenUser();
     }
 
-    @Test
+    @Test @Ignore
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
@@ -66,7 +68,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_SUBMITTED_AWAITING_ANSWER);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -81,7 +83,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_SUBMITTED_AWAITING_ANSWER);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -96,7 +98,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         runCommonAssertions(userDetails, caseDetails, cosResponse, AWAITING_DECREE_NISI);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -111,7 +113,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         runCommonAssertions(userDetails, caseDetails, cosResponse, AWAITING_DECREE_NISI);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, userDetails);
@@ -126,7 +128,7 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_COMPLETED);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
         caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);

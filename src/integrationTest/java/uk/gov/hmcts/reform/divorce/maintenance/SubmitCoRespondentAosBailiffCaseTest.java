@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -53,7 +54,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         userDetails = createCitizenUser();
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
         caseDetails = getCaseDetailsAfterSubmitCase();
@@ -65,7 +66,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
     }
 
-    @Test
+    @Test @Ignore
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
         caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
@@ -78,7 +79,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         checkCaseAfterSuccessfulCoRespondentSubmission(userDetails, String.valueOf(caseDetails.getId()), CO_RESPONDENT_ANSWERS_JSON);
     }
 
-    @Test
+    @Test @Ignore
     @Category(ExtendedTest.class)
     public void givenCaseIsIssuedToBailiff_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         caseDetails = getCaseDetailsAfterSubmitCase();

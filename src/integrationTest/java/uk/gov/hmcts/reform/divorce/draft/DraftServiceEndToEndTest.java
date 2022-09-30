@@ -122,7 +122,7 @@ public class DraftServiceEndToEndTest extends CcdSubmissionSupport {
         assertUserDraft(draftsSubmissionSupport.getUserDraft(user), loadJsonToObject(DRAFT_PART_2_RESPONSE_FILE, Map.class));
     }
 
-    @Test
+    @Test @Ignore
     public void whenUserHasNoSavedDraft_ButHasCcdCase_ShouldRetrieveFilteredAndFormattedCaseData() throws IOException {
         CaseDetails caseDetails = submitCase("submit-complete-case.json", user, Pair.of(D_8_PETITIONER_EMAIL, user.getEmailAddress()));
         String caseId = String.valueOf(caseDetails.getId());
