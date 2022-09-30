@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class RetrieveAosTest extends RetrieveAosCaseSupport {
     private ObjectMapper objectMapper;
 
     @Test
+    @Ignore
     public void givenCaseExists_whenRetrieveAosCase_thenReturnResponse() throws Exception {
         UserDetails userDetails = createCitizenUser();
 
