@@ -82,6 +82,17 @@ If you're making a very small change which does not require ExtendTests to run, 
 If you have already created the PR without `[FAST]` in the title, you can add it but need to make a code change for Jenkins to pick it up
 You can also run non-extended test only locally by setting the `CHANGE_TITLE` env variable to `[FAST]` (i.e simulating a PR with a title starting with `[FAST]`)
 
+### Running additional tests in the Jenkins PR Pipeline
+
+1. Add one or more appropriate labels to your PR in GitHub. Valid labels are:
+
+- ```enable_fortify_scan```
+- ```enable_full_functional_tests```
+
+2. Trigger a build of your PR in Jenkins.  Fortify scans will take place asynchronously as part of the Static Checks/Container Build step.
+- Check the Blue Ocean view for live monitoring, and review the logs once complete for any issues.
+- As Fortify scans execute during the Static Checks/Container Build step, you will need to ensure this is triggered by making a minor change to the PR, such as bumping the chart version.
+
 ## Developing
 
 **Enable schedule**
