@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -264,36 +263,6 @@ public class OrchestrationControllerTest {
         assertThat(response.getBody(), is(caseData));
 
         verify(caseOrchestrationService).submitCoRespondentAosCase(caseData, AUTH_TOKEN);
-    }
-
-    @Test
-    @Ignore
-    public void whenSubmitDn_thenProceedAsExpected() throws WorkflowException {
-        final Map<String, Object> dnCase = Collections.emptyMap();
-
-        when(caseOrchestrationService.submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(dnCase);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDn(AUTH_TOKEN, TEST_CASE_ID, dnCase);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dnCase, response.getBody());
-
-        verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
-    }
-
-    @Test
-    @Ignore
-    public void whenSubmitDa_thenProceedAsExpected() throws WorkflowException {
-        final Map<String, Object> daCase = Collections.emptyMap();
-
-        when(caseOrchestrationService.submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(daCase);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDa(AUTH_TOKEN, TEST_CASE_ID, daCase);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(daCase, response.getBody());
-
-        verify(caseOrchestrationService).submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID);
     }
 
     @Test

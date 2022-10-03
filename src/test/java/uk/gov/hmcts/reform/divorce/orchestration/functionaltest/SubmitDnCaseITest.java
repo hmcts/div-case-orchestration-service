@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -112,85 +111,6 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
-    @Test
-    @Ignore
-    public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
-        final String caseDataString = convertObjectToJsonString(caseData);
-        final Map<String, Object> caseDetails = new HashMap<>();
-
-        caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
-
-        stubSignInForCaseworker();
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    @Test
-    @Ignore
-    public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
-        final String caseDataString = convertObjectToJsonString(caseData);
-        final Map<String, Object> caseDetails = new HashMap<>();
-
-        caseDetails.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
-        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
-
-        stubSignInForCaseworker();
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    @Test
-    @Ignore
-    public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
-        final String caseDataString = convertObjectToJsonString(caseData);
-        final Map<String, Object> caseDetails = new HashMap<>();
-
-        caseDetails.put(CASE_STATE_JSON_KEY, AWAITING_CLARIFICATION);
-        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
-
-        stubSignInForCaseworker();
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubFormatterClarificationEndpoint(OK,
-            ImmutableMap.of(
-                FORMATTER_CASE_DATA_KEY, caseData,
-                FORMATTER_DIVORCE_SESSION_KEY, caseData
-            ), caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {

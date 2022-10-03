@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -144,54 +143,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
     }
 
     @Test
-    @Ignore
-    public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
-        final String caseDataString = convertObjectToJsonString(caseData);
-
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-
-        final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
-
-        stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    @Test
-    @Ignore
-    public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, true);
-
-        final String caseDataString = convertObjectToJsonString(caseData);
-
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-
-        final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
-
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
-
-        stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    @Test
     public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, false);
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -235,42 +186,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(caseDataString));
-    }
-
-    @Test
-    @Ignore
-    public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
-        final String caseDataString = convertObjectToJsonString(caseData);
-
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, AWAITING_DN_AOS, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    @Test
-    @Ignore
-    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = buildSolicitorRepresentationResponse();
-        final String caseDataString = convertObjectToJsonString(caseData);
-
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, AOS_NOMINATE_SOLICITOR, caseData, caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(caseData))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(caseDataString));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
