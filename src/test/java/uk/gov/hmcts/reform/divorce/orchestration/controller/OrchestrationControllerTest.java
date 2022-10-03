@@ -266,34 +266,6 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void whenSubmitDn_thenProceedAsExpected() throws WorkflowException {
-        final Map<String, Object> dnCase = Collections.emptyMap();
-
-        when(caseOrchestrationService.submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(dnCase);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDn(AUTH_TOKEN, TEST_CASE_ID, dnCase);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dnCase, response.getBody());
-
-        verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
-    }
-
-    @Test
-    public void whenSubmitDa_thenProceedAsExpected() throws WorkflowException {
-        final Map<String, Object> daCase = Collections.emptyMap();
-
-        when(caseOrchestrationService.submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(daCase);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDa(AUTH_TOKEN, TEST_CASE_ID, daCase);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(daCase, response.getBody());
-
-        verify(caseOrchestrationService).submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID);
-    }
-
-    @Test
     public void whenAmendPetition_thenReturnDraftAndUpdateState() throws Exception {
         final String caseId = "test.id";
         final Map<String, Object> caseData = Collections.singletonMap(
