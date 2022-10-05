@@ -15,6 +15,7 @@ public class RestUtil {
                                              Map<String, Object> params) {
         if (requestBody != null) {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .body(requestBody)
@@ -23,6 +24,7 @@ public class RestUtil {
                 .andReturn();
         } else {
             return SerenityRest.given()
+                .relaxedHTTPSValidation()
                 .headers(headers)
                 .queryParams(params)
                 .when()
@@ -39,25 +41,28 @@ public class RestUtil {
                                              Map<String, Object> params) {
         if (requestBody != null) {
             return SerenityRest.given()
-                    .headers(headers)
-                    .queryParams(params)
-                    .body(requestBody)
-                    .when()
-                    .put(url)
-                    .andReturn();
+                .relaxedHTTPSValidation()
+                .headers(headers)
+                .queryParams(params)
+                .body(requestBody)
+                .when()
+                .put(url)
+                .andReturn();
         } else {
             return SerenityRest.given()
-                    .headers(headers)
-                    .queryParams(params)
-                    .when()
-                    .put(url)
-                    .andReturn();
+                .relaxedHTTPSValidation()
+                .headers(headers)
+                .queryParams(params)
+                .when()
+                .put(url)
+                .andReturn();
         }
     }
 
     public static Response getFromRestService(String url, Map<String, Object> headers) {
         return SerenityRest.given()
             .headers(headers)
+            .relaxedHTTPSValidation()
             .when()
             .get(url)
             .andReturn();

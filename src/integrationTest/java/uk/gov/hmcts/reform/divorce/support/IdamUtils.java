@@ -41,6 +41,7 @@ public class IdamUtils {
                 .build();
 
         Response pinResponse = SerenityRest.given()
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.AUTHORIZATION, authToken)
             .header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString())
             .body(generatePinRequest)

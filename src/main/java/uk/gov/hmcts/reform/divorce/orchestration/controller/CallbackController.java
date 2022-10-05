@@ -266,12 +266,12 @@ public class CallbackController {
     @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Trigger notification email to Respondent that their AOS has been submitted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Email sent to Respondent for AOS Submitted",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Email sent to Respondent for AOS Submitted", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
         @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/aos-submitted endpoint called for caseId {}", caseId);
         Map<String, Object> returnedCaseData;
@@ -327,8 +327,7 @@ public class CallbackController {
         produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Default application state")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Default state set",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Default state set", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> defaultValue(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
@@ -806,6 +805,7 @@ public class CallbackController {
         @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
         return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
