@@ -156,7 +156,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             requestBody
         );
 
-        waitForCaseToBeUploadedToES();
+        sleepThread();
 
         return response;
     }
@@ -173,7 +173,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             bodyWithUser
         );
 
-        waitForCaseToBeUploadedToES();
+        sleepThread();
 
         return response;
     }
@@ -227,6 +227,8 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
         );
 
+        sleepThread();
+
         return response;
     }
 
@@ -277,5 +279,13 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @SuppressWarnings("unchecked")
     private Map<String, String> getDocumentLinkObject(Map<String, Object> documentGenerated) {
         return (Map<String, String>) documentGenerated.get("DocumentLink");
+    }
+
+    protected void sleepThread() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

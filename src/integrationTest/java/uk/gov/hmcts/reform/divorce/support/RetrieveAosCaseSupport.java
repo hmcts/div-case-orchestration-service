@@ -22,6 +22,9 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
+
+        sleepThread();
+
         return RestUtil.getFromRestService(
             serverUrl + contextPathAos,
             headers

@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,27 +92,6 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
-    @Test
-    public void givenCaseUpdateIsSuccessful_whenSubmitDa_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        final String caseDataString = convertObjectToJsonString(caseData);
-        final Map<String, Object> caseDetails = new HashMap<>();
-
-        caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
-        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
-
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED, Collections.emptyMap(), caseDataString);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
