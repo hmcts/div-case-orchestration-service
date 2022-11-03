@@ -114,6 +114,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isCostClaimGrantedPopulated;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isAosReceivedNoAdCoEvent;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.stateForAosReceivedNoAdConEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.hasJudgeGrantedCostsDecision;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimAdjourned;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimEmpty;
@@ -396,17 +398,18 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CcdCallbackResponse aosReceived(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = aosRespondedWorkflow.run(ccdCallbackRequest, authToken);
-        log.info("Aos received notification completed with CASE ID: {}.",
-            ccdCallbackRequest.getCaseDetails().getCaseId());
+        log.info("Aos received notification completed with CASE ID: {}.", ccdCallbackRequest.getCaseDetails().getCaseId());
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+        if (isAosReceivedNoAdCoEvent(ccdCallbackRequest.getEventId())) {
+            responseBuilder.state(stateForAosReceivedNoAdConEvent(response));
+        }
 
         if (aosRespondedWorkflow.errors().isEmpty()) {
-            return CcdCallbackResponse.builder()
-                .data(response)
-                .build();
+            return responseBuilder.data(response).build();
         } else {
             Map<String, Object> workflowErrors = aosRespondedWorkflow.errors();
-            log.error("Aos received notification with CASE ID: {} failed." + workflowErrors,
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+            log.error("Aos received notification with CASE ID: {} failed." + workflowErrors, ccdCallbackRequest.getCaseDetails().getCaseId());
             return CcdCallbackResponse
                 .builder()
                 .errors(getNotificationErrors(workflowErrors))
@@ -417,8 +420,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(ccdCallbackRequest);
-        log.info("Co-respondent received notification completed with CASE ID: {}.",
-            ccdCallbackRequest.getCaseDetails().getCaseId());
+        log.info("Co-respondent received notification completed with CASE ID: {}.", ccdCallbackRequest.getCaseDetails().getCaseId());
 
         if (sendCoRespondSubmissionNotificationWorkflow.errors().isEmpty()) {
             return CcdCallbackResponse.builder()
@@ -436,8 +438,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException {
+    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         return aosSubmissionWorkflow.run(ccdCallbackRequest, authToken);
     }
 

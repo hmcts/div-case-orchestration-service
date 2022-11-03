@@ -49,6 +49,14 @@
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2022-22971</cve>
     </suppress>
+    
+      <suppress>
+    <notes><![CDATA[
+    file name: postgresql-42.2.24.jar
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
+ </suppress>
 
     <suppress>
       <notes><![CDATA[file name: spring-core-5.2.21.RELEASE.jar]]></notes>

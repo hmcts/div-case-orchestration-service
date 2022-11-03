@@ -16,6 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_RECEIVED_NO_ADCON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -74,5 +80,17 @@ public class ControllerUtils {
         return Optional.ofNullable((String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS))
             .map(i -> i.equalsIgnoreCase(PaymentStatus.SUCCESS.value()))
             .orElse(false);
+    }
+
+    public static String stateForAosReceivedNoAdConEvent(Map<String, Object> caseData) {
+        if (YES_VALUE.equalsIgnoreCase((String) caseData.get(RESP_WILL_DEFEND_DIVORCE))) {
+            return AOS_SUBMITTED_AWAITING_ANSWER;
+        }
+
+        return AWAITING_DECREE_NISI;
+    }
+
+    public static boolean isAosReceivedNoAdCoEvent(String eventId) {
+        return AOS_RECEIVED_NO_ADCON_STARTED.equals(eventId);
     }
 }

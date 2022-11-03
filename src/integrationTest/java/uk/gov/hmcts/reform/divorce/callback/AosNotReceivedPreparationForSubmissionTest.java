@@ -21,6 +21,7 @@ public class AosNotReceivedPreparationForSubmissionTest extends IntegrationTest 
     public void givenCase_whenSubmitAOSNotReceived_thenReturnAOSOverdueCoverLetter() throws Exception {
         RestAssured
             .given()
+            .relaxedHTTPSValidation()
             .header(AUTHORIZATION, createCaseWorkerUser().getAuthToken())
             .contentType(ContentType.JSON)
             .body(ResourceLoader.loadJson(BASE_CASE_RESPONSE))
