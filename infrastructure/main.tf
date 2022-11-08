@@ -23,7 +23,7 @@ module "div-scheduler-db" {
   env                = var.env
   database_name      = "div_scheduler"
   postgresql_user    = "div_scheduler"
-  postgresql_version = "10"
+  postgresql_version = "11"
   sku_name           = "GP_Gen5_2"
   sku_tier           = "GeneralPurpose"
   common_tags        = var.common_tags
@@ -56,7 +56,7 @@ data "azurerm_key_vault" "sendgrid" {
 
 data "azurerm_key_vault_secret" "sendgrid-api-key" {
   provider = azurerm.sendgrid
-  
+
   name         = "hmcts-divorce-api-key"
   key_vault_id = data.azurerm_key_vault.sendgrid.id
 }
