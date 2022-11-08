@@ -47,6 +47,24 @@ resource "azurerm_key_vault_secret" "postgresql-password" {
   key_vault_id = data.azurerm_key_vault.div_key_vault.id
 }
 
+resource "azurerm_key_vault_secret" "POSTGRES-HOST-V11" {
+  name = "${var.component}-POSTGRES-HOST-V11"
+  value = module.div-scheduler-db.host_name
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PORT-V11" {
+  name = "${var.component}-POSTGRES-PORT-V11"
+  value = module.div-scheduler-db.postgresql_listen_port
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-DATABASE-V11" {
+  name = "${var.component}-POSTGRES-DATABASE-V11"
+  value = module.div-scheduler-db.postgresql_database
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
 data "azurerm_key_vault" "sendgrid" {
   provider = azurerm.sendgrid
 

@@ -1,6 +1,10 @@
-variable "product" {}
+variable "product" {
+  default = "div"
+}
 
-variable "component" {}
+variable "component" {
+  default = "case-orchestration-service"
+}
 
 variable "location" {
   default = "UK South"
@@ -26,4 +30,12 @@ variable "common_tags" {
 variable "location_db" {
   type    = "string"
   default = "UK South"
+}
+
+variable postgresql_user_v11 {
+  default = "div_scheduler"
+}
+
+variable database_name_v11 {
+  default = "div_scheduler"
 }
