@@ -28,9 +28,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR_CONTENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_RECEIVED_NO_ADCON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class ControllerUtilsTest {
 
@@ -200,6 +205,24 @@ public class ControllerUtilsTest {
     public void givenEmptyErrorResponse_thenReturnErrorList() {
         assertThat(ControllerUtils.getResponseErrors(TEST_ERROR, null), nullValue());
         assertThat(ControllerUtils.getResponseErrors(null, Collections.emptyMap()), nullValue());
+    }
+
+    @Test
+    public void shouldReturnTrueIfEventIsAosReceivedNoAdCon() {
+        assertThat(ControllerUtils.isAosReceivedNoAdCoEvent(AOS_RECEIVED_NO_ADCON_STARTED), is(true));
+    }
+
+    @Test
+    public void shouldReturnAosSubmittedAwaitingAnswerIfRespWillDefendDivorce() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+
+        assertThat(ControllerUtils.stateForAosReceivedNoAdConEvent(caseData), is(AOS_SUBMITTED_AWAITING_ANSWER));
+    }
+
+    @Test
+    public void shouldReturnAwaitingDecreeNisiByDefault() {
+        assertThat(ControllerUtils.stateForAosReceivedNoAdConEvent(new HashMap<>()), is(AWAITING_DECREE_NISI));
     }
 
     private Map<String, Object> buildTestCaseData(String howToPay, String paymentStatus) {

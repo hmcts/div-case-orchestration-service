@@ -11,9 +11,10 @@ public class CcdEvents {
     public static final String AWAITING_DN_AOS = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS = "aosSubmittedDefended";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
-    public static final String AOS_NOT_RECEIVED_FOR_PROCESS_SERVER = "aosNotReceivedForProcessServer";
     public static final String AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD = "aosNotReceivedForAltMethod";
     public static final String AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION = "aosNotReceivedForBailiff";
+    public static final String AOS_NOT_RECEIVED_FOR_PROCESS_SERVER = "aosNotReceivedForProcessServer";
+    public static final String AOS_RECEIVED_NO_ADCON_STARTED = "aosReceivedNoAdConStarted";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED = "startAosFromServiceAppRejected";
