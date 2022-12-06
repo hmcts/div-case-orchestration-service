@@ -40,7 +40,7 @@ withNightlyPipeline(type, product, component) {
 
     println("### Set test_environment.. ###")
     env.test_environment = 'aat'
-    after('DependencyCheckNightly') {
+    afterSuccess('DependencyCheckNightly') {
         stage('NightlyFunctional') {
             println("~~~~~~~~~~~~~~~~~  Starting Nightly Only Functional :aat ~~~~~~~~~~")
             sh("./gradlew --no-daemon --init-script init.gradle nightlyFunctional")
@@ -49,7 +49,7 @@ withNightlyPipeline(type, product, component) {
 
         }
     }
-    after('fullFunctionalTest') {
+    afterSuccess('fullFunctionalTest') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
@@ -58,7 +58,7 @@ withNightlyPipeline(type, product, component) {
     enableMutationTest()
     enableFortifyScan()
 
-    after('fortify-scan') {
+    afterSuccess('fortify-scan') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
 }

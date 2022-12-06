@@ -31,7 +31,7 @@ def secrets = [
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.COMPONENT, params.ENVIRONMENT, params.SUBSCRIPTION) {
         loadVaultSecrets(secrets)
 
-        after('functionalTest:saat') {
+        afterSuccess('functionalTest:saat') {
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         }
 }
