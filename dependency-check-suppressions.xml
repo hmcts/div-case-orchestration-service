@@ -10,7 +10,6 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
     </suppress>
-
     <suppress>
         <notes>
             <![CDATA[
@@ -21,7 +20,6 @@
         <packageUrl regex="true">^.*$</packageUrl>
         <cve>CVE-2021-22134</cve>
     </suppress>
-
     <suppress until="2030-01-01">
         <notes><![CDATA[
                  https://nvd.nist.gov/vuln/detail/CVE-2021-22096#range-7096083
@@ -29,13 +27,11 @@
                 ]]></notes>
         <cve>CVE-2021-22096</cve>
     </suppress>
-
     <suppress>
         <notes><![CDATA[file name: jackson-databind-2.13.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
     </suppress>
-
     <suppress>
         <notes><![CDATA[file name: spring-core-5.2.20.RELEASE.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
@@ -44,15 +40,11 @@
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2022-22971</cve>
     </suppress>
-
-      <suppress>
-    <notes><![CDATA[
-    file name: postgresql-42.2.24.jar
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
-    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
- </suppress>
-
+    <suppress>
+        <notes><![CDATA[file name: postgresql-42.2.24.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
+    </suppress>
     <suppress>
       <notes><![CDATA[file name: spring-core-5.2.21.RELEASE.jar]]></notes>
       <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
@@ -122,5 +114,58 @@
         <notes><![CDATA[file name: commons-math3-3.6.1.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-math3@.*$</packageUrl>
         <cve>CVE-2021-37533</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: LatencyUtils-2.0.3.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.latencyutils/LatencyUtils@.*$</packageUrl>
+        <cve>CVE-2021-4277</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-buffer-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-buffer@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-codec-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-codec@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-codec-http-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-codec\-http@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-common-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-common@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-handler-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-handler@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-resolver-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-resolver@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: netty-transport-4.1.77.Final.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-transport@.*$</packageUrl>
+        <cve>CVE-2022-41881</cve>
+        <cve>CVE-2022-41915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: snakeyaml-1.33.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cve>CVE-2021-4235</cve>
+        <cve>CVE-2022-3064</cve>
     </suppress>
 </suppressions>
