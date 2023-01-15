@@ -17,7 +17,7 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.44.0'
-    id 'info.solidsoft.pitest' version '1.9.11'
+    id 'info.solidsoft.pitest' version '1.5.2'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
     id 'org.flywaydb.flyway' version '9.11.0'
