@@ -30,7 +30,7 @@ plugins {
 def versions = [
         awaitility            : '4.0.2',
         bcpkixJdk15on         : '1.64',
-        bspCommonLib          : '0.0.48',
+        bspCommonLib          : '0.0.51',
         ccdStoreClient        : '4.7.3',
         commonsBeanUtils      : '1.9.4',
         commonsIo             : '2.7',
