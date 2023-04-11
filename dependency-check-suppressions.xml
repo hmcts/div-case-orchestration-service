@@ -14,6 +14,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2022-22971</cve>
+        <cve>CVE-2023-20861</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: postgresql-42.2.26.jar]]></notes>
@@ -134,11 +135,13 @@
         <notes><![CDATA[file name: tomcat-embed-core-9.0.68.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <cve>CVE-2022-45143</cve>
+        <cve>CVE-2023-28708</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: tomcat-embed-websocket-9.0.68.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2022-45143</cve>
+        <cve>CVE-2023-28708</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: bcprov-jdk15on-1.64.jar]]></notes>
@@ -262,6 +265,11 @@
     <suppress>
         <notes><![CDATA[file name: json-smart-2.3.1.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/net\.minidev/json\-smart@.*$</packageUrl>
+        <cve>CVE-2022-45688</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: accessors-smart-2.3.1.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/net\.minidev/accessors\-smart@.*$</packageUrl>
         <cve>CVE-2022-45688</cve>
     </suppress>
 </suppressions>
