@@ -15,6 +15,7 @@
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2022-22971</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: postgresql-42.2.26.jar]]></notes>
@@ -155,6 +156,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-aspects-5.2.20.RELEASE.jar]]></notes>
@@ -163,6 +165,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-beans-5.2.20.RELEASE.jar]]></notes>
@@ -171,6 +174,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-cloud-netflix-archaius-2.1.2.RELEASE.jar]]></notes>
@@ -189,6 +193,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-context-support-5.2.20.RELEASE.jar]]></notes>
@@ -197,6 +202,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-expression-5.2.20.RELEASE.jar]]></notes>
@@ -205,6 +211,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-jcl-5.2.20.RELEASE.jar]]></notes>
@@ -213,6 +220,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-jdbc-5.2.20.RELEASE.jar]]></notes>
@@ -221,6 +229,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-orm-5.2.20.RELEASE.jar]]></notes>
@@ -229,6 +238,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-security-crypto-5.4.5.jar]]></notes>
@@ -244,6 +254,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: spring-webmvc-5.2.20.RELEASE.jar]]></notes>
@@ -252,6 +263,7 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20863</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: jackson-core-2.13.2.jar]]></notes>
