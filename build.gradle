@@ -171,7 +171,7 @@ allprojects {
             dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
 
             //CVE-2022-22965
-            dependencySet(group: 'org.springframework', version: '5.2.20.RELEASE') {
+            dependencySet(group: 'org.springframework', version: '6.0.4') {
                 entry 'spring-aop'
                 entry 'spring-beans'
                 entry 'spring-context'
