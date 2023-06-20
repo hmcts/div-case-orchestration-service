@@ -314,7 +314,7 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.2.5.Final'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
     implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
