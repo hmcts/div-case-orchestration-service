@@ -8,8 +8,4 @@
     <!--<suppress checks="JavadocMethod" files=".*Test.java"/>-->
     <suppress checks=".*" files=".*Connections.java"/>
     <suppress checks=".*" files=".*SampleWorkflow.java"/>
-    <suppress>
-        <notes><![CDATA[file name: org.springframework.spring-boot-starter-2.3.11.jar]]></notes>
-        <cve>CVE-2023-20883</cve>
-    </suppress>
 </suppressions>
