@@ -295,4 +295,8 @@
         <packageUrl regex="true">^pkg:maven/net\.minidev/accessors\-smart@.*$</packageUrl>
         <cve>CVE-2022-45688</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[file name: org.springframework.spring-boot-starter-2.3.11.jar]]></notes>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
 </suppressions>
