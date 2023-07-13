@@ -163,6 +163,91 @@
         <cve>CVE-2020-15522</cve>
     </suppress>
     <suppress>
+        <notes><![CDATA[file name: spring-boot-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-actuator-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-actuator@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-actuator-autoconfigure-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-actuator\-autoconfigure@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-autoconfigure-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-autoconfigure@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-configuration-processor-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-configuration\-processor@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-devtools-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-devtools@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-actuator-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-actuator@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-aop-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-aop@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-data-jpa-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-data\-jpa@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-jdbc-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-jdbc@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-json-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-json@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-logging-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-logging@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-quartz-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-quartz@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-tomcat-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-tomcat@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-validation-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-validation@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-boot-starter-web-2.3.11.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-web@.*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[file name: spring-aop-5.2.20.RELEASE.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-aop@.*$</packageUrl>
         <cve>CVE-2022-22971</cve>
