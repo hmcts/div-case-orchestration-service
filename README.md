@@ -1,6 +1,6 @@
 # Divorce Case Orchestration Service [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This application orchestrates a workflow based on the requested business requirement.
+This application orchestrates a workflow based on the requested business requirement
 
 ## Setup
 
