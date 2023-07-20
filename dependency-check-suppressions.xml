@@ -307,28 +307,9 @@
         <notes><![CDATA[file name: org.springframework.spring-boot-starter-2.3.11.jar]]></notes>
         <cve>CVE-2023-20883</cve>
     </suppress>
-    <suppress base="true">
-        <notes><![CDATA[
-   FP per issue #5779
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
-        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
-    </suppress>
     <suppress>
         <notes><![CDATA[file name: guava-30.1-jre.jar]]></notes>
         <packageUrl regex="true">pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
         <cve>CVE-2023-2976</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: org.springframework.boot.spring-boot-starter-2.3.11.RELEASE.jar,
-file name: org.springframework.boot.spring-boot-starter-actuator@2.3.11.RELEASE,
-file name: org.springframework.boot.spring-boot-starter-aop@2.3.11.RELEASE,
-file name: org.springframework.boot.spring-boot-starter-json@2.3.11.RELEASE,
-file name: org.springframework.boot.spring-boot-starter-logging@2.3.11.RELEASE,
-file name: org.springframework.boot.spring-boot-starter-tomcat@2.3.11.RELEASE,
-file name: org.springframework.boot.spring-boot-starter-web@2.3.11.RELEASE
-]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter.*@*$</packageUrl>
-        <cve>CVE-2023-20883</cve>
     </suppress>
 </suppressions>
