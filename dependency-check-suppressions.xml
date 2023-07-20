@@ -89,42 +89,49 @@
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-buffer@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-codec-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-codec@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-codec-http-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-codec\-http@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-common-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-common@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-handler-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-handler@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-resolver-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-resolver@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-transport-4.1.77.Final.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/io\.netty/netty\-transport@.*$</packageUrl>
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
+        <cve>CVE-2023-34462</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: snakeyaml-1.33.jar]]></notes>
@@ -306,5 +313,22 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
         <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: guava-30.1-jre.jar]]></notes>
+        <packageUrl regex="true">pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
+        <cve>CVE-2023-2976</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: org.springframework.boot.spring-boot-starter-2.3.11.RELEASE.jar,
+file name: org.springframework.boot.spring-boot-starter-actuator@2.3.11.RELEASE,
+file name: org.springframework.boot.spring-boot-starter-aop@2.3.11.RELEASE,
+file name: org.springframework.boot.spring-boot-starter-json@2.3.11.RELEASE,
+file name: org.springframework.boot.spring-boot-starter-logging@2.3.11.RELEASE,
+file name: org.springframework.boot.spring-boot-starter-tomcat@2.3.11.RELEASE,
+file name: org.springframework.boot.spring-boot-starter-web@2.3.11.RELEASE
+]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter.*@*$</packageUrl>
+        <cve>CVE-2023-20883</cve>
     </suppress>
 </suppressions>
