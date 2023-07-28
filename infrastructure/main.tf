@@ -73,7 +73,6 @@ module "postgresql-14" {
   product       = var.product
   component     = var.component
   business_area = "cft"
-  username = "div_scheduler@div-cos-${var.env}"
 
   pgsql_databases = [
     {
