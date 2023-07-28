@@ -3,10 +3,18 @@ provider "azurerm" {
 }
 
 provider "azurerm" {
+  subscription_id            = local.cft_vnet[var.env].subscription
+  skip_provider_registration = "true"
+  features {}
+  alias = "cft_vnet"
+}
+
+provider "azurerm" {
   alias = "sendgrid"
   features {}
   subscription_id = var.env != "prod" ? local.sendgrid_subscription.nonprod : local.sendgrid_subscription.prod
 }
+
 
 locals {
   vaultName = "${var.product}-${var.env}"
