@@ -73,6 +73,7 @@ module "postgresql-14" {
   product       = var.product
   component     = var.component
   business_area = "cft"
+  username = "div_scheduler@div-cos-${var.env}"
 
   pgsql_databases = [
     {
@@ -120,5 +121,35 @@ data "azurerm_key_vault_secret" "sendgrid-api-key" {
 resource "azurerm_key_vault_secret" "spring-mail-password" {
   name         = "spring-mail-password"
   value        = data.azurerm_key_vault_secret.sendgrid-api-key.value
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V14" {
+  name         = "${var.component}-POSTGRES-USER-V14"
+  value        = module.postgresql-14.username
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V14" {
+  name         = "${var.component}-POSTGRES-PASS-V14"
+  value        = module.postgresql-14.password
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_HOST-V14" {
+  name         = "${var.component}-POSTGRES-HOST-V14"
+  value        = module.postgresql-14.fqdn
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_PORT-V14" {
+  name         = "${var.component}-POSTGRES-PORT-V14"
+  value        = "5432"
+  key_vault_id = data.azurerm_key_vault.div_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V14" {
+  name         = "${var.component}-POSTGRES-DATABASE-V14"
+  value        = "div_scheduler"
   key_vault_id = data.azurerm_key_vault.div_key_vault.id
 }
