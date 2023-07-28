@@ -69,7 +69,7 @@ module "postgresql-14" {
 
   source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   env    = var.env
-  name          = "div-${var.product}-v14-flexible"
+  name          = "${var.product}-${var.component}-v14-flexible"
   product       = var.product
   component     = var.component
   business_area = "cft"
