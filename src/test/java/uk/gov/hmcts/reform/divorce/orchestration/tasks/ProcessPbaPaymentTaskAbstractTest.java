@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
@@ -278,7 +279,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return (invocation) -> {
             if (httpStatus.value() >= 400) {
-                throw new FeignException.FeignClientException(httpStatus.value(), errorMessage, body);
+                throw Mockito.mock(FeignException.class);
             }
             return ResponseEntity.status(httpStatus).body(paymentResponse);
         };

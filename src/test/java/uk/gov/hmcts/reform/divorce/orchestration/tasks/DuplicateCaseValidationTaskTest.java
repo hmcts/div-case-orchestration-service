@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -63,7 +64,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test
     public void givenGetCaseThrowsANotFoundException_whenExecute_thenDoNothing() throws TaskException {
         Response response = Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
+            .request(Mockito.mock(Request.class))
             .headers(Collections.emptyMap())
             .status(HttpStatus.NOT_FOUND.value()).build();
 
@@ -81,7 +82,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test(expected = FeignException.class)
     public void givenGetCaseThrowsAServerException_whenExecute_thenThrowException() throws TaskException {
         Response response = Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
+            .request(Mockito.mock(Request.class))
             .headers(Collections.emptyMap())
             .status(HttpStatus.GATEWAY_TIMEOUT.value()).build();
 

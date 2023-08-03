@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -134,11 +135,13 @@ public class SearchCasesDAOverdueTaskTest {
 
     @Test
     public void execute_exceptionDuringSearch_searchStops() throws TaskException {
+        FeignException.BadRequest badRequest = Mockito.mock(FeignException.BadRequest.class);
+        when(badRequest.getMessage()).thenReturn("Bad test request");
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(AUTH_TOKEN),
             any(),
             any())
-        ).thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
+        ).thenThrow(badRequest);
 
         try {
             classUnderTest.execute(contextBeingModified, Collections.emptyMap());
