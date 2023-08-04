@@ -19,7 +19,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -67,7 +66,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             genericPetSolicitorDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
         expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PETITIONER_SOLICITOR_EMAIL));
@@ -91,10 +90,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(emailService).sendEmail(petSolEmail,
-                EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
-                expectedTemplateVars,
-                coRespRespondedSolicitorEmail,
-                LanguagePreference.ENGLISH);
+            EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
+            expectedTemplateVars,
+            coRespRespondedSolicitorEmail,
+            LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -102,7 +101,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             welshGenericPetSolicitorDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
         expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PETITIONER_SOLICITOR_EMAIL));
@@ -130,8 +129,8 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
         expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
@@ -140,10 +139,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
-                expectedTemplateVars,
-                coRespRespondedButRespHasNot,
-                LanguagePreference.ENGLISH)
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+            expectedTemplateVars,
+            coRespRespondedButRespHasNot,
+            LanguagePreference.ENGLISH)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -162,8 +161,8 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
@@ -173,10 +172,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
-                expectedTemplateVars,
-                coRespRespondedWhenAosUndefended,
-                LanguagePreference.ENGLISH)
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+            expectedTemplateVars,
+            coRespRespondedWhenAosUndefended,
+            LanguagePreference.ENGLISH)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -197,7 +196,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             welshGenericPetDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
@@ -223,8 +222,8 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 

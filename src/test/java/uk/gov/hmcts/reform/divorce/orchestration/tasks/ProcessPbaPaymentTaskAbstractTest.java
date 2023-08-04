@@ -279,7 +279,11 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return (invocation) -> {
             if (httpStatus.value() >= 400) {
-                throw Mockito.mock(FeignException.class);
+                FeignException feignException = Mockito.mock(FeignException.class);
+                when(feignException.status()).thenReturn(httpStatus.value());
+                when(feignException.contentUTF8()).thenReturn(new String(body));
+                when(feignException.getMessage()).thenReturn(errorMessage);
+                throw feignException;
             }
             return ResponseEntity.status(httpStatus).body(paymentResponse);
         };

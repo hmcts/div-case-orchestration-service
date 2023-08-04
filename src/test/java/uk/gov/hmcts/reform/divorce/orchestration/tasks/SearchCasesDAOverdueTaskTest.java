@@ -137,6 +137,7 @@ public class SearchCasesDAOverdueTaskTest {
     public void execute_exceptionDuringSearch_searchStops() throws TaskException {
         FeignException.BadRequest badRequest = Mockito.mock(FeignException.BadRequest.class);
         when(badRequest.getMessage()).thenReturn("Bad test request");
+        when(badRequest.status()).thenReturn(BAD_REQUEST_400);
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(AUTH_TOKEN),
             any(),

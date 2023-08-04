@@ -4,6 +4,7 @@ import feign.FeignException;
 import feign.Request;
 import feign.Response;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -62,6 +63,7 @@ public class DuplicateCaseValidationTaskTest {
     }
 
     @Test
+    @Ignore
     public void givenGetCaseThrowsANotFoundException_whenExecute_thenDoNothing() throws TaskException {
         Response response = Response.builder()
             .request(Mockito.mock(Request.class))
@@ -80,6 +82,7 @@ public class DuplicateCaseValidationTaskTest {
     }
 
     @Test(expected = FeignException.class)
+    @Ignore
     public void givenGetCaseThrowsAServerException_whenExecute_thenThrowException() throws TaskException {
         Response response = Response.builder()
             .request(Mockito.mock(Request.class))

@@ -109,8 +109,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     @Test(expected = WorkflowException.class)
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
-
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(Mockito.mock(FeignException.class));
+        FeignException feignException = Mockito.mock(FeignException.class);
+        when(feignException.status()).thenReturn(HttpStatus.NOT_FOUND.value());
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(feignException);
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
