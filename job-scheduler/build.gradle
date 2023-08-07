@@ -19,22 +19,6 @@ compileTestJava {
     options.compilerArgs << '-Xlint:deprecation'
 }
 
-tasks.withType(JavaExec).configureEach {
-    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-}
-
-tasks.withType(Test) {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = 'full'
-    }
-}
-
-test {
-    useJUnitPlatform()
-    failFast = true
-}
-
 def versions = [
   assertj           : '3.16.1',
   flyway            : '6.5.5',
@@ -42,8 +26,7 @@ def versions = [
   lombok            : '1.18.22',
   postgresql        : '42.2.26',
   logbackVersion    : '1.2.10',
-  reformJavaLogging : '5.0.1',
-  junit             : '4.13.2'
+  reformJavaLogging : '5.0.1'
 ]
 
 dependencies {
