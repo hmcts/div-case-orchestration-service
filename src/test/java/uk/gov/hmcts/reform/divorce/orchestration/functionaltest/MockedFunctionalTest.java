@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSEl
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
     classes = OrchestrationServiceApplication.class)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
