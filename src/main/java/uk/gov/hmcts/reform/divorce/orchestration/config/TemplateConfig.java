@@ -15,7 +15,7 @@ import javax.validation.Valid;
 @Setter
 @Component
 @Validated
-@ConfigurationProperties()
+@ConfigurationProperties(prefix = "uk.gov.notify")
 public class TemplateConfig {
     @Valid
     private Map<String, Map<LanguagePreference,  Map<String, String>>> template;
