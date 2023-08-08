@@ -47,9 +47,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
+    classes = OrchestrationServiceApplication.class)
 @AutoConfigureMockMvc
+@PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
 public class TransformationBulkScanITest {
 
