@@ -7,15 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.mapper.config.DataFormatterConfiguration;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = OrchestrationServiceApplication.class)
+@SpringBootTest
 @TestPropertySource(properties = {
     "DOCUMENT_MANAGEMENT_STORE_URL=http://customUrl"
 })

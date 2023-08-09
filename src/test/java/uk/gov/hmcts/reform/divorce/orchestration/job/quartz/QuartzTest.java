@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,9 +27,7 @@ import static org.quartz.impl.matchers.GroupMatcher.anyGroup;
  * This should give us early warnings in case there's some runtime errors with loading and executing Quartz jobs.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = OrchestrationServiceApplication.class)
+@SpringBootTest
 @TestPropertySource(properties = {
     "scheduler.enabled=true"
 })

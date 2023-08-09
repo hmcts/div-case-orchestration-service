@@ -48,9 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = OrchestrationServiceApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)

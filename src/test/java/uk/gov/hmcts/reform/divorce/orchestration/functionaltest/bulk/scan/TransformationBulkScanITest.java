@@ -47,9 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = OrchestrationServiceApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
