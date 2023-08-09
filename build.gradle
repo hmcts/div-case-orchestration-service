@@ -69,7 +69,7 @@ def versions = [
         serenity              : '2.2.13',
         serenityCucumber      : '1.9.50',
         serviceTokenGenerator : '3.1.1',
-        springfoxSwagger      : '3.0.0',
+        springDoc             : '1.6.9',
         springSecurityCrypto  : '6.1.2',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.7.14',
@@ -314,8 +314,7 @@ dependencies {
     implementation group: 'com.sun.mail', name: 'javax.mail', version: versions.javaMail
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
-    implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
     implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.0'
     implementation group: 'jakarta.mail', name: 'jakarta.mail-api', version: versions.jakartaMail
     implementation group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: versions.jakartaWsRs
