@@ -58,9 +58,6 @@ spring:
   flyway:
     enabled: ${scheduler.enabled}
     schemas: 'public'
-  mvc:
-    pathmatch:
-      matching-strategy: ANT_PATH_MATCHER
 
 feign:
   client:

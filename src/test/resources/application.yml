@@ -45,9 +45,6 @@ spring:
   flyway:
     enabled: false
     schemas: 'public'
-  mvc:
-    pathmatch:
-      matching-strategy: ANT_PATH_MATCHER
 
 feign:
   client:
