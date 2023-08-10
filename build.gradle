@@ -433,6 +433,8 @@ dependencies {
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     integrationTestImplementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jacksonDatatypeJsr
+    integrationTestImplementation group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
+    integrationTestImplementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     integrationTestImplementation group: 'junit', name: 'junit', version: versions.junit
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: versions.serenityCucumber
