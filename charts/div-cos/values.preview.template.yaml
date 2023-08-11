@@ -25,21 +25,6 @@ java:
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
 
-  keyVaults:
-    "div":
-      resourceGroup: div
-      secrets:
-        - ccd-submission-s2s-auth-secret
-        - div-doc-s2s-auth-secret
-        - idam-secret
-        - idam-xui-secret
-        - frontend-secret
-        - idam-citizen-username
-        - idam-citizen-password
-        - idam-caseworker-username
-        - idam-caseworker-password
-        - uk-gov-notify-api-key
-        - spring-mail-password
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
