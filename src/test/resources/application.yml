@@ -183,8 +183,8 @@ uk:
   gov:
     notify:
       api:
-        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
-        baseUrl: https://api.notifications.service.gov.uk
+        key: dummy
+        baseUrl: dummy
       email:
         templateVars:
           SAVE_DRAFT:
