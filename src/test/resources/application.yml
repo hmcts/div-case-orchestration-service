@@ -183,7 +183,7 @@ uk:
   gov:
     notify:
       api:
-        key: apiKeyStoredInVault
+        key: dummy
         baseUrl: dummy
       email:
         templateVars:
