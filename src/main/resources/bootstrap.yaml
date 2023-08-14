@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    propertiesvolume:
+      enabled: true
+      prefixed: true
+      paths: /mnt/secrets/div
+      aliases:
+        div.ccd-submission-s2s-auth-secret: AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY
+        div.div-doc-s2s-auth-secret: AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY
+        div.frontend-secret: SERVICE_AUTH_SECRET
+        div.idam-secret: IDAM_CLIENT_SECRET
+        div.idam-xui-secret: IDAM_XUI_CLIENT_SECRET
+        div.idam-citizen-username: IDAM_CITIZEN_USERNAME
+        div.idam-citizen-password: IDAM_CITIZEN_PASSWORD
+        div.idam-caseworker-username: IDAM_CASEWORKER_USERNAME
+        div.idam-caseworker-password: IDAM_CASEWORKER_PASSWORD
+        div.idam-caseworker-superuser-username: IDAM_CASEWORKER_SUPERUSER_USERNAME
+        div.idam-caseworker-superuser-password: IDAM_CASEWORKER_SUPERUSER_PASSWORD
+        div.cos-postgresql-password: DIV_SCHEDULER_DB_PASSWORD
+        div.uk-gov-notify-api-key: UK_GOV_NOTIFY_API_KEY
+        div.AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        div.spring-mail-password: spring.mail.password
