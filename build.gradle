@@ -48,7 +48,7 @@ def versions = [
         guava                 : '32.1.2-jre',
         hibernateTypes        : '2.4.4',
         hmctsNotify           : '3.14.1-RELEASE',
-        idamClient            : '1.3.0',
+        idamClient            : '2.1.1',
         jackson               : '2.13.2',
         jacksonDatabind       : '2.13.2',
         jacksonDatatypeJsr    : '2.13.2',
