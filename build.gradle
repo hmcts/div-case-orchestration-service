@@ -33,7 +33,6 @@ plugins {
 def versions = [
         awaitility            : '4.0.2',
         bcpkixJdk15on         : '1.64',
-        bspCommonLib          : '0.0.48',
         ccdStoreClient        : '4.7.3',
         commonsBeanUtils      : '1.9.4',
         commonsIo             : '2.7',
@@ -77,6 +76,9 @@ def versions = [
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
+        bspCommonLib         : '0.0.51',
+        ccdClient            : '4.9.2',
+        reformLogging        : '6.0.1'
 ]
 
 allprojects {
@@ -353,10 +355,11 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui") {
         exclude group: "org.yaml", module: "snakeyaml"
     }
-    implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient, {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
+    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
+    implementation group: 'com.github.hmcts', name: 'ccd-client', version: versions.ccdClient
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
+    implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging, {
         exclude group: 'ch.qos.logback', module: 'logback-core'
