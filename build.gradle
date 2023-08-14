@@ -343,6 +343,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: versions.retry
     implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
     implementation "com.github.hmcts:div-common-lib:1.2.20", {
