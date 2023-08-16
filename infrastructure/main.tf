@@ -17,15 +17,17 @@ locals {
 }
 
 module "div-scheduler-db" {
-  source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = "${var.product}-${var.component}-postgres-v11-db"
-  location        = var.location_db
-  env             = var.env
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.product}-${var.component}"
+  location           = var.location_db
+  env                = var.env
   database_name      = "div_scheduler"
   postgresql_user    = "div_scheduler"
-  postgresql_version = "11"
-  common_tags     = var.common_tags
-  subscription    = var.subscription
+  postgresql_version = "10"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = var.common_tags
+  subscription       = var.subscription
 }
 
 data "azurerm_key_vault" "div_key_vault" {
