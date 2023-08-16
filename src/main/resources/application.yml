@@ -3,6 +3,8 @@ info:
     name: ${spring.application.name}
 
 spring:
+  config:
+    import: optional:configtree:/mnt/secrets/div/
   datasource:
     scheduler:
       name: scheduler
