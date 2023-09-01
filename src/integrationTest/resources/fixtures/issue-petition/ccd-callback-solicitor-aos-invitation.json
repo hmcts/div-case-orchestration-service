@@ -9,6 +9,7 @@
     "last_modified": "2018-02-05T14:57:11.346",
     "security_classification": "PUBLIC",
     "case_data": {
+      "dueDate": "2019-02-10",
       "D8DivorceCostsClaim": "YES",
       "D8DivorceClaimFrom": [
         "correspondent"
