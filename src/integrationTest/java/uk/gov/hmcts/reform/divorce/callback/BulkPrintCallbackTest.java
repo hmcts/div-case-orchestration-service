@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +62,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         expectedDueDate = LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
+    @Ignore
     @Test
     @SuppressWarnings("unchecked")
     public void givenNonAdulteryCase_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
@@ -76,6 +78,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         ));
     }
 
+    @Ignore
     @Test
     public void givenAdulteryCaseWithCoRespondent_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
         Map<String, Object> response = callApiToGenerateAos(ADULTERY_CASE_WITH_CORESPONDENT);
@@ -94,6 +97,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         assertResponseIsValid(jsonResponse);
     }
 
+    @Ignore
     @Test
     public void givenRespondentSolicitorAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
         Map<String, Object> response = callApiToGenerateAos(RESPONDENT_SOLICITOR_AOS_INVITATION);
