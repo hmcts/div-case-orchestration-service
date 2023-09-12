@@ -26,8 +26,7 @@ java:
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
 
   keyVaults:
-    "div":
-      resourceGroup: div
+    div:
       secrets:
         - name: ccd-submission-s2s-auth-secret
           alias: AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY
