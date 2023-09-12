@@ -58,7 +58,7 @@ spring:
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
-    enabled: false
+    enabled: ${scheduler.enabled}
     schemas: 'div_scheduler'
 
 feign:
@@ -635,7 +635,7 @@ management:
 
 logging:
   level:
-    org.springframework.web: ERROR
+    org.springframework.web: DEBUG
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
