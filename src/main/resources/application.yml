@@ -59,7 +59,7 @@ spring:
     auto-startup: ${scheduler.enabled}
   flyway:
     enabled: ${scheduler.enabled}
-    schemas: 'public'
+    schemas: 'div_scheduler'
 
 feign:
   client:
