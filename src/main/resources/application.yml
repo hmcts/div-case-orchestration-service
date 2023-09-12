@@ -58,7 +58,7 @@ spring:
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
-    enabled: ${scheduler.enabled}
+    enabled: false
     schemas: 'div_scheduler'
 
 feign:
