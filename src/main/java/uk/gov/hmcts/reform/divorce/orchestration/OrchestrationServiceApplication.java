@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -11,6 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.config.CourtDetailsConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
 import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
+
+import javax.annotation.PostConstruct;
 
 @EnableFeignClients(basePackages = {
     "uk.gov.hmcts.reform.authorisation",
@@ -33,8 +37,22 @@ import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
     }
 )
 @EnableConfigurationProperties({CourtDetailsConfig.class, CourtDistributionConfig.class, EmailTemplatesConfig.class})
+@Slf4j
 public class OrchestrationServiceApplication {
+
+    @Value("${spring.datasource.scheduler.username}")
+    private String schedulerUsername;
+
+    @Value("${spring.datasource.scheduler.password}")
+    private String schedulerPassword;
+
     public static void main(String[] args) {
         SpringApplication.run(OrchestrationServiceApplication.class, args);
+    }
+
+    @PostConstruct
+    private void init() {
+        log.info("Scheduler userName----------------------------- {}",schedulerUsername);
+        log.info("Scheduler password----------------------------- {}",schedulerPassword);
     }
 }
