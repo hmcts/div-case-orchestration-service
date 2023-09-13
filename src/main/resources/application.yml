@@ -3,8 +3,6 @@ info:
     name: ${spring.application.name}
 
 spring:
-  config:
-    import: optional:configtree:/mnt/secrets/div/
   datasource:
     scheduler:
       name: scheduler
@@ -23,6 +21,8 @@ spring:
     connectionTimeout: 30000
   application:
     name: div-cos
+  config:
+    import: optional:configtree:/mnt/secrets/div/
   resources:
     static-locations:
   mail:
