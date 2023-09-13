@@ -47,6 +47,13 @@ spring:
         quartz:
           scheduler:
             instanceId: AUTO
+          dataSource:
+            scheduler:
+              driver: org.postgresql.Driver
+              URL: ${spring.datasource.scheduler.url}
+              user: ${spring.datasource.scheduler.username}
+              password: ${spring.datasource.scheduler.password}
+              maxConnections: 20
           jobStore:
             isClustered: true
             class: org.quartz.impl.jdbcjobstore.JobStoreTX
@@ -55,6 +62,19 @@ spring:
           threadPool:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 8
+          plugin:
+            triggHistory:
+              class: org.quartz.plugins.history.LoggingTriggerHistoryPlugin
+              triggerFiredMessage: Trigger [{1}.{0}] fired job [{6}.{5}] at {4, date, HH:mm:ss MM/dd/yyyy}
+              triggerCompleteMessage: Trigger [{1}.{0}] completed firing job [{6}.{5}] at {4, date, HH:mm:ss MM/dd/yyyy}
+              triggerMisfiredMessage: Trigger [{1}.{0}] misfired job [{6}.{5}]. Should have fired at {3, date, dd-MM-yyyy HH:mm:ss.SSS}
+            jobHistory:
+              class: org.quartz.plugins.history.LoggingJobHistoryPlugin
+              jobToBeFiredMessage: Job [{1}.{0}] to be fired by trigger [{4}.{3}], re-fire {7}
+              jobSuccessMessage: Job [{1}.{0}] execution complete and reports {8}
+              jobFailedMessage: Job [{1}.{0}] execution failed with exception {8}
+              jobWasVetoedMessage: Job [{1}.{0}] was vetoed. It was to be fired by trigger [{4}.{3}] at {2, date, dd-MM-yyyy HH:mm:ss.SSS}
+
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
