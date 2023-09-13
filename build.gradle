@@ -308,6 +308,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
+    implementation group: 'com.mchange', name: 'c3p0', version: '0.9.5.5'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster

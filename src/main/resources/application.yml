@@ -52,6 +52,7 @@ spring:
               URL: ${spring.datasource.scheduler.url}
               user: ${spring.datasource.scheduler.username}
               password: ${spring.datasource.scheduler.password}
+              maxConnections: 20
           jobStore:
             isClustered: true
             class: org.quartz.impl.jdbcjobstore.JobStoreTX
