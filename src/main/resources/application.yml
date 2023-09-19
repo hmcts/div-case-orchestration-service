@@ -182,6 +182,7 @@ feature-toggle:
     bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:false}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:false}
     use_user_token: ${FEATURE_USE_USER_TOKEN:false}
+    send_letter_recipient_check: ${FEATURE_SEND_LETTER_RECIPIENT_CHECK:true}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}

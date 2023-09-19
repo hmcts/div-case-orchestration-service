@@ -36,21 +36,24 @@ public class BulkPrintServiceTest {
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
-    
+
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     private BulkPrintService classUnderTest;
-    
+
     @Test
     public void sendLetterApiIsNeverCalledWhenBulkPrintToggledOff() {
-        classUnderTest = new BulkPrintService(false, authTokenGenerator, sendLetterApi);
+        classUnderTest = new BulkPrintService(false, authTokenGenerator, sendLetterApi, featureToggleService);
         classUnderTest.send("foo", "bar", emptyList());
 
         verifyNoInteractions(sendLetterApi);
         verifyNoInteractions(authTokenGenerator);
     }
-    
+
     @Test
     public void happyPath() {
-        classUnderTest = new BulkPrintService(true, authTokenGenerator, sendLetterApi);
+        classUnderTest = new BulkPrintService(true, authTokenGenerator, sendLetterApi, featureToggleService);
 
         final String authToken = "auth-token";
         when(authTokenGenerator.generate()).thenReturn(authToken);
