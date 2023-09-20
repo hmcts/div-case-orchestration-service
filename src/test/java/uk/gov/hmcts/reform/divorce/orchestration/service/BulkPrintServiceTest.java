@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -17,7 +19,9 @@ import static java.util.Base64.getEncoder;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToObject;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,15 +82,17 @@ public class BulkPrintServiceTest {
         final ArgumentCaptor<LetterWithPdfsRequest> letterRequestCaptor = ArgumentCaptor.forClass(LetterWithPdfsRequest.class);
         verify(sendLetterApi, times(1)).sendLetter(eq(authToken), letterRequestCaptor.capture());
 
-        final ImmutableMap<String, Object> expectedAdditionalParameters = ImmutableMap.of(
-            "letterType", letterType,
-            "caseIdentifier", caseId,
-            "caseReferenceNumber", caseId);
+        final ImmutableSet<String> expectedAdditionalParameters = ImmutableSet.of(
+            "letterType",
+            "caseIdentifier",
+            "caseReferenceNumber",
+            "recipients");
 
         final String xeroxType = "DIV001";
         assertThat(letterRequestCaptor.getValue(), allOf(
             hasProperty("type", equalTo(xeroxType)),
-            hasProperty("documents", equalTo(asList(stringifiedDocument1, stringifiedDocument2))),
-            hasProperty("additionalData", equalTo(expectedAdditionalParameters))));
+            hasProperty("documents", equalTo(asList(stringifiedDocument1, stringifiedDocument2)))));
+
+        assertThat("Should match", letterRequestCaptor.getValue().getAdditionalData().keySet().equals(expectedAdditionalParameters));
     }
 }
