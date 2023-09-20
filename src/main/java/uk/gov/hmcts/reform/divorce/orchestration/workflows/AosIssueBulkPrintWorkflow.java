@@ -75,7 +75,7 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
             tasks.add(updateNoticeOfProceedingsDetailsTask);
         }
 
-        return this.execute((Task[]) tasks.toArray(),
+        return this.execute(tasks.toArray(new Task[0]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
