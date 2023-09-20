@@ -58,7 +58,7 @@ public class BulkPrintService {
                 .map(GeneratedDocumentInfo::getBytes)
                 .map(getEncoder()::encodeToString)
                 .collect(toList());
-
+            log.info("Bulk print documents--------------------------{}", documents.stream().findFirst().get());
             send(authTokenGenerator.generate(), caseId, letterType, stringifiedDocuments);
 
         } else {
