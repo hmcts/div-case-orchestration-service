@@ -64,7 +64,7 @@ def versions = [
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
-        sendLetterClient      : '2.2.0',
+        sendLetterClient      : '3.0.23',
         serenity              : '2.6.0',
         serenityCucumber      : '1.9.51',
         serviceTokenGenerator : '3.1.1',
@@ -376,7 +376,7 @@ dependencies {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
     }
-    implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient, {
+    implementation group: 'com.github.hmcts', name: 'send-letter-client', version: versions.sendLetterClient, {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
     }
