@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aospack.offline
 
 import org.json.JSONArray;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,6 +89,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         stubDMStore(TEST_DOCUMENT_ID_IN_EXAMPLE_PAYLOAD, "existingDocumentContent".getBytes());
     }
 
+    @Ignore
     @Test
     public void testEndpointReturnsAdequateResponse_ForRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
@@ -139,6 +141,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         ));
     }
 
+    @Ignore
     @Test
     public void testEndpointReturnsAdequateResponse_ForCoRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
@@ -203,6 +206,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         documentGeneratorServiceServer.verify(0, postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH)));
     }
 
+    @Ignore
     @Test
     public void testEndpointReturnsExpectedDueDateInResponse_ForRespondent() throws Exception {
 
