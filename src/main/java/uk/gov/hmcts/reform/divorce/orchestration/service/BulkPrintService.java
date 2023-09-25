@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -25,21 +26,27 @@ public class BulkPrintService {
     private static final String LETTER_TYPE_KEY = "letterType";
     private static final String CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
     private static final String CASE_IDENTIFIER_KEY = "caseIdentifier";
-    
+    private static final String RECIPIENTS_PROD = "party";
+    private static final String RECIPIENTS = "recipients";
+
     private final AuthTokenGenerator authTokenGenerator;
 
     private final SendLetterApi sendLetterApi;
-    
+
+    private final FeatureToggleService featureToggleService;
+
     private final boolean bulkPrintEnabled;
 
     @Autowired
-    public BulkPrintService(@Value("${feature-toggle.toggle.bulk-print}") final boolean bulkPrintEnabled, 
+    public BulkPrintService(@Value("${feature-toggle.toggle.bulk-print}") final boolean bulkPrintEnabled,
                             final AuthTokenGenerator authTokenGenerator,
-                            final SendLetterApi sendLetterApi
+                            final SendLetterApi sendLetterApi,
+                            final FeatureToggleService featureToggleService
     ) {
         this.bulkPrintEnabled = bulkPrintEnabled;
         this.authTokenGenerator = authTokenGenerator;
         this.sendLetterApi = sendLetterApi;
+        this.featureToggleService = featureToggleService;
     }
 
     /**
@@ -51,7 +58,7 @@ public class BulkPrintService {
                 .map(GeneratedDocumentInfo::getBytes)
                 .map(getEncoder()::encodeToString)
                 .collect(toList());
-
+            log.info("Bulk print documents--------------------------{}", documents.stream().findFirst().get());
             send(authTokenGenerator.generate(), caseId, letterType, stringifiedDocuments);
 
         } else {
@@ -73,6 +80,14 @@ public class BulkPrintService {
         additionalData.put(LETTER_TYPE_KEY, letterType);
         additionalData.put(CASE_IDENTIFIER_KEY, caseId);
         additionalData.put(CASE_REFERENCE_NUMBER_KEY, caseId);
+        log.info("isSendLetterDuplicateCheckEnabled {} for caseId {}",
+            featureToggleService.isFeatureEnabled(Features.SEND_LETTER_RECIPIENT_CHECK), caseId);
+        if (featureToggleService.isFeatureEnabled(Features.SEND_LETTER_RECIPIENT_CHECK)) {
+            additionalData.put(RECIPIENTS_PROD, new String[]{RECIPIENTS});
+        } else {
+            additionalData.put(RECIPIENTS, new String[]{"%s:%d".formatted(RECIPIENTS, System.nanoTime())});
+        }
+        log.info("additional data {}", additionalData);
         return additionalData;
     }
 }

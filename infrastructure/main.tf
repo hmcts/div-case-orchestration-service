@@ -56,7 +56,7 @@ data "azurerm_key_vault" "sendgrid" {
 
 data "azurerm_key_vault_secret" "sendgrid-api-key" {
   provider = azurerm.sendgrid
-  
+
   name         = "hmcts-divorce-api-key"
   key_vault_id = data.azurerm_key_vault.sendgrid.id
 }

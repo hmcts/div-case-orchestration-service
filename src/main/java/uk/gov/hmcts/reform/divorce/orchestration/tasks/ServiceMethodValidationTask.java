@@ -23,6 +23,7 @@ public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
+        log.info("In ServiceMethodValidationTask");
         String solServiceMethod = getOptionalPropertyValueAsString(payload, SOL_SERVICE_METHOD_CCD_FIELD, null);
         if (!Strings.isNullOrEmpty(solServiceMethod) && PERSONAL_SERVICE_VALUE.equals(solServiceMethod)) {
             String currentCaseState = context.getTransientObject(CASE_STATE_JSON_KEY);

@@ -5,7 +5,6 @@ info:
 spring:
   datasource:
     scheduler:
-      name: scheduler
       driver-class-name: org.postgresql.Driver
       url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
       username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler_user}
@@ -21,6 +20,8 @@ spring:
     connectionTimeout: 30000
   application:
     name: div-cos
+  config:
+    import: optional:configtree:/mnt/secrets/div/
   resources:
     static-locations:
   mail:
@@ -45,6 +46,13 @@ spring:
         quartz:
           scheduler:
             instanceId: AUTO
+          dataSource:
+            scheduler:
+              driver: org.postgresql.Driver
+              URL: ${spring.datasource.scheduler.url}
+              user: ${spring.datasource.scheduler.username}
+              password: ${spring.datasource.scheduler.password}
+              maxConnections: 20
           jobStore:
             isClustered: true
             class: org.quartz.impl.jdbcjobstore.JobStoreTX
@@ -53,6 +61,19 @@ spring:
           threadPool:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 8
+          plugin:
+            triggHistory:
+              class: org.quartz.plugins.history.LoggingTriggerHistoryPlugin
+              triggerFiredMessage: Trigger [{1}.{0}] fired job [{6}.{5}] at {4, date, HH:mm:ss MM/dd/yyyy}
+              triggerCompleteMessage: Trigger [{1}.{0}] completed firing job [{6}.{5}] at {4, date, HH:mm:ss MM/dd/yyyy}
+              triggerMisfiredMessage: Trigger [{1}.{0}] misfired job [{6}.{5}]. Should have fired at {3, date, dd-MM-yyyy HH:mm:ss.SSS}
+            jobHistory:
+              class: org.quartz.plugins.history.LoggingJobHistoryPlugin
+              jobToBeFiredMessage: Job [{1}.{0}] to be fired by trigger [{4}.{3}], re-fire {7}
+              jobSuccessMessage: Job [{1}.{0}] execution complete and reports {8}
+              jobFailedMessage: Job [{1}.{0}] execution failed with exception {8}
+              jobWasVetoedMessage: Job [{1}.{0}] was vetoed. It was to be fired by trigger [{4}.{3}] at {2, date, dd-MM-yyyy HH:mm:ss.SSS}
+
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
@@ -161,6 +182,7 @@ feature-toggle:
     bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:false}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:false}
     use_user_token: ${FEATURE_USE_USER_TOKEN:false}
+    send_letter_recipient_check: ${FEATURE_SEND_LETTER_RECIPIENT_CHECK:true}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -633,7 +655,7 @@ management:
 
 logging:
   level:
-    org.springframework.web: ERROR
+    org.springframework.web: DEBUG
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"

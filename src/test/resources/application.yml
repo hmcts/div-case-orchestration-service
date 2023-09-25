@@ -21,6 +21,8 @@ spring:
     connectionTimeout: 30000
   application:
     name: div-cos
+  config:
+    import: optional:configtree:/mnt/secrets/div/
   resources:
     static-locations:
   mail:

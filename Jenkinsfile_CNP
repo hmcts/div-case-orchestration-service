@@ -27,8 +27,17 @@ def secrets = [
                 secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
                 secret("frontend-secret", "SERVICE_AUTH_SECRET"),
                 secret("idam-secret", "IDAM_CLIENT_SECRET"),
+                secret("idam-xui-secret", "IDAM_XUI_CLIENT_SECRET"),
+                secret("idam-citizen-username", "IDAM_CITIZEN_USERNAME"),
                 secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
-                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+                secret("idam-caseworker-username", "IDAM_CASEWORKER_USERNAME"),
+                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD"),
+                secret("cos-postgresql-password", "DIV_SCHEDULER_DB_PASSWORD"),
+                secret("uk-gov-notify-api-key", "UK_GOV_NOTIFY_API_KEY"),
+                secret("AppInsightsInstrumentationKey", "azure.application-insights.instrumentation-key"),
+                secret("idam-caseworker-superuser-username", "IDAM_CASEWORKER_SUPERUSER_USERNAME"),
+                secret("idam-caseworker-superuser-password", "IDAM_CASEWORKER_SUPERUSER_PASSWORD")
+
         ]
 ]
 
