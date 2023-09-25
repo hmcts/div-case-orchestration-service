@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.Invocation;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -18,10 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,8 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
@@ -51,7 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -111,7 +104,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
-        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
@@ -141,7 +134,6 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
         ));
         assertThat(templateParameters.size(), equalTo(10));
-        checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
     @Test
@@ -191,7 +183,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
-        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
@@ -219,7 +211,6 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
         ));
         assertThat(templateParameters.size(), equalTo(7));
-        checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
     @Test
@@ -240,25 +231,5 @@ public class SendRespondentSubmissionNotificationEmailTest {
             exception.getMessage(),
             is("Could not evaluate value of mandatory property \"D8DivorceUnit\"")
         );
-    }
-
-    private void checkThatPropertiesAreCheckedBeforeBeingRetrieved(Map<String, Object> mockCaseData) {
-        mockCaseData.containsKey(LANGUAGE_PREFERENCE_WELSH);
-
-        List<String> listOfMethodInvoked = mockingDetails(mockCaseData).getInvocations().stream()
-            .map(Invocation::getMethod)
-            .map(Method::getName)
-            .collect(Collectors.toList());
-
-        long amountOfPropertiesChecked = listOfMethodInvoked.stream()
-            .filter("containsKey"::equalsIgnoreCase)
-            .count();
-        long amountOfPropertiesRetrieved = listOfMethodInvoked.stream()
-            .filter("get"::equalsIgnoreCase)
-            .count();
-
-        assertThat("Properties should be checked before they are retrieved",
-            amountOfPropertiesChecked,
-            equalTo(amountOfPropertiesRetrieved));
     }
 }

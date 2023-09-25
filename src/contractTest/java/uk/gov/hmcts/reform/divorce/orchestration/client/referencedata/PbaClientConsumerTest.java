@@ -102,9 +102,10 @@ public class PbaClientConsumerTest {
     @PactTestFor(pactMethod = "getOrganisationalPbasReferenceData")
     public void verifyGetOrganisationalPbasReferenceDataPact() throws IOException, JSONException {
 
-        ResponseEntity<PBAOrganisationResponse> response = pbaValidationClient.retrievePbaNumbers(SOME_AUTHORIZATION_TOKEN,
-            SOME_SERVICE_AUTHORIZATION_TOKEN, ORGANISATION_EMAIL);
-        assertThat(response.getBody().getOrganisationEntityResponse().getOrganisationIdentifier(), equalTo(ORGANISATION_EMAIL));
+        ResponseEntity<PBAOrganisationResponse> response = pbaValidationClient.retrievePbaNumbers(
+            SOME_AUTHORIZATION_TOKEN, SOME_SERVICE_AUTHORIZATION_TOKEN, ORGANISATION_EMAIL);
+        assertThat(response.getBody().getOrganisationEntityResponse().getOrganisationIdentifier(),
+            equalTo(ORGANISATION_EMAIL));
 
     }
 }

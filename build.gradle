@@ -2,7 +2,8 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.3.11.RELEASE'
+        springBootVersion = '2.7.14'
+        springCloudBomVersion = "2021.0.8"
     }
     repositories {
         mavenCentral()
@@ -13,24 +14,25 @@ buildscript {
     }
 }
 
+
 plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.47.0'
     id 'info.solidsoft.pitest' version '1.9.11'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'jacoco'
     id 'org.flywaydb.flyway' version '9.19.4'
     id 'org.owasp.dependencycheck' version '8.0.2'
     id 'org.sonarqube' version '3.2.0'
-    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'org.springframework.boot' version "2.7.14"
     id 'au.com.dius.pact' version '4.1.8'
+    id 'uk.gov.hmcts.java' version '0.12.27'
 }
 
 def versions = [
         awaitility            : '4.0.2',
         bcpkixJdk15on         : '1.64',
-        bspCommonLib          : '0.0.48',
         ccdStoreClient        : '4.7.3',
         commonsBeanUtils      : '1.9.4',
         commonsIo             : '2.7',
@@ -39,13 +41,13 @@ def versions = [
         divCommonLib          : '1.2.16',
         dumbster              : '1.7.1',
         elasticsearch         : '7.14.0',
-        feignHttpClient       : '10.3.0',
+        feignHttpClient       : '12.4',
         flyway                : '6.5.5',
         googleAuth            : '1.5.0',
-        guava                 : '30.1-jre',
+        guava                 : '32.1.2-jre',
         hibernateTypes        : '2.4.4',
         hmctsNotify           : '3.14.1-RELEASE',
-        idamClient            : '1.3.0',
+        idamClient            : '2.1.1',
         jackson               : '2.13.2',
         jacksonDatabind       : '2.13.2',
         jacksonDatatypeJsr    : '2.13.2',
@@ -55,30 +57,33 @@ def versions = [
         jdbi                  : '2.78',
         jsonAssert            : '1.2.3',
         jsonPathAssert        : '2.2.0',
-        junit                 : '4.13.1',
+        junit                 : '4.13.2',
         logbackVersion        : '1.2.10',
         lombok                : '1.18.28',
         postgresql            : '42.2.26',
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
-        sendLetterClient      : '2.2.0',
-        serenity              : '2.2.13',
-        serenityCucumber      : '1.9.50',
+        sendLetterClient      : '3.0.23',
+        serenity              : '2.6.0',
+        serenityCucumber      : '1.9.51',
         serviceTokenGenerator : '3.1.1',
-        springfoxSwagger      : '2.9.2',
-        springSecurityCrypto  : '5.4.5',
+        springDoc             : '1.6.9',
+        springSecurityCrypto  : '6.1.2',
         springSecurityRsa            : '1.0.8.RELEASE',
-        springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.68',
+        springBoot                   : '2.7.14',
+        tomcat                       : '9.0.80',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
+        bspCommonLib         : '0.0.51',
+        ccdClient            : '4.9.2',
+        reformLogging        : '6.0.1'
 ]
 
 allprojects {
 
-    def springBootVersion = '2.3.11.RELEASE'
+    def springBootVersion = '2.7.14'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
@@ -90,9 +95,10 @@ allprojects {
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
+
+
     checkstyle.toolVersion = '8.34'
     checkstyle.configFile = new File(rootDir, "checkstyle.xml")
-    checkstyle.configDir(rootDir)
     checkstyle.maxWarnings(0)
 
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
@@ -115,9 +121,26 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 
+    tasks.withType(JavaExec).configureEach {
+        javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    }
+
+    tasks.withType(Test) {
+        useJUnitPlatform()
+
+        testLogging {
+            exceptionFormat = 'full'
+        }
+    }
+
+    test {
+        failFast = true
+    }
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudBomVersion}"
         }
         dependencies {
             dependencySet(
@@ -171,7 +194,7 @@ allprojects {
             dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
 
             //CVE-2022-22965
-            dependencySet(group: 'org.springframework', version: '5.2.20.RELEASE') {
+            dependencySet(group: 'org.springframework', version: '5.3.29') {
                 entry 'spring-aop'
                 entry 'spring-beans'
                 entry 'spring-context'
@@ -194,7 +217,13 @@ apply plugin: 'net.serenity-bdd.aggregator'
 
 group = 'uk.gov.hmcts.reform.divorce'
 version = '0.0.1'
-sourceCompatibility = 11
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 
 bootJar {
     manifest {
@@ -251,6 +280,18 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
 }
 
+processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+processContractTestResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+processIntegrationTestResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
@@ -263,10 +304,11 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompile('com.github.hmcts:fortify-client:1.2.0:all')
+    testImplementation('com.github.hmcts:fortify-client:1.2.0:all')
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
+    implementation group: 'com.mchange', name: 'c3p0', version: '0.9.5.5'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
@@ -275,8 +317,8 @@ dependencies {
     implementation group: 'com.sun.mail', name: 'javax.mail', version: versions.javaMail
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
-    implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
+    implementation group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.15'
     implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.0'
     implementation group: 'jakarta.mail', name: 'jakarta.mail-api', version: versions.jakartaMail
     implementation group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: versions.jakartaWsRs
@@ -289,6 +331,7 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.springframework', name: 'spring-context-support'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -299,9 +342,25 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: versions.retry
     implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
-    implementation "com.github.hmcts:div-common-lib:1.2.20"
-    implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
+    implementation "com.github.hmcts:div-common-lib:1.2.20", {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
+    }
+    implementation("org.springdoc:springdoc-openapi-ui") {
+        exclude group: "org.yaml", module: "snakeyaml"
+    }
+    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
+    implementation group: 'com.github.hmcts', name: 'ccd-client', version: versions.ccdClient
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
+    implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging, {
         exclude group: 'ch.qos.logback', module: 'logback-core'
@@ -309,9 +368,18 @@ dependencies {
     }
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
-    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
-    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
-    implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
+    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume, {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
+    }
+    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator, {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
+    }
+    implementation group: 'com.github.hmcts', name: 'send-letter-client', version: versions.sendLetterClient, {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
+    }
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.2.4.Final'
@@ -355,6 +423,11 @@ dependencies {
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
+    testImplementation group: 'junit', name: 'junit', version: versions.junit
+    testImplementation("org.junit.vintage:junit-vintage-engine") {
+        exclude group: "org.hamcrest", module: "hamcrest-core"
+    }
+
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
     testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.0.0'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
@@ -373,6 +446,7 @@ dependencies {
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+
     integrationTestImplementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
     integrationTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     integrationTestImplementation group: 'org.skyscreamer', name: 'jsonassert', version: versions.jsonAssert
@@ -398,22 +472,25 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty'
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
+                exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
+                exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
+
             }
 
-    contractTestCompile group: 'com.google.guava', name: 'guava', version: versions.guava
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-    contractTestRuntime group: 'com.google.guava', name: 'guava', version: versions.guava
-    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestImplementation group: 'com.google.guava', name: 'guava', version: versions.guava
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestRuntimeOnly group: 'com.google.guava', name: 'guava', version: versions.guava
+    contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
-    contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
-    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.2')
-    contractTestCompile sourceSets.main.runtimeClasspath
-    contractTestCompile sourceSets.test.runtimeClasspath
+    contractTestImplementation sourceSets.main.runtimeClasspath
+    contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 dependencies {
@@ -427,7 +504,6 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
 }
 
 task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
-    main = bootJar.mainClassName
     doFirst() {
         classpath = sourceSets.main.runtimeClasspath
         systemProperties = System.properties
@@ -497,11 +573,10 @@ pitest {
 
 jacocoTestReport {
     executionData(test)
-
     reports {
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        xml.required = true
+        csv.required = false
+        xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
@@ -612,7 +687,7 @@ pact {
 }
 
 task fortifyScan(type: JavaExec)  {
-    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }

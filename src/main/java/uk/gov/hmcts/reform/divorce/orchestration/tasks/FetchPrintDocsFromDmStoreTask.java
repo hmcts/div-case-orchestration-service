@@ -46,7 +46,7 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-
+        log.info("In FetchPrintDocsFromDmStoreTask");
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = extractGeneratedDocumentList(caseData);
         populateDocumentBytes(context, generatedDocumentInfoList);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocumentInfoList);

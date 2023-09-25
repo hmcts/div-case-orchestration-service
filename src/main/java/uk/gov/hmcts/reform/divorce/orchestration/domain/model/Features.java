@@ -17,6 +17,7 @@ public enum Features {
     REPRESENTED_RESPONDENT_JOURNEY("represented_respondent_journey"),
     OBJECT_TO_COSTS("object_to_costs"),
     BAILIFF_JOURNEY("bailiff_journey"),
+    SEND_LETTER_RECIPIENT_CHECK("send_letter_recipient_check"),
     USE_USER_TOKEN("use_user_token");
 
     private final String name;

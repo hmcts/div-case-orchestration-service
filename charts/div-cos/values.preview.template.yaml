@@ -9,6 +9,7 @@ java:
     FEATURE_OBJECT_TO_COSTS: "true"
     FEATURE_BAILIFF_JOURNEY: "true"
     FEATURE_USE_USER_TOKEN: "true"
+    FEATURE_SEND_LETTER_RECIPIENT_CHECK: false
     PAY_BY_ACCOUNT: "true"
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
@@ -26,20 +27,38 @@ java:
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
 
   keyVaults:
-    "div":
-      resourceGroup: div
+    div:
       secrets:
-        - ccd-submission-s2s-auth-secret
-        - div-doc-s2s-auth-secret
-        - idam-secret
-        - idam-xui-secret
-        - frontend-secret
-        - idam-citizen-username
-        - idam-citizen-password
-        - idam-caseworker-username
-        - idam-caseworker-password
-        - uk-gov-notify-api-key
-        - spring-mail-password
+        - name: ccd-submission-s2s-auth-secret
+          alias: AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY
+        - name: div-doc-s2s-auth-secret
+          alias: AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY
+        - name: idam-secret
+          alias: IDAM_CLIENT_SECRET
+        - name: idam-xui-secret
+          alias: IDAM_XUI_CLIENT_SECRET
+        - name: frontend-secret
+          alias: SERVICE_AUTH_SECRET
+        - name: idam-citizen-username
+          alias: IDAM_CITIZEN_USERNAME
+        - name: idam-citizen-password
+          alias: IDAM_CITIZEN_PASSWORD
+        - name: idam-caseworker-username
+          alias: IDAM_CASEWORKER_USERNAME
+        - name: idam-caseworker-password
+          alias: IDAM_CASEWORKER_PASSWORD
+        - name: uk-gov-notify-api-key
+          alias: UK_GOV_NOTIFY_API_KEY
+        - name: cos-postgresql-password
+          alias: DIV_SCHEDULER_DB_PASSWORD
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: spring-mail-password
+          alias: spring.mail.password
+        - name: idam-caseworker-superuser-username
+          alias: IDAM_CASEWORKER_SUPERUSER_USERNAME
+        - name: idam-caseworker-superuser-password
+          alias: IDAM_CASEWORKER_SUPERUSER_PASSWORD
 
   # Don't modify these properties
   image: ${IMAGE_NAME}

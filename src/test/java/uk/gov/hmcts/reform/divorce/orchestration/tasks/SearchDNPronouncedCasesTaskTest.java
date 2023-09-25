@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -97,8 +98,11 @@ public class SearchDNPronouncedCasesTaskTest {
 
     @Test
     public void shouldRethrowFeignException() throws TaskException {
+        FeignException.BadRequest badRequest = Mockito.mock(FeignException.BadRequest.class);
+        when(badRequest.getMessage()).thenReturn("Bad test request");
+        when(badRequest.status()).thenReturn(HttpStatus.BAD_REQUEST.value());
         when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any()))
-            .thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
+            .thenThrow(badRequest);
 
         Map<String, Object> actualResult = null;
         try {

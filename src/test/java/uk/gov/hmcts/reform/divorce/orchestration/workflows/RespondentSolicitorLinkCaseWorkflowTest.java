@@ -7,7 +7,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -107,8 +109,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     @Test(expected = WorkflowException.class)
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
-
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null));
+        FeignException feignException = Mockito.mock(FeignException.class);
+        when(feignException.status()).thenReturn(HttpStatus.NOT_FOUND.value());
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(feignException);
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -120,7 +123,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null));
+        FeignException feignException = Mockito.mock(FeignException.class);
+        when(feignException.status()).thenReturn(HttpStatus.UNAUTHORIZED.value());
+        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(feignException);
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -128,8 +133,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     @Test(expected = FeignException.class)
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
-
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null));
+        FeignException feignException = Mockito.mock(FeignException.class);
+        when(feignException.status()).thenReturn(HttpStatus.GATEWAY_TIMEOUT.value());
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(feignException);
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }

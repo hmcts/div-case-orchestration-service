@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -144,7 +145,7 @@ public class BulkCaseCreateTaskTest {
         when(ccdUtilMock.getCurrentDateWithCustomerFacingFormat()).thenReturn(CURRENT_DATE);
         when(caseMaintenanceClient.submitBulkCase(bulkCaseFormat(), AUTH_TOKEN)).thenReturn(cmsResponse);
         when(caseMaintenanceClient.submitBulkCase(not(eq(bulkCaseFormat())), eq(AUTH_TOKEN)))
-            .thenThrow(new FeignException.BadRequest("Request failed", "Request failed".getBytes()));
+            .thenThrow(Mockito.mock(FeignException.class));
 
         Map<String, Object> response = classToTest.execute(context, null);
 
