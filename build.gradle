@@ -51,7 +51,7 @@ def versions = [
         jackson               : '2.13.2',
         jacksonDatabind       : '2.13.2',
         jacksonDatatypeJsr    : '2.13.2',
-        jakartaMail           : '1.6.5',
+        jakartaMail           : '1.6.7',
         jakartaWsRs           : '2.1.6',
         javaMail              : '1.6.2',
         jdbi                  : '2.78',
