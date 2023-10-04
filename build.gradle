@@ -59,7 +59,7 @@ def versions = [
         jsonPathAssert        : '2.2.0',
         junit                 : '4.13.2',
         logbackVersion        : '1.2.10',
-        lombok                : '1.18.28',
+        lombok                : '1.18.30',
         postgresql            : '42.2.26',
         puppyCrawl            : '8.29',
         reformPropertiesVolume: '0.0.4',
