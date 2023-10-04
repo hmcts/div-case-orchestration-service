@@ -209,6 +209,12 @@ allprojects {
                 entry 'spring-orm'
                 entry 'spring-tx'
             }
+
+            //CVE-2023-34047
+            dependencySet(group: 'org.springframework.plugin', version: '3.0.0') {
+                entry 'spring-plugin-core'
+                entry 'spring-plugin-metadata'
+            }
         }
     }
 }
