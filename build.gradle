@@ -75,7 +75,7 @@ def versions = [
         tomcat                       : '9.0.80',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
-        httpComponents               : '4.5.13',
+        httpComponents               : '4.5.14',
         bspCommonLib         : '0.0.51',
         ccdClient            : '4.9.2',
         reformLogging        : '6.0.1'
