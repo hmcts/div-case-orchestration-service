@@ -9,6 +9,16 @@
         <cve>CVE-2023-35116</cve>
     </suppress>
     <suppress>
+        <notes><![CDATA[file name: spring-plugin-core-1.2.0.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
+        <cve>CVE-2023-34047</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: spring-plugin-metadata-1.2.0.RELEASE.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-metadata@.*$</packageUrl>
+        <cve>CVE-2023-34047</cve> 
+    </suppress>
+    <suppress>
         <notes><![CDATA[file name: spring-core-5.2.20.RELEASE.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
