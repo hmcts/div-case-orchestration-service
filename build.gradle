@@ -33,7 +33,7 @@ plugins {
 def versions = [
         awaitility            : '4.0.2',
         bcpkixJdk15on         : '1.64',
-        ccdStoreClient        : '4.7.3',
+        ccdStoreClient        : '4.7.6',
         commonsBeanUtils      : '1.9.4',
         commonsIo             : '2.7',
         commonsLang3          : '3.9',
