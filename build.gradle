@@ -50,7 +50,7 @@ def versions = [
         idamClient            : '2.1.1',
         jackson               : '2.13.2',
         jacksonDatabind       : '2.13.2',
-        jacksonDatatypeJsr    : '2.13.2',
+        jacksonDatatypeJsr    : '2.15.2',
         jakartaMail           : '1.6.7',
         jakartaWsRs           : '2.1.6',
         javaMail              : '1.6.2',
