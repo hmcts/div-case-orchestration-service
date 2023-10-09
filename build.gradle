@@ -45,7 +45,7 @@ def versions = [
         flyway                : '6.5.7',
         googleAuth            : '1.5.0',
         guava                 : '32.1.2-jre',
-        hibernateTypes        : '2.4.4',
+        hibernateTypes        : '2.21.1',
         hmctsNotify           : '3.14.1-RELEASE',
         idamClient            : '2.1.1',
         jackson               : '2.13.2',
