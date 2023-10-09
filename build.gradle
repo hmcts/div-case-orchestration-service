@@ -61,7 +61,7 @@ def versions = [
         logbackVersion        : '1.2.10',
         lombok                : '1.18.30',
         postgresql            : '42.2.26',
-        puppyCrawl            : '8.29',
+        puppyCrawl            : '8.45.1',
         reformPropertiesVolume: '0.0.4',
         reformsJavaLogging    : '5.1.7',
         sendLetterClient      : '3.0.23',
