@@ -75,7 +75,7 @@ module "postgresql-14" {
 
   pgsql_databases = [
     {
-      name : "div_scheduler_14"
+      name : "div_scheduler"
     }
   ]
 
