@@ -41,7 +41,7 @@ def versions = [
         divCommonLib          : '1.2.16',
         dumbster              : '1.7.1',
         elasticsearch         : '7.14.0',
-        feignHttpClient       : '12.4',
+        feignHttpClient       : '12.5',
         flyway                : '6.5.7',
         googleAuth            : '1.5.0',
         guava                 : '32.1.2-jre',
