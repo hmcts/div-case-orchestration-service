@@ -31,7 +31,7 @@ java:
         DIV_SCHEDULER_DB_HOST : "div-cos-v14-flexible-{{ .Values.global.environment }}.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
         DIV_SCHEDULER_DB_NAME : "div_scheduler"
-        DIV_SCHEDULER_DB_USER_NAME : "pgadmin"
+        DIV_SCHEDULER_DB_USER_NAME : "pgadmin@div-cos-v14-flexible-{{ .Values.global.environment }}"
         FLYWAY_URL : "jdbc:postgresql://div-cos-v14-flexible-{{ .Values.global.environment }}.postgres.database.azure.com:5432/div_scheduler"
         SPRING_MAIL_HOST: smtp.sendgrid.net
         SPRING_MAIL_PORT: 587
