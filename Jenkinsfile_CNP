@@ -32,7 +32,7 @@ def secrets = [
                 secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
                 secret("idam-caseworker-username", "IDAM_CASEWORKER_USERNAME"),
                 secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD"),
-                secret("cos-postgresql-password", "DIV_SCHEDULER_DB_PASSWORD"),
+                secret("cos-POSTGRES-PASS-V14", "DIV_SCHEDULER_DB_PASSWORD"),
                 secret("uk-gov-notify-api-key", "UK_GOV_NOTIFY_API_KEY"),
                 secret("AppInsightsInstrumentationKey", "azure.application-insights.instrumentation-key"),
                 secret("idam-caseworker-superuser-username", "IDAM_CASEWORKER_SUPERUSER_USERNAME"),
