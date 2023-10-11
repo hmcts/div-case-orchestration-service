@@ -90,6 +90,7 @@
         <cve>CVE-2022-41881</cve>
         <cve>CVE-2022-41915</cve>
         <cve>CVE-2023-34462</cve>
+        <cve>CVE-2023-4586</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: netty-codec-4.1.77.Final.jar]]></notes>
