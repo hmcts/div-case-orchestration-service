@@ -36,7 +36,7 @@ def versions = [
         ccdStoreClient        : '4.7.6',
         commonsBeanUtils      : '1.9.4',
         commonsIo             : '2.14.0',
-        commonsLang3          : '3.9',
+        commonsLang3          : '3.13.0',
         commonsMath3          : '3.6.1',
         divCommonLib          : '1.2.16',
         dumbster              : '1.7.1',
