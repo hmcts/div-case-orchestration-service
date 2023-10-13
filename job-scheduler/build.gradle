@@ -24,7 +24,7 @@ def versions = [
   flyway            : '6.5.7',
   jacksonDatabind   : '2.13.2',
   lombok            : '1.18.30',
-  postgresql        : '42.2.26',
+  postgresql        : '42.6.0',
   logbackVersion    : '1.2.10',
   reformJavaLogging : '5.0.1'
 ]
