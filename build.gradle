@@ -46,7 +46,7 @@ def versions = [
         googleAuth            : '1.5.0',
         guava                 : '32.1.3-jre',
         hibernateTypes        : '2.21.1',
-        hmctsNotify           : '3.14.1-RELEASE',
+        hmctsNotify           : '3.19.2-RELEASE',
         idamClient            : '2.1.1',
         jackson               : '2.13.2',
         jacksonDatabind       : '2.13.2',
