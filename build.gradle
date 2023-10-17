@@ -185,7 +185,7 @@ allprojects {
                 entry 'tomcat-embed-el'
             }
             //CVE-2021-44228, CVE-2021-44832, CVE-2021-45046, CVE-2021-45105
-            dependencySet(group: 'org.apache.logging.log4j', version: '2.19.0') {
+            dependencySet(group: 'org.apache.logging.log4j', version: '2.21.0') {
                 entry 'log4j-api'
                 entry 'log4j-to-slf4j'
             }
