@@ -75,12 +75,6 @@ data "azurerm_key_vault" "div_key_vault" {
   resource_group_name = local.vaultName
 }
 
-resource "azurerm_key_vault_secret" "postgresql-user" {
-  name         = "${var.component}-postgresql-user"
-  value        = module.div-scheduler-db.user_name
-  key_vault_id = data.azurerm_key_vault.div_key_vault.id
-}
-
 data "azurerm_key_vault" "sendgrid" {
   provider = azurerm.sendgrid
 
