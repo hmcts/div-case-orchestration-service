@@ -27,7 +27,7 @@ plugins {
     id 'org.sonarqube' version '3.2.0'
     id 'org.springframework.boot' version "2.7.17"
     id 'au.com.dius.pact' version '4.1.8'
-    id 'uk.gov.hmcts.java' version '0.12.46'
+    id 'uk.gov.hmcts.java' version '0.12.47'
 }
 
 def versions = [
