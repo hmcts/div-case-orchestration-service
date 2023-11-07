@@ -493,9 +493,9 @@ dependencies {
 
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.10.0')
+    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.10.1')
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
 }
