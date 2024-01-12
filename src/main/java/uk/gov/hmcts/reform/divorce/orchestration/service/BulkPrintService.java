@@ -26,7 +26,6 @@ public class BulkPrintService {
     private static final String LETTER_TYPE_KEY = "letterType";
     private static final String CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
     private static final String CASE_IDENTIFIER_KEY = "caseIdentifier";
-    private static final String RECIPIENTS_PROD = "party";
     private static final String RECIPIENTS = "recipients";
 
     private final AuthTokenGenerator authTokenGenerator;
@@ -83,7 +82,7 @@ public class BulkPrintService {
         log.info("isSendLetterDuplicateCheckEnabled {} for caseId {}",
             featureToggleService.isFeatureEnabled(Features.SEND_LETTER_RECIPIENT_CHECK), caseId);
         if (featureToggleService.isFeatureEnabled(Features.SEND_LETTER_RECIPIENT_CHECK)) {
-            additionalData.put(RECIPIENTS_PROD, new String[]{RECIPIENTS});
+            additionalData.put(RECIPIENTS, new String[]{RECIPIENTS});
         } else {
             additionalData.put(RECIPIENTS, new String[]{"%s:%d".formatted(RECIPIENTS, System.nanoTime())});
         }
