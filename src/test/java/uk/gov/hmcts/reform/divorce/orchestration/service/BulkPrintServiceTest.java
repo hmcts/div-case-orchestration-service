@@ -125,7 +125,7 @@ public class BulkPrintServiceTest {
             "letterType",
             "caseIdentifier",
             "caseReferenceNumber",
-            "party");
+            "recipients");
 
         final String xeroxType = "DIV001";
         assertThat(letterRequestCaptor.getValue(), allOf(
