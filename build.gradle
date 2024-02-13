@@ -56,7 +56,7 @@ def versions = [
         javaMail              : '1.6.2',
         jdbi                  : '2.78',
         jsonAssert            : '1.5.1',
-        jsonPathAssert        : '2.2.0',
+        jsonPathAssert        : '2.9.0',
         junit                 : '4.13.2',
         logbackVersion        : '1.2.10',
         lombok                : '1.18.30',
