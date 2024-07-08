@@ -375,10 +375,6 @@ dependencies {
     }
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
-    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume, {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator, {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
