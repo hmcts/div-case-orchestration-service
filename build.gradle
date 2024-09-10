@@ -27,7 +27,7 @@ plugins {
     id 'org.sonarqube' version '3.5.0.2730'
     id 'org.springframework.boot' version "2.7.17"
     id 'au.com.dius.pact' version '4.1.8'
-    id 'uk.gov.hmcts.java' version '0.12.47'
+    id 'uk.gov.hmcts.java' version '0.12.63'
 }
 
 def versions = [
@@ -61,9 +61,7 @@ def versions = [
         logbackVersion        : '1.2.10',
         lombok                : '1.18.30',
         postgresql            : '42.6.0',
-        puppyCrawl            : '8.45.1',
         reformPropertiesVolume: '0.1.0',
-        reformsJavaLogging    : '5.1.7',
         sendLetterClient      : '3.0.23',
         serenity              : '2.6.0',
         serenityCucumber      : '1.9.51',
@@ -78,7 +76,7 @@ def versions = [
         httpComponents        : '4.5.14',
         bspCommonLib          : '0.0.51',
         ccdClient             : '4.9.2',
-        reformLogging         : '6.0.1'
+        reformLogging         : '6.1.6'
 ]
 
 allprojects {
@@ -95,11 +93,11 @@ allprojects {
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
-
-
-    checkstyle.toolVersion = '8.34'
-    checkstyle.configFile = new File(rootDir, "checkstyle.xml")
-    checkstyle.maxWarnings(0)
+    checkstyle {
+        maxWarnings = 0
+        toolVersion = '10.14.0'
+        getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+    }
 
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
     dependencyCheck {
@@ -316,7 +314,6 @@ dependencies {
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.9'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
-    implementation group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: versions.hibernateTypes
     implementation group: 'com.sun.mail', name: 'javax.mail', version: versions.javaMail
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo
@@ -362,16 +359,10 @@ dependencies {
     }
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
     implementation group: 'com.github.hmcts', name: 'ccd-client', version: versions.ccdClient
-    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
     implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
-    implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
-    implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging, {
-        exclude group: 'ch.qos.logback', module: 'logback-core'
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-    }
-    implementation group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
-    implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
+    implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
+
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume, {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
