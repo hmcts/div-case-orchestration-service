@@ -14,7 +14,6 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'application'
     id 'checkstyle'
@@ -304,6 +303,7 @@ dependencyCheck {
 dependencies {
     implementation project(':job-scheduler')
 
+
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
     testImplementation('com.github.hmcts:fortify-client:1.3.0:all')
@@ -391,26 +391,13 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
-    implementation(group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
-        force = true
-    }
-
+    implementation(group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils)
     implementation group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jackson
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-
     implementation(group: 'com.google.guava', name: 'guava', version: versions.guava)
-
-    implementation(group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bcpkixJdk15on) {
-        force = true
-    }
-
-    implementation(group: 'org.springframework.security', name: 'spring-security-rsa', version: versions.springSecurityRsa) {
-        force = true
-    }
-
-    implementation(group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurityCrypto) {
-        force = true
-    }
+    implementation(group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bcpkixJdk15on)
+    implementation(group: 'org.springframework.security', name: 'spring-security-rsa', version: versions.springSecurityRsa)
+    implementation(group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurityCrypto)
 
     constraints{
         implementation group: 'com.warrenstrange', name: 'googleauth', version: '1.5.0'

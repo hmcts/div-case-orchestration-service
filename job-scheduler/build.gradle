@@ -2,13 +2,7 @@ sourceCompatibility = 17
 
 repositories {
     mavenLocal()
-    maven {
-        url "https://dl.bintray.com/hmcts/hmcts-maven"
-    }
-    maven {
-        url 'https://repo.spring.io/libs-milestone'
-    }
-    jcenter()
+    mavenCentral()
 }
 
 compileJava {
@@ -20,20 +14,20 @@ compileTestJava {
 }
 
 def versions = [
-  assertj           : '3.24.2',
-  flyway            : '6.5.7',
-  jacksonDatabind   : '2.15.3',
-  lombok            : '1.18.30',
-  postgresql        : '42.6.0',
-  logbackVersion    : '1.2.10',
-  reformJavaLogging : '5.0.1'
+        assertj          : '3.24.2',
+        flyway           : '6.5.7',
+        jacksonDatabind  : '2.15.3',
+        lombok           : '1.18.30',
+        postgresql       : '42.6.0',
+        logbackVersion   : '1.2.10',
+        reformJavaLogging: '5.0.1'
 ]
 
 dependencies {
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
-      exclude group: 'ch.qos.logback', module: 'logback-core'
-      exclude group: 'ch.qos.logback', module: 'logback-classic'
-  }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
+        exclude group: 'ch.qos.logback', module: 'logback-core'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+    }
     implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     implementation group: 'org.springframework.retry', name: 'spring-retry'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -42,22 +36,20 @@ dependencies {
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
     implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     implementation group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging, {
-      exclude group: 'ch.qos.logback', module: 'logback-core'
-      exclude group: 'ch.qos.logback', module: 'logback-classic'
-  }
+        exclude group: 'ch.qos.logback', module: 'logback-core'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+    }
 
-    implementation (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
-    force = true
-  }
+    implementation(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonDatabind)
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: versions.assertj
     testImplementation group: 'junit', name: 'junit', version: versions.junit
-    testImplementation("org.junit.vintage:junit-vintage-engine")    {
+    testImplementation("org.junit.vintage:junit-vintage-engine") {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
 }
