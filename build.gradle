@@ -70,15 +70,15 @@ def versions = [
         serviceTokenGenerator : '3.1.4',
         springDoc             : '1.7.0',
         springSecurityCrypto  : '6.1.5',
-        springSecurityRsa            : '1.1.1',
-        springBoot                   : '2.7.17',
-        tomcat                       : '9.0.82',
-        unirest                      : '1.4.9',
-        pact_version                 : '4.1.11',
-        httpComponents               : '4.5.14',
-        bspCommonLib         : '0.0.51',
-        ccdClient            : '4.9.2',
-        reformLogging        : '6.0.1'
+        springSecurityRsa     : '1.1.1',
+        springBoot            : '2.7.17',
+        tomcat                : '9.0.82',
+        unirest               : '1.4.9',
+        pact_version          : '4.1.11',
+        httpComponents        : '4.5.14',
+        bspCommonLib          : '0.0.51',
+        ccdClient             : '4.9.2',
+        reformLogging         : '6.0.1'
 ]
 
 allprojects {
@@ -115,9 +115,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
-        maven { url 'https://repo.spring.io/libs-milestone' }
-        maven { url "https://repo.maven.apache.org/maven2" }
         maven { url "https://jitpack.io" }
     }
 
