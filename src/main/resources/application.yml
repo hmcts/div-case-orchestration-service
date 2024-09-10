@@ -86,8 +86,6 @@ feign:
       default:
         connectTimeout: 10000
         readTimeout: 60000
-        requestInterceptors:
-          - uk.gov.hmcts.reform.divorce.orchestration.config.FeignRequestInterceptor
 
 scheduler:
   re-create: ${SCHEDULER_RE_CREATE:true}

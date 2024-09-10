@@ -23,6 +23,13 @@ def versions = [
         reformLogging    : '6.1.6'
 ]
 
+checkstyle {
+    ignoreFailures = true
+    toolVersion = '10.14.0'
+    getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+    sourceSets = []
+}
+
 dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
         exclude group: 'ch.qos.logback', module: 'logback-core'

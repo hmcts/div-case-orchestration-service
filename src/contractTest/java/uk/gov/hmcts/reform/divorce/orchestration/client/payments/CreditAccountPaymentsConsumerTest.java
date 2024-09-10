@@ -82,27 +82,29 @@ public class CreditAccountPaymentsConsumerTest {
 
     @Pact(provider = "payment_creditAccountPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact postCreditAccountPayment(PactDslWithProvider builder) throws JsonProcessingException {
-        return buildRequestResponsePact(builder, "An active account has sufficient funds for a payment", "50000", 201, "Success", "success", null,
+        return buildRequestResponsePact(builder, "An active account has sufficient funds for a payment",
+            "50000", 201, "Success", "success", null,
             "Payment request failed . PBA account CAERPHILLY COUNTY BOROUGH COUNCIL have insufficient funds available");
     }
 
-
     @Pact(provider = "payment_creditAccountPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact postCreditAccountPaymentForbidden(PactDslWithProvider builder) throws JsonProcessingException {
-        return buildRequestResponsePact(builder, "An active account has insufficient funds for a payment", "150000", 403, "Failed", "failed",
-            "CA-E0001", "Payment request failed . PBA account CAERPHILLY COUNTY BOROUGH COUNCIL have insufficient funds available");
+        return buildRequestResponsePact(builder, "An active account has insufficient funds for a payment",
+            "150000", 403, "Failed", "failed",
+            "CA-E0001",
+            "Payment request failed . PBA account CAERPHILLY COUNTY BOROUGH COUNCIL have insufficient funds available");
     }
 
     @Pact(provider = "payment_creditAccountPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact postCreditAccountPaymentOnHold(PactDslWithProvider builder) throws JsonProcessingException {
-        return buildRequestResponsePact(builder, "An on hold account requests a payment", "150000", 403, "Failed", "failed",
-            "CA-E0003", "Your account is on hold");
+        return buildRequestResponsePact(builder, "An on hold account requests a payment", "150000", 403,
+            "Failed", "failed", "CA-E0003", "Your account is on hold");
     }
 
     @Pact(provider = "payment_creditAccountPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact postCreditAccountPaymentDeleted(PactDslWithProvider builder) throws JsonProcessingException {
-        return buildRequestResponsePact(builder, "A deleted account requests a payment", "150000", 403, "Failed", "failed",
-            "CA-E0004", "Your account is deleted");
+        return buildRequestResponsePact(builder, "A deleted account requests a payment", "150000", 403,
+            "Failed", "failed", "CA-E0004", "Your account is deleted");
     }
 
     private RequestResponsePact buildRequestResponsePact(PactDslWithProvider builder, String stateName, String amount,
@@ -129,7 +131,8 @@ public class CreditAccountPaymentsConsumerTest {
             .toPact();
     }
 
-    private DslPart buildCreditAccountPaymentResponseDtoPactDsl(String status, String paymentStatus, String errorCode, String errorMessage) {
+    private DslPart buildCreditAccountPaymentResponseDtoPactDsl(String status, String paymentStatus, String errorCode,
+                                                                String errorMessage) {
         return newJsonBody((o) -> {
             o.stringMatcher("date_created", "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$",
                 "2020-10-06T18:54:48.785+0000")
