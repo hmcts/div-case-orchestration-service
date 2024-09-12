@@ -23,7 +23,7 @@ plugins {
     id 'jacoco'
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'org.owasp.dependencycheck' version '8.4.2'
-    id 'org.sonarqube' version '3.5.0.2730'
+    id 'org.sonarqube' version '5.1.0.4882'
     id 'org.springframework.boot' version "2.7.17"
     id 'au.com.dius.pact' version '4.1.8'
     id 'uk.gov.hmcts.java' version '0.12.63'
@@ -581,7 +581,7 @@ sonarqube {
         property "sonar.projectName", "Divorce :: div-case-orchestration-service"
         property "sonar.projectKey", "div-case-orchestration-service"
         property "sonar.exclusions", sonarExclusions.join(", ")
-        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.outputLocation.get()}"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
