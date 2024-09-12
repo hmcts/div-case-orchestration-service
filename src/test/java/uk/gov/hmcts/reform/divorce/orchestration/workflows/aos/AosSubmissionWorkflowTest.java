@@ -28,9 +28,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitioner
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap.of;
+import static com.google.common.collect.ImmutableMap.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -289,7 +290,7 @@ public class AosSubmissionWorkflowTest {
 
         when(emailNotificationTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
-        Map<String, String> vars = ImmutableMap.of(
+        Map<String, String> vars = of(
             NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_USER_FIRST_NAME,
             NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_USER_LAST_NAME,
             NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP_HUSBAND,
@@ -752,8 +753,7 @@ public class AosSubmissionWorkflowTest {
         expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION);
         expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID);
 
-        expectedContext.setTransientObjects(ImmutableMap
-            .of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
+        expectedContext.setTransientObjects(of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
                 NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
                 NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
                 NOTIFICATION_TEMPLATE, template
