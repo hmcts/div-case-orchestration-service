@@ -25,7 +25,7 @@ def versions = [
   jacksonDatabind   : '2.15.3',
   lombok            : '1.18.30',
   postgresql        : '42.6.0',
-  logbackVersion    : '1.2.10',
+  logbackVersion    : '1.5.12',
   reformJavaLogging : '5.0.1'
 ]
 
