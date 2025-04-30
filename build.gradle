@@ -160,7 +160,7 @@ allprojects {
             }
 
             // solves CVE-2023-4586
-            dependencySet(group: 'io.netty', version: '4.1.101.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.118.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -209,6 +209,11 @@ allprojects {
             dependencySet(group: 'org.springframework.plugin', version: '3.0.0') {
                 entry 'spring-plugin-core'
                 entry 'spring-plugin-metadata'
+            }
+
+            dependencies {
+                implementation 'org.apache.lucene:lucene-core:9.12.0'
+                implementation 'org.apache.lucene:lucene-analyzers-common:9.12.0'
             }
         }
     }
