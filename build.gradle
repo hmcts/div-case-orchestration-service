@@ -210,16 +210,6 @@ allprojects {
                 entry 'spring-plugin-core'
                 entry 'spring-plugin-metadata'
             }
-
-            dependencySet(
-                    group: 'org.apache.lucene',
-                    version: '9.12.0'
-            ) {
-                entry 'lucene-core'
-                entry 'lucene-analyzers-common'
-                entry 'lucene-queryparser'
-                entry 'lucene-replicator-nrt'
-            }
         }
     }
 }
