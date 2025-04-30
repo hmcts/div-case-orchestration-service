@@ -465,7 +465,7 @@ dependencies {
 }
 
 dependencies {
-    testImplementation 'com.vladsch.flexmark:flexmark:0.64.0'
+    testImplementation 'com.vladsch.flexmark:flexmark:0.34.30'
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
