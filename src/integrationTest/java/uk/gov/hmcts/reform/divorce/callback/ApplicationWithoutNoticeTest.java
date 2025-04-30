@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 @Slf4j
 public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {
 
-    public static final String EXPECTED_AMOUNT = "5300";
+    public static final String EXPECTED_AMOUNT = "5800";
     public static final String EXPECTED_FEE_CODE = "FEE0228";
 
     @Autowired
