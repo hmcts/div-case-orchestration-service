@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.5.7")
     }
 }
 
@@ -462,10 +462,6 @@ dependencies {
 
 dependencies {
     integrationTestImplementation(sourceSets.test.output)
-}
-
-dependencies {
-    testImplementation 'com.vladsch.flexmark:flexmark:0.34.30'
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
