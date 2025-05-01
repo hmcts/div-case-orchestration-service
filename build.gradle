@@ -76,7 +76,8 @@ def versions = [
         bspCommonLib          : '0.0.51',
         ccdClient             : '4.9.2',
         reformLogging         : '6.1.6',
-        netty                 : '4.1.118.Final'
+        netty                 : '4.1.118.Final',
+        glassfish             : '4.0.2'
 ]
 
 allprojects {
@@ -184,10 +185,9 @@ allprojects {
             //CVE-2017-18640
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.33'
 
-            dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
+            dependency group: 'org.glassfish', name: 'jakarta.el', version: versions.glassfish
 
-            //CVE-2022-22965
-            dependencySet(group: 'org.springframework', version: '5.3.30') {
+            dependencySet(group: 'org.springframework', version: '5.3.39') {
                 entry 'spring-aop'
                 entry 'spring-beans'
                 entry 'spring-context'
