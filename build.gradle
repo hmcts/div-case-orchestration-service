@@ -68,7 +68,7 @@ def versions = [
         springDoc             : '1.7.0',
         springSecurityCrypto  : '6.1.5',
         springSecurityRsa     : '1.1.1',
-        springBoot            : ${springBootVersion},
+        springBoot            : '2.7.17',
         tomcat                : '9.0.104',
         unirest               : '1.4.9',
         pact_version          : '4.1.11',
