@@ -24,9 +24,9 @@ plugins {
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'org.owasp.dependencycheck' version '8.4.2'
     id 'org.sonarqube' version '5.1.0.4882'
-    id 'org.springframework.boot' version "2.7.17"
+    id 'org.springframework.boot' version ${springBootVersion}
     id 'au.com.dius.pact' version '4.1.8'
-    id 'uk.gov.hmcts.java' version '0.12.63'
+    id 'uk.gov.hmcts.java' version '0.12.65'
 }
 
 def versions = [
@@ -68,8 +68,8 @@ def versions = [
         springDoc             : '1.7.0',
         springSecurityCrypto  : '6.1.5',
         springSecurityRsa     : '1.1.1',
-        springBoot            : '2.7.17',
-        tomcat                : '9.0.82',
+        springBoot            : ${springBootVersion},
+        tomcat                : '9.0.104',
         unirest               : '1.4.9',
         pact_version          : '4.1.11',
         httpComponents        : '4.5.14',
@@ -79,9 +79,6 @@ def versions = [
 ]
 
 allprojects {
-
-    def springBootVersion = '2.7.17'
-
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'io.spring.dependency-management'
@@ -302,7 +299,6 @@ dependencyCheck {
 
 dependencies {
     implementation project(':job-scheduler')
-
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
