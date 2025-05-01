@@ -388,6 +388,20 @@ dependencies {
     implementation(group: 'org.springframework.security', name: 'spring-security-rsa', version: versions.springSecurityRsa)
     implementation(group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurityCrypto)
 
+    implementation 'org.apache.lucene:lucene-core:9.12.0'
+    implementation 'org.apache.lucene:lucene-analyzers-common:9.12.0'
+    implementation 'org.apache.lucene:lucene-backward-codecs:9.12.0'
+    implementation 'org.apache.lucene:lucene-grouping:9.12.0'
+    implementation 'org.apache.lucene:lucene-highlighter:9.12.0'
+    implementation 'org.apache.lucene:lucene-join:9.12.0'
+    implementation 'org.apache.lucene:lucene-memory:9.12.0'
+    implementation 'org.apache.lucene:lucene-misc:9.12.0'
+    implementation 'org.apache.lucene:lucene-queries:9.12.0'
+    implementation 'org.apache.lucene:lucene-queryparser:9.12.0'
+    implementation 'org.apache.lucene:lucene-sandbox:9.12.0'
+    implementation 'org.apache.lucene:lucene-spatial3d:9.12.0'
+    implementation 'org.apache.lucene:lucene-suggest:9.12.0'
+
     constraints{
         implementation group: 'com.warrenstrange', name: 'googleauth', version: '1.5.0'
     }
