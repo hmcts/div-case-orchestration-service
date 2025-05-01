@@ -298,6 +298,19 @@ dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
 
+// Fixes for CVE-2024-45772 & CVE-2025-25193
+configurations.configureEach {
+    resolutionStrategy.eachDependency {
+        // lucene-analyzers-common is not a vulnerable dependency and doesn't have a version 9.12.0
+        if (requested.group == 'org.apache.lucene' && requested.name != 'lucene-analyzers-common') {
+            useVersion '9.12.0'
+        }
+        if (requested.group == 'io.netty' && (requested.name == 'netty-transport-classes-epoll' ||  requested.name == 'netty-transport-native-unix-common')) {
+            useVersion '4.1.118.Final'
+        }
+    }
+}
+
 dependencies {
     implementation project(':job-scheduler')
 
