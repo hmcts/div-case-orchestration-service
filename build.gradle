@@ -75,7 +75,8 @@ def versions = [
         httpComponents        : '4.5.14',
         bspCommonLib          : '0.0.51',
         ccdClient             : '4.9.2',
-        reformLogging         : '6.1.6'
+        reformLogging         : '6.1.6',
+        netty                 : '4.1.118.Final'
 ]
 
 allprojects {
@@ -157,7 +158,7 @@ allprojects {
             }
 
             // solves CVE-2023-4586
-            dependencySet(group: 'io.netty', version: '4.1.101.Final') {
+            dependencySet(group: 'io.netty', version: versions.netty) {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
