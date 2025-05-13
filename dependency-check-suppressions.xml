@@ -476,6 +476,7 @@
         <notes>Lucene 8.11.3 used transitively via Elasticsearch 7.17.28. Upgrade to ES 8.x under review.</notes>
         <cve>CVE-2024-45772</cve>
         <cpe>cpe:2.3:a:apache:lucene:8.11.3:*:*:*:*:*:*:*</cpe>
+    </suppress>
     <suppress>
         <notes><![CDATA[file name: jose4j-0.7.12.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
