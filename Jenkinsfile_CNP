@@ -83,4 +83,3 @@ withPipeline(type, product, component) {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
 
 }
-
