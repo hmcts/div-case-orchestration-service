@@ -322,10 +322,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
-        exclude group: 'ch.qos.logback', module: 'logback-core'
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-    }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'

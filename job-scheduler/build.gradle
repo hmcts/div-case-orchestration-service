@@ -19,7 +19,6 @@ def versions = [
         jacksonDatabind  : '2.15.3',
         lombok           : '1.18.30',
         postgresql       : '42.6.0',
-        logbackVersion   : '1.2.10',
         reformLogging    : '6.1.9'
 ]
 
@@ -31,17 +30,12 @@ checkstyle {
 }
 
 dependencies {
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', {
-        exclude group: 'ch.qos.logback', module: 'logback-core'
-        exclude group: 'ch.qos.logback', module: 'logback-classic'
-    }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     implementation group: 'org.springframework.retry', name: 'spring-retry'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok

@@ -318,20 +318,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: logback-classic-1.2.10.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
-        <cve>CVE-2023-6378</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: logback-core-1.2.10.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
-        <cve>CVE-2023-6378</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: spring-boot-2.7.17.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot@.*$</packageUrl>
