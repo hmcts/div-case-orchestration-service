@@ -238,16 +238,6 @@ compileTestJava {
     options.compilerArgs << '-Xlint:deprecation'
 }
 
-distributions {
-    main {
-        contents {
-            from(file("$projectDir/lib/AI-Agent.xml")) {
-                into "lib"
-            }
-        }
-    }
-}
-
 sourceSets {
     integrationTest {
         java {
