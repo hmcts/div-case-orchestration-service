@@ -468,12 +468,19 @@
         <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
         <cve>CVE-2023-51775</cve>
     </suppress>
+    <!-- Suppress CVE-2023-6378 -->
     <suppress>
         <cve>CVE-2023-6378</cve>
         <cpe>cpe:2.3:a:qos:logback:1.2.10:*:*:*:*:*:*:*</cpe>
     </suppress>
     <suppress>
         <cve>CVE-2023-6378</cve>
+        <cpe>cpe:2.3:a:qos:logback:1.2.12:*:*:*:*:*:*:*</cpe>
+    </suppress>
+
+    <!-- Suppress CVE-2023-6481 -->
+    <suppress>
+        <cve>CVE-2023-6481</cve>
         <cpe>cpe:2.3:a:qos:logback:1.2.12:*:*:*:*:*:*:*</cpe>
     </suppress>
 </suppressions>
