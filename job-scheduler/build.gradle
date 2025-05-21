@@ -20,7 +20,7 @@ def versions = [
         lombok           : '1.18.30',
         postgresql       : '42.6.0',
         logbackVersion   : '1.2.10',
-        reformLogging    : '6.1.6'
+        reformLogging    : '6.1.9'
 ]
 
 checkstyle {

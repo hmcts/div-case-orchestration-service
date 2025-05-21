@@ -75,7 +75,7 @@ def versions = [
         httpComponents        : '4.5.14',
         bspCommonLib          : '0.0.51',
         ccdClient             : '4.9.2',
-        reformLogging         : '6.1.6',
+        reformLogging         : '6.1.9',
         netty                 : '4.1.118.Final',
         glassfish             : '4.0.2'
 ]
