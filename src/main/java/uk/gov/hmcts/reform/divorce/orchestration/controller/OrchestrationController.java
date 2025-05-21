@@ -115,7 +115,7 @@ public class OrchestrationController {
         @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @PathVariable String caseId,
         @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) throws WorkflowException {
-
+        log.info("updateCase: Checking logging capability (Case ID {})", caseId);
         return ResponseEntity.ok(
             CaseResponse.builder()
                 .caseId(orchestrationService.update(payload, authorizationToken, caseId).get(ID).toString())
