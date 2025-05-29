@@ -41,6 +41,7 @@ java:
         SPRING_MAIL_USERNAME: apikey
     keyVaults:
       div:
+        resourceGroup: div
         secrets:
           - name: ccd-submission-s2s-auth-secret
             alias: AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY
