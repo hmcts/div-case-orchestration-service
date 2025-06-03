@@ -73,7 +73,7 @@ def versions = [
         pact_version          : '4.1.11',
         httpComponents        : '4.5.14',
         bspCommonLib          : '0.0.51',
-        ccdClient             : '5.1.0',
+        ccdClient             : '4.9.2',
         reformLogging         : '6.1.9',
         apacheLogging         : '2.24.3',
         netty                 : '4.1.118.Final',
@@ -341,7 +341,7 @@ dependencies {
         exclude group: "org.yaml", module: "snakeyaml"
     }
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
-    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: versions.ccdClient
+    implementation group: 'com.github.hmcts', name: 'ccd-client', version: versions.ccdClient
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
     implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
