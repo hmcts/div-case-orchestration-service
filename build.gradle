@@ -118,7 +118,7 @@ allprojects {
         javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     }
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         useJUnitPlatform()
 
         testLogging {
@@ -445,13 +445,14 @@ dependencies {
     integrationTestImplementation(sourceSets.test.output)
 }
 
-task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
+tasks.register('smoke', Test) {
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
     }
 }
 
-task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
+tasks.register('bootRunAat', BootRun) {
+    dependsOn 'classes'
     doFirst() {
         classpath = sourceSets.main.runtimeClasspath
         systemProperties = System.properties
@@ -459,8 +460,8 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
     }
 }
 
-task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-    doFirst(){
+tasks.register('functional', Test) {
+    doFirst() {
         printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
     }
 
@@ -482,8 +483,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
-    doFirst(){
+tasks.register('nightlyFunctional', Test) {
+    doFirst() {
         printf("::::::::::  Running  nightlyFunctional ::::::::::")
     }
 
@@ -588,14 +589,14 @@ flyway {
     schemas = 'public'
 }
 
-task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+tasks.register('migratePostgresDatabase', org.flywaydb.gradle.task.FlywayMigrateTask) {
     baselineOnMigrate = true
     if (project.hasProperty("dburl")) {
         url = "jdbc:postgresql://${dburl}"
     }
 }
 
-task contract(type: Test) {
+tasks.register('contract', Test) {
     group = 'Delivery pipeline'
     description = 'Runs the consumer Pact tests'
     useJUnitPlatform()
@@ -606,7 +607,7 @@ task contract(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-task runAndPublishConsumerPactTests(type: Test){
+tasks.register('runAndPublishConsumerPactTests', Test) {
     logger.lifecycle("Runs pact Tests")
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
@@ -621,7 +622,7 @@ project.ext {
     pactVersion = getCheckedOutGitCommitHash()
 }
 
-def getCheckedOutGitCommitHash() {
+static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
@@ -634,7 +635,7 @@ pact {
     }
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
     mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
