@@ -483,4 +483,11 @@
         <cve>CVE-2023-6481</cve>
         <cpe>cpe:2.3:a:qos:logback:1.2.12:*:*:*:*:*:*:*</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: commons-beanutils-1.9.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/commons-beanutils/commons-beanutils@.*$</packageUrl>
+        <cve>CVE-2025-48734</cve>
+    </suppress>
 </suppressions>
