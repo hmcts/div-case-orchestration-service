@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
-    private static final String ACTIVE_ACCOUNT = "PBA0077051";
+    private static final String ACTIVE_ACCOUNT = "PBA0088322";
     private static final String DELETED_ACCOUNT = "PBA0078600";
     private static final String NON_EXISTING_ACCOUNT = "PBA1357924";
 

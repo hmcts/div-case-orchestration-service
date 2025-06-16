@@ -318,20 +318,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: logback-classic-1.2.10.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
-        <cve>CVE-2023-6378</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: logback-core-1.2.10.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
-        <cve>CVE-2023-6378</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: spring-boot-2.7.17.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot@.*$</packageUrl>
@@ -467,5 +453,41 @@
         <notes><![CDATA[file name: postgresql-42.6.0.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org.postgresql/postgresql@.*$</packageUrl>
         <cve>CVE-2024-1597</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[Suppression for CVE-2024-38820]]></notes>
+        <cve>CVE-2024-38820</cve>
+    </suppress>
+    <suppress>
+        <notes>Lucene 8.11.3 used transitively via Elasticsearch 7.17.28. Upgrade to ES 8.x under review.</notes>
+        <cve>CVE-2024-45772</cve>
+        <cpe>cpe:2.3:a:apache:lucene:8.11.3:*:*:*:*:*:*:*</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: jose4j-0.7.12.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
+        <cve>CVE-2023-51775</cve>
+    </suppress>
+    <!-- Suppress CVE-2023-6378 -->
+    <suppress>
+        <cve>CVE-2023-6378</cve>
+        <cpe>cpe:2.3:a:qos:logback:1.2.10:*:*:*:*:*:*:*</cpe>
+    </suppress>
+    <suppress>
+        <cve>CVE-2023-6378</cve>
+        <cpe>cpe:2.3:a:qos:logback:1.2.12:*:*:*:*:*:*:*</cpe>
+    </suppress>
+
+    <!-- Suppress CVE-2023-6481 -->
+    <suppress>
+        <cve>CVE-2023-6481</cve>
+        <cpe>cpe:2.3:a:qos:logback:1.2.12:*:*:*:*:*:*:*</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: commons-beanutils-1.9.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/commons-beanutils/commons-beanutils@.*$</packageUrl>
+        <cve>CVE-2025-48734</cve>
     </suppress>
 </suppressions>

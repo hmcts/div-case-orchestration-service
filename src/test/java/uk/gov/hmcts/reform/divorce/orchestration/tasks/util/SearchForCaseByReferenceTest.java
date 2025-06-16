@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -21,14 +22,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchForCaseByReferenceTest {
 
     protected static final String CASEWORKER_TOKEN = "caseworkerToken";
     protected static final String CASE_REFERENCE = "1234432112244321";
+    @InjectMocks
     SearchForCaseByReference searchForCaseByReference;
 
     @Mock
@@ -43,7 +43,6 @@ public class SearchForCaseByReferenceTest {
 
     @Before
     public void setUpTest() {
-        initMocks(SearchForCaseByReference.class);
         searchForCaseByReference = new SearchForCaseByReference(new SearchForCase(caseMaintenanceClient, authUtil));
     }
 

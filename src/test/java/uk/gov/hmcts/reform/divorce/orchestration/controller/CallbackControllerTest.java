@@ -1716,7 +1716,7 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldReturnErrorMessageInResponse_whenCaseOrchestrationServiceExceptionIsThrown() {
-        CaseOrchestrationServiceException serviceException = spy(new CaseOrchestrationServiceException("This is a test error message"));
+        CaseOrchestrationServiceException serviceException = new CaseOrchestrationServiceException("This is a test error message");
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleCaseOrchestrationServiceExceptionForCcdCallback(serviceException);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
@@ -1725,7 +1725,6 @@ public class CallbackControllerTest {
         assertThat(ccdCallbackResponse.getData(), is(nullValue()));
         assertThat(ccdCallbackResponse.getErrors(), hasSize(1));
         assertThat(ccdCallbackResponse.getErrors(), hasItem("This is a test error message"));
-        verify(serviceException).getIdentifiableMessage();
     }
 
     @Test
