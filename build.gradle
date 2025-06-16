@@ -342,7 +342,7 @@ dependencies {
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
     implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: versions.ccdClient
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
-    implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
+    implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib, classifier: 'plain'
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
 
     implementation group: 'com.github.hmcts', name: 'send-letter-client', version: versions.sendLetterClient, {
