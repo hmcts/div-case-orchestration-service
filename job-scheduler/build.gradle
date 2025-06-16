@@ -17,7 +17,7 @@ def versions = [
         assertj          : '3.24.2',
         flyway           : '6.5.7',
         jacksonDatabind  : '2.15.3',
-        lombok           : '1.18.30',
+        lombok           : '1.18.38',
         postgresql       : '42.6.0',
         reformLogging    : '6.1.9'
 ]
