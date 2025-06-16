@@ -60,7 +60,7 @@ def versions = [
         lombok                : '1.18.30',
         postgresql            : '42.6.0',
         reformPropertiesVolume: '0.1.0',
-        sendLetterClient      : '3.0.23',
+        sendLetterClient      : '3.0.23.1',
         serenity              : '2.6.0',
         serenityCucumber      : '1.9.51',
         serviceTokenGenerator : '5.2.0',
