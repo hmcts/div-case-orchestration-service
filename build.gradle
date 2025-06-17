@@ -56,7 +56,7 @@ def versions = [
         jsonAssert            : '1.5.1',
         jsonPathAssert        : '2.2.0',
         junit                 : '4.13.2',
-        lombok                : '1.18.30',
+        lombok                : '1.18.38',
         postgresql            : '42.6.0',
         reformPropertiesVolume: '0.1.0',
         sendLetterClient      : '3.0.23',
