@@ -190,7 +190,7 @@ allprojects {
 
             dependency group: 'org.glassfish', name: 'jakarta.el', version: versions.glassfish
 
-            dependencySet(group: 'org.springframework', version: '5.3.39') {
+            dependencySet(group: 'org.springframework', version: '6.2.8') {
                 entry 'spring-aop'
                 entry 'spring-beans'
                 entry 'spring-context'
