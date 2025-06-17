@@ -360,7 +360,7 @@ dependencies {
     }
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.3.1.Final'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '7.0.2.Final'
 
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: versions.jacksonDatabind
 
