@@ -36,7 +36,7 @@ def versions = [
         commonsIo             : '2.15.0',
         commonsLang3          : '3.13.0',
         commonsMath3          : '3.6.1',
-        divCommonLib          : '1.2.16',
+        divCommonLib          : '1.3.0',
         dumbster              : '1.7.1',
         elasticsearch         : '7.17.28',
         feignHttpClient       : '12.5',
@@ -59,7 +59,7 @@ def versions = [
         lombok                : '1.18.30',
         postgresql            : '42.6.0',
         reformPropertiesVolume: '0.1.0',
-        sendLetterClient      : '3.0.23',
+        sendLetterClient      : '3.0.4.1',
         serenity              : '2.6.0',
         serenityCucumber      : '1.9.51',
         serviceTokenGenerator : '5.3.2',
@@ -71,8 +71,8 @@ def versions = [
         unirest               : '1.4.9',
         pact_version          : '4.1.11',
         httpComponents        : '4.5.14',
-        bspCommonLib          : '0.0.51',
-        ccdClient             : '4.9.2',
+        bspCommonLib          : '0.1.2',
+        ccdClient             : '4.9.1.1',
         reformLogging         : '6.1.9',
         apacheLogging         : '2.24.3',
         netty                 : '4.1.118.Final',
@@ -111,15 +111,6 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1' }
-        maven {
-            url 'https://jitpack.io'
-            content {
-                includeVersion 'com.github.hmcts', 'send-letter-client', '3.0.23'
-                includeVersion 'com.github.hmcts', 'bsp-common-lib', '0.0.51'
-                includeVersion 'com.github.hmcts', 'div-common-lib', '1.2.21_DFR-829'
-                includeVersion 'com.github.hmcts', 'ccd-client', '4.9.2'
-            }
-        }
     }
 
     tasks.withType(JavaExec).configureEach {
@@ -341,7 +332,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: versions.retry
     implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
-    implementation "com.github.hmcts:div-common-lib:1.2.21_DFR-829", {
+    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}", {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-context'
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
     }
@@ -349,7 +340,7 @@ dependencies {
         exclude group: "org.yaml", module: "snakeyaml"
     }
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamClient
-    implementation group: 'com.github.hmcts', name: 'ccd-client', version: versions.ccdClient
+    implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: versions.ccdClient
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceTokenGenerator
     implementation group: 'com.github.hmcts', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
