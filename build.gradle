@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 buildscript {
     ext {
         springBootVersion = '2.7.17'
-        springCloudBomVersion = "2021.0.8"
+        springCloudBomVersion = "2021.0.9"
     }
     repositories {
         mavenCentral()
@@ -383,7 +383,7 @@ dependencies {
     }
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.8'
+    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.10'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
