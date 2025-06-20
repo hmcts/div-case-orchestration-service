@@ -304,7 +304,7 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
-    implementation group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.19'
+    implementation group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.34'
     implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.2'
     implementation group: 'jakarta.mail', name: 'jakarta.mail-api', version: versions.jakartaMail
     implementation group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: versions.jakartaWsRs
